@@ -1,0 +1,12 @@
+
+services:
+  gamer_profile_service:
+    container_name: gamer_profile_service
+    build:
+      context: ./GamerProfileService/GamerProfileService
+      dockerfile: ./GamerProfileService/Dockerfile
+    image: gameby_gamer_profile_service:latest
+    environment:
+      "ASPNETCORE_ENVIRONMENT": "Development"
+    ports: 
+      - 8080:8080

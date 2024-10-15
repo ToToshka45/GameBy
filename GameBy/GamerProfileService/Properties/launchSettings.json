@@ -35,7 +35,8 @@
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQLite_ConnectionString": "Data Source=LocalDatabase.db"
       },
       "publishAllPorts": true,
       "useSSL": true

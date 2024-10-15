@@ -13,6 +13,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["GamerProfileService/GamerProfileService.csproj", "GamerProfileService/"]
+COPY ["GameBy.Core/GameBy.Core.csproj", "GameBy.Core/"]
+COPY ["GameBy.DataAccess/GameBy.DataAccess.csproj", "GameBy.DataAccess/"]
 RUN dotnet restore "./GamerProfileService/GamerProfileService.csproj"
 COPY . .
 WORKDIR "/src/GamerProfileService"
@@ -27,4 +29,5 @@ RUN dotnet publish "./GamerProfileService.csproj" -c $BUILD_CONFIGURATION -o /ap
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+#COPY --from=base /app/GameBy.DataAccess/LocalDatabase.db .
 ENTRYPOINT ["dotnet", "GamerProfileService.dll"]

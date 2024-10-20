@@ -21,7 +21,7 @@ public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
     /// <param name="id"> Id сущности. </param>
     /// <param name="cancellationToken"></param>
     /// <returns> Найденную сущность или <see langword="null" />.</returns>
-    public virtual async Task<T> GetAsync( Guid id, CancellationToken cancellationToken = default )
+    public virtual async Task<T?> GetAsync( Guid id, CancellationToken cancellationToken = default )
     {
         return await _entitySet.FindAsync( id, cancellationToken );
     }
@@ -56,7 +56,7 @@ public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
     /// </summary>
     /// <param name="entity"> Сущность для добавления. </param>
     /// <returns> Добавленная сущность или <see langword="null" /> если передан <see langword="null" />.</returns>
-    public virtual async Task<T> AddAsync( T entity, CancellationToken cancellationToken = default )
+    public virtual async Task<T?> AddAsync( T entity, CancellationToken cancellationToken = default )
     {
         if ( entity == null )
         {
@@ -81,16 +81,16 @@ public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
     /// </summary>
     /// <param name="entity"> Сущность для изменения. </param>
     /// <returns> Была ли сущность обновлена. </returns>
-    public virtual async Task<bool> UpdateAsync( T entity, CancellationToken cancellationToken = default )
+    public virtual Task<bool> UpdateAsync( T entity, CancellationToken cancellationToken = default )
     {
         if ( entity == null )
         {
-            return false;
+            return Task.FromResult( false );
         }
 
         Context.Entry( entity ).State = EntityState.Modified;
 
-        return true;
+        return Task.FromResult( true );
     }
 
     /// <summary>
@@ -116,16 +116,16 @@ public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
     /// </summary>
     /// <param name="entity"> Сущность для удаления. </param>
     /// <returns> Была ли сущность удалена. </returns>
-    public virtual async Task<bool> DeleteAsync( T entity, CancellationToken cancellationToken = default )
+    public virtual Task<bool> DeleteAsync( T entity, CancellationToken cancellationToken = default )
     {
         if ( entity == null )
         {
-            return false;
+            return Task.FromResult( false );
         }
 
         Context.Entry( entity ).State = EntityState.Deleted;
 
-        return true;
+        return Task.FromResult( true );
     }
 
     /// <summary>

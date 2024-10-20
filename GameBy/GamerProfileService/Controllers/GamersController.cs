@@ -27,67 +27,51 @@ public class GamersController : ControllerBase
     public async Task<ActionResult<List<GamerResponse>>> GetGamersAsync()
     {
         var gamers = await _unitOfWork.GamerRepository.GetAllAsync( Request.HttpContext.RequestAborted );
-        var response = gamers.Select( x =>
+        var response = gamers.Select( gamer =>
             new GamerResponse()
             {
-                Id = x.Id,
-                Name = x.Name,
-                Nickname = x.Nickname,
-                //DateOfBirth = x.DateOfBirth,
-                AboutMe = x.AboutMe,
-                Country = x.Country,
-                City = x.City,
-                ContactMe = x.ContactMe,
+                Id = gamer.Id,
+                Name = gamer.Name,
+                Nickname = gamer.Nickname,
+                //DateOfBirth = gamer.DateOfBirth,
+                AboutMe = gamer.AboutMe,
+                Country = gamer.Country,
+                City = gamer.City,
+                ContactMe = gamer.ContactMe,
             } ).ToList();
 
         return Ok( response );
     }
 
-    ///// <summary>
-    ///// Получить данные игрока по идентификатору
-    ///// </summary>
-    ///// <param name="id"></param>
-    ///// <returns></returns>
-    //[HttpGet( "{id}" )]
-    //public async Task<ActionResult<CustomerResponse>> GetCustomerAsync( Guid id )
-    //{
-    //    var entityItem = await _unitOfWork.CustomerRepository.GetAsync( id, Request.HttpContext.RequestAborted );
+    /// <summary>
+    /// Получить данные игрока по идентификатору
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet( "{id}" )]
+    public async Task<ActionResult<GamerResponse>> GetGamerAsync( Guid id )
+    {
+        var gamer = await _unitOfWork.GamerRepository.GetAsync( id, Request.HttpContext.RequestAborted );
 
-    //    var preferenceResponses = new List<PreferenceResponse>();
-    //    var preferences = await _unitOfWork.PreferenceRepository.GetAsyncByIds( entityItem.CustomerPreferences.Select( cp => cp.PreferenceId ), Request.HttpContext.RequestAborted );
-    //    foreach ( var preference in preferences )
-    //    {
-    //        var preferenceResponse = new PreferenceResponse()
-    //        {
-    //            Id = preference.Id,
-    //            Name = preference.Name,
-    //        };
+        if ( gamer is null )
+        {
+            return NotFound();
+        }
 
-    //        preferenceResponses.Add( preferenceResponse );
-    //    }
+        var response = new GamerResponse()
+        {
+            Id = gamer.Id,
+            Name = gamer.Name,
+            Nickname = gamer.Nickname,
+            //DateOfBirth = gamer.DateOfBirth,
+            AboutMe = gamer.AboutMe,
+            Country = gamer.Country,
+            City = gamer.City,
+            ContactMe = gamer.ContactMe,
+        };
 
-    //    var response = new CustomerResponse()
-    //    {
-    //        Id = entityItem.Id,
-    //        FirstName = entityItem.FirstName,
-    //        LastName = entityItem.LastName,
-    //        Email = entityItem.Email,
-    //        PromoCodes = entityItem.PromoCodes.Select( pc => {
-    //            return new PromoCodeResponse()
-    //            {
-    //                Id = pc.Id,
-    //                Code = pc.Code,
-    //                ServiceInfo = pc.ServiceInfo,
-    //                BeginDate = pc.BeginDate.ToString(),
-    //                EndDate = pc.EndDate.ToString(),
-    //                PartnerName = pc.PartnerName,
-    //            };
-    //        } ).ToList(),
-    //        Preferences = preferenceResponses,
-    //    };
-
-    //    return Ok( response );
-    //}
+        return Ok( response );
+    }
 
     /// <summary>
     /// Создать нового игрока
@@ -95,7 +79,7 @@ public class GamersController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateCustomerAsync( CreateOrEditGamerRequest request )
+    public async Task<IActionResult> CreateGamerAsync( CreateOrEditGamerRequest request )
     {
         var newGamer = new Gamer()
         {
@@ -108,63 +92,58 @@ public class GamersController : ControllerBase
             ContactMe = request.ContactMe,
         };
 
-        var createdCustomer = await _unitOfWork.GamerRepository.AddAsync( newGamer, Request.HttpContext.RequestAborted );
+        await _unitOfWork.GamerRepository.AddAsync( newGamer, Request.HttpContext.RequestAborted );
 
         await _unitOfWork.SaveChangesAsync( Request.HttpContext.RequestAborted );
 
         return Created();
     }
 
-    ///// <summary>
-    ///// Редактировать игрока
-    ///// </summary>
-    ///// <param name="id"></param>
-    ///// <param name="request"></param>
-    ///// <returns></returns>
-    //[HttpPut( "{id}" )]
-    //public async Task<IActionResult> EditCustomersAsync( Guid id, CreateOrEditCustomerRequest request )
-    //{
-    //    var entityItem = await _unitOfWork.CustomerRepository.GetAsync( id, Request.HttpContext.RequestAborted );
+    /// <summary>
+    /// Редактировать игрока
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpPut( "{id}" )]
+    public async Task<IActionResult> EditGamerAsync( Guid id, CreateOrEditGamerRequest request )
+    {
+        var gamer = await _unitOfWork.GamerRepository.GetAsync( id, Request.HttpContext.RequestAborted );
 
-    //    var customerPreferences = new List<CustomerPreference>();
-    //    var preferences = await _unitOfWork.PreferenceRepository.GetAsyncByIds( request.PreferenceIds, Request.HttpContext.RequestAborted );
-    //    foreach ( var preference in preferences )
-    //    {
-    //        var customerPreference = new CustomerPreference()
-    //        {
-    //            PreferenceId = preference.Id,
-    //            Preference = preference,
-    //        };
+        if ( gamer is null )
+        {
+            return NotFound();
+        }
 
-    //        customerPreferences.Add( customerPreference );
-    //    }
+        gamer.Name = request.Name;
+        gamer.Nickname = request.Nickname;
+        //gamer.DateOfBirth = request.DateOfBirth;
+        gamer.AboutMe = request.AboutMe;
+        gamer.Country = request.Country;
+        gamer.City = request.City;
+        gamer.ContactMe = request.ContactMe;
 
-    //    entityItem.FirstName = request.FirstName;
-    //    entityItem.LastName = request.LastName;
-    //    entityItem.Email = request.Email;
-    //    entityItem.CustomerPreferences = customerPreferences;
+        await _unitOfWork.GamerRepository.UpdateAsync( gamer, Request.HttpContext.RequestAborted );
+        await _unitOfWork.SaveChangesAsync( Request.HttpContext.RequestAborted );
 
-    //    await _unitOfWork.CustomerRepository.UpdateAsync( entityItem, Request.HttpContext.RequestAborted );
-    //    await _unitOfWork.SaveChangesAsync( Request.HttpContext.RequestAborted );
+        return NoContent();
+    }
 
-    //    return NoContent();
-    //}
+    /// <summary>
+    /// Удалить игрока по идентификатору
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete]
+    public async Task<IActionResult> DeleteGamerAsync( Guid id )
+    {
+        var wasDeleted = await _unitOfWork.GamerRepository.DeleteAsync( id, Request.HttpContext.RequestAborted );
 
-    ///// <summary>
-    ///// Удалить игрока по идентификатору
-    ///// </summary>
-    ///// <param name="id"></param>
-    ///// <returns></returns>
-    //[HttpDelete]
-    //public async Task<IActionResult> DeleteCustomer( Guid id )
-    //{
-    //    var wasDeleted = await _unitOfWork.CustomerRepository.DeleteAsync( id, Request.HttpContext.RequestAborted );
+        if ( wasDeleted )
+        {
+            await _unitOfWork.SaveChangesAsync( Request.HttpContext.RequestAborted );
+        }
 
-    //    if ( wasDeleted )
-    //    {
-    //        await _unitOfWork.SaveChangesAsync( Request.HttpContext.RequestAborted );
-    //    }
-
-    //    return Ok( wasDeleted );
-    //}
+        return Ok( wasDeleted );
+    }
 }

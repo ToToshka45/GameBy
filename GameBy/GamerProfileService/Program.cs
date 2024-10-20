@@ -4,9 +4,6 @@ using GameBy.DataAccess;
 using GameBy.DataAccess.Repositories;
 using GamerProfileService.Settings;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Primitives;
 
 namespace GamerProfileService;
 
@@ -58,15 +55,5 @@ public class Program
 
         app.Run();
     }
-
-    //private static string GetConnectionString(IConfiguration configuration)
-    //{
-    //    var environment = configuration[""];
-
-    //    if ( true )
-    //    {
-
-    //    }
-    //}
 
 }

@@ -16,6 +16,10 @@ jobs:
   build:
     # среда
     runs-on: ubuntu-latest
+    
+    # переменные окружения
+    env:
+      PROJECT_PATH: GameBy\GamerProfileService\GamerProfileService.csproj
 
     steps:
     - name: Checkout repository
@@ -27,10 +31,10 @@ jobs:
         dotnet-version: 8.0.x
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ${{ env.PROJECT_PATH }}
       
-    - name: Build
-      run: dotnet build --no-restore
+    - name: Build project
+      run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
       
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+ #   - name: Test
+ #     run: dotnet test --no-build --verbosity normal

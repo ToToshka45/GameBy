@@ -49,7 +49,7 @@ public class GamersController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet( "{id}" )]
-    public async Task<ActionResult<GamerResponse>> GetGamerAsync( Guid id )
+    public async Task<ActionResult<GamerResponse>> GetGamerAsync( int id )
     {
         var gamer = await _unitOfWork.GamerRepository.GetAsync( id, Request.HttpContext.RequestAborted );
 
@@ -106,7 +106,7 @@ public class GamersController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPut( "{id}" )]
-    public async Task<IActionResult> EditGamerAsync( Guid id, CreateOrEditGamerRequest request )
+    public async Task<IActionResult> EditGamerAsync( int id, CreateOrEditGamerRequest request )
     {
         var gamer = await _unitOfWork.GamerRepository.GetAsync( id, Request.HttpContext.RequestAborted );
 
@@ -135,7 +135,7 @@ public class GamersController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete]
-    public async Task<IActionResult> DeleteGamerAsync( Guid id )
+    public async Task<IActionResult> DeleteGamerAsync( int id )
     {
         var wasDeleted = await _unitOfWork.GamerRepository.DeleteAsync( id, Request.HttpContext.RequestAborted );
 

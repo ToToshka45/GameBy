@@ -21,7 +21,7 @@ public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
     /// <param name="id"> Id сущности. </param>
     /// <param name="cancellationToken"></param>
     /// <returns> Найденную сущность или <see langword="null" />.</returns>
-    public virtual async Task<T?> GetAsync( Guid id, CancellationToken cancellationToken = default )
+    public virtual async Task<T?> GetAsync( int id, CancellationToken cancellationToken = default )
     {
         return await _entitySet.FindAsync( id, cancellationToken );
     }
@@ -32,7 +32,7 @@ public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
     /// <param name="ids"> Ids сущностей. </param>
     /// <param name="cancellationToken"></param>
     /// <returns> Cущность. </returns>
-    public virtual async Task<List<T>> GetAsyncByIds( IEnumerable<Guid> ids, CancellationToken cancellationToken = default )
+    public virtual async Task<List<T>> GetAsyncByIds( IEnumerable<int> ids, CancellationToken cancellationToken = default )
     {
         var query = _entitySet
             .Where( item => ids.Any( id => item.Id == id ) )
@@ -98,7 +98,7 @@ public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
     /// </summary>
     /// <param name="id"> Id удалённой сущности. </param>
     /// <returns> Была ли сущность удалена. </returns>
-    public virtual async Task<bool> DeleteAsync( Guid id, CancellationToken cancellationToken = default )
+    public virtual async Task<bool> DeleteAsync( int id, CancellationToken cancellationToken = default )
     {
         var obj = await _entitySet.FindAsync( id, cancellationToken );
         if ( obj == null )

@@ -10,7 +10,7 @@ public interface IEfRepository<T> where T : BaseEntity
     /// <param name="id"> Id сущности. </param>
     /// <param name="cancellationToken"></param>
     /// <returns> Cущность. </returns>
-    Task<T?> GetAsync( Guid id, CancellationToken cancellationToken = default );
+    Task<T?> GetAsync( int id, CancellationToken cancellationToken = default );
 
     /// <summary>
     /// Получить набор сущностей по набору Id.
@@ -18,7 +18,7 @@ public interface IEfRepository<T> where T : BaseEntity
     /// <param name="ids"> Ids сущностей. </param>
     /// <param name="cancellationToken"></param>
     /// <returns> Cущность. </returns>
-    Task<List<T>> GetAsyncByIds( IEnumerable<Guid> ids, CancellationToken cancellationToken = default );
+    Task<List<T>> GetAsyncByIds( IEnumerable<int> ids, CancellationToken cancellationToken = default );
 
     /// <summary>
     /// Запросить все сущности в базе.
@@ -32,7 +32,7 @@ public interface IEfRepository<T> where T : BaseEntity
     /// </summary>
     /// <param name="id"> Id удалённой сущности. </param>
     /// <returns> Была ли сущность удалена. </returns>
-    Task<bool> DeleteAsync( Guid id, CancellationToken cancellationToken = default );
+    Task<bool> DeleteAsync( int id, CancellationToken cancellationToken = default );
 
     /// <summary>
     /// Удалить сущность.

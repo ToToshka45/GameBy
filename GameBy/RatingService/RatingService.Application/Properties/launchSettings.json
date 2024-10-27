@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RatingService.Application": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

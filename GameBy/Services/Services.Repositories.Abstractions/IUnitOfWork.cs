@@ -1,4 +1,4 @@
-﻿namespace GameBy.Core.Abstractions.Repositories;
+﻿namespace Services.Repositories.Abstractions;
 
 /// <summary>
 /// UOW.

@@ -19,8 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameBy.Core\GameBy.Core.csproj" />
-    <ProjectReference Include="..\GameBy.DataAccess\GameBy.DataAccess.csproj" />
+    <ProjectReference Include="..\Domain\Domain.Entities\Domain.Entities.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.EntityFramework\Infrastructure.EntityFramework.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.Repositories.Implementations\Infrastructure.Repositories.Implementations.csproj" />
   </ItemGroup>
 
 </Project>

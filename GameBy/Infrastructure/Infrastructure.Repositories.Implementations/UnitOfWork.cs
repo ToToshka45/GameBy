@@ -1,4 +1,4 @@
-﻿using GameBy.Core.Abstractions.Repositories;
+﻿using Services.Repositories.Abstractions;
 
 namespace GameBy.DataAccess.Repositories;
 

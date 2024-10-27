@@ -1,6 +1,6 @@
-﻿using GameBy.Core.Domain;
+﻿using Domain.Entities;
 
-namespace GameBy.Core.Abstractions.Repositories;
+namespace Services.Repositories.Abstractions;
 
 public interface IEfRepository<T> where T : BaseEntity
 {

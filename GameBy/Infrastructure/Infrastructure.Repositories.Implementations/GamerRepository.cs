@@ -1,5 +1,5 @@
-﻿using GameBy.Core.Abstractions.Repositories;
-using GameBy.Core.Domain.Entities;
+﻿using Domain.Entities;
+using Services.Repositories.Abstractions;
 
 namespace GameBy.DataAccess.Repositories;
 

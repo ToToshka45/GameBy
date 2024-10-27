@@ -1,4 +1,4 @@
-﻿using GameBy.Core.Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

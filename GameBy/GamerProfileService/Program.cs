@@ -1,5 +1,5 @@
 
-using GameBy.Core.Abstractions.Repositories;
+using Services.Repositories.Abstractions;
 using GameBy.DataAccess;
 using GameBy.DataAccess.Repositories;
 using GamerProfileService.Settings;

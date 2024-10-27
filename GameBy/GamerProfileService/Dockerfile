@@ -12,12 +12,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["GamerProfileService/GamerProfileService.csproj", "GamerProfileService/"]
-COPY ["GameBy.Core/GameBy.Core.csproj", "GameBy.Core/"]
-COPY ["GameBy.DataAccess/GameBy.DataAccess.csproj", "GameBy.DataAccess/"]
-RUN dotnet restore "./GamerProfileService/GamerProfileService.csproj"
+COPY ["GamerProfileService/GamerProfileService.csproj", "Build/GamerProfileService/"]
+COPY ["Domain/Domain.Entities/Domain.Entities.csproj", "Build/Domain.Entities/"]
+COPY ["Infrastructure/Infrastructure.EntityFramework/Infrastructure.EntityFramework.csproj", "Build/Infrastructure.EntityFramework/"]
+COPY ["Infrastructure/Infrastructure.Repositories.Implementations/Infrastructure.Repositories.Implementations.csproj", "Build/Infrastructure.Repositories.Implementations/"]
+COPY ["Services/Services.Repositories.Abstractions/Services.Repositories.Abstractions.csproj", "Build/Services.Repositories.Abstractions/"]
+RUN dotnet restore "./Build/GamerProfileService/GamerProfileService.csproj"
 COPY . .
-WORKDIR "/src/GamerProfileService"
+WORKDIR "/src/Build/GamerProfileService"
 RUN dotnet build "./GamerProfileService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

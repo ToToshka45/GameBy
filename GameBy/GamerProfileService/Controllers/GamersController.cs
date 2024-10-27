@@ -1,5 +1,5 @@
-﻿using GameBy.Core.Abstractions.Repositories;
-using GameBy.Core.Domain.Entities;
+﻿using Services.Repositories.Abstractions;
+using Domain.Entities;
 using GamerProfileService.Models;
 using Microsoft.AspNetCore.Mvc;
 

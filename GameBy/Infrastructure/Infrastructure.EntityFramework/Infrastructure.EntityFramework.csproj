@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameBy.Core\GameBy.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="LocalDatabase.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -32,6 +28,10 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\Domain.Entities\Domain.Entities.csproj" />
   </ItemGroup>
 
 </Project>

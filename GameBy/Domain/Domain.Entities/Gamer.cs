@@ -1,4 +1,4 @@
-﻿namespace GameBy.Core.Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class Gamer : BaseEntity
 {

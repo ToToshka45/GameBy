@@ -12,6 +12,8 @@ namespace GamerProfileService.Mapping
         public GamerMappingsProfile()
         {
             CreateMap<GamerDto, GamerModel>();
+            CreateMap<CreateGamerModel, CreateGamerDto>();
+            CreateMap<UpdateGamerModel, UpdateGamerDto>();
         }
     }
 }

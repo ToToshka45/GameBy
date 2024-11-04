@@ -1,6 +1,6 @@
-﻿namespace Services.Contracts.Gamer
+namespace GamerProfileService.Models.Gamer
 {
-    public class UpdateGamerDto
+    public class CreateGamerModel
     {
         public required string Name { get; set; }
         public required string Nickname { get; set; }

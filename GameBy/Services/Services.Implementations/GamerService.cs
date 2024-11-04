@@ -17,31 +17,57 @@ namespace Services.Implementations
             _mapper = mapper;
         }
 
+        public async Task<List<GamerDto>> GetAllAsync( CancellationToken cancellationToken )
+        {
+            var gamer = await _gamerRepository.GetAllAsync( cancellationToken );
+
+            return _mapper.Map<List<Gamer>, List<GamerDto>>( gamer );
+        }
+        
         public async Task<GamerDto> GetByIdAsync( int id, CancellationToken cancellationToken )
+        {
+            var gamer = await _gamerRepository.GetAsync( id, cancellationToken );
+
+            return _mapper.Map<Gamer, GamerDto>( gamer );
+        }
+
+        public async Task<int> CreateAsync( CreateGamerDto createGamerDto, CancellationToken cancellationToken )
+        {
+            var gamer = _mapper.Map<CreateGamerDto, Gamer>( createGamerDto );
+            var createdGamer = await _gamerRepository.AddAsync( gamer, cancellationToken );
+
+            await _gamerRepository.SaveChangesAsync( cancellationToken );
+
+            return createdGamer.Id;
+        }
+
+        public async Task<bool> UpdateAsync( int id, UpdateGamerDto updateGamerDto, CancellationToken cancellationToken )
         {
             var gamer = await _gamerRepository.GetAsync( id, cancellationToken );
 
             if ( gamer == null )
             {
-                throw new Exception( $"Игрок с id = {id} не найден" );
+                return false;
             }
 
-            return _mapper.Map<Gamer, GamerDto>( gamer );
+            _mapper.Map<UpdateGamerDto, Gamer>( updateGamerDto, gamer );
+
+            await _gamerRepository.UpdateAsync( gamer, cancellationToken );
+            await _gamerRepository.SaveChangesAsync( cancellationToken );
+
+            return true;
         }
 
-        public async Task UpdateAsync( int id, UpdateGamerDto updateGamerDto )
+        public async Task<bool> DeleteAsync( int id, CancellationToken cancellationToken )
         {
-            throw new NotImplementedException();
-        }
+            var wasDeleted = await _gamerRepository.DeleteAsync( id, cancellationToken );
 
-        public async Task<int> CreateAsync( CreateGamerDto createGamerDto )
-        {
-            throw new NotImplementedException();
-        }
+            if ( wasDeleted )
+            {
+                await _gamerRepository.SaveChangesAsync( cancellationToken );
+            }
 
-        public async Task DeleteAsync( int id )
-        {
-            throw new NotImplementedException();
+            return wasDeleted;
         }
     }
 }

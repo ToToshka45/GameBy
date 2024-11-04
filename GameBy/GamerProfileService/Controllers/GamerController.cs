@@ -1,7 +1,11 @@
-﻿using Services.Repositories.Abstractions;
+﻿using AutoMapper;
 using Domain.Entities;
 using GamerProfileService.Models;
+using GamerProfileService.Models.Gamer;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
+using Services.Contracts.Gamer;
+using Services.Repositories.Abstractions;
 
 namespace GamerProfileService.Controllers;
 
@@ -10,12 +14,16 @@ namespace GamerProfileService.Controllers;
 /// </summary>
 [ApiController]
 [Route( "api/v1/[controller]" )]
-public class GamersController : ControllerBase
+public class GamerController : ControllerBase
 {
+    private readonly IGamerService _service;
+    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public GamersController( IUnitOfWork unitOfWork )
+    public GamerController( IGamerService service, IMapper mapper, IUnitOfWork unitOfWork )
     {
+        _service = service;
+        _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
 
@@ -49,28 +57,10 @@ public class GamersController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet( "{id}" )]
-    public async Task<ActionResult<GamerResponse>> GetGamerAsync( int id )
+    public async Task<IActionResult> GetAsync( int id )
     {
-        var gamer = await _unitOfWork.GamerRepository.GetAsync( id, Request.HttpContext.RequestAborted );
-
-        if ( gamer is null )
-        {
-            return NotFound();
-        }
-
-        var response = new GamerResponse()
-        {
-            Id = gamer.Id,
-            Name = gamer.Name,
-            Nickname = gamer.Nickname,
-            //DateOfBirth = gamer.DateOfBirth,
-            AboutMe = gamer.AboutMe,
-            Country = gamer.Country,
-            City = gamer.City,
-            ContactMe = gamer.ContactMe,
-        };
-
-        return Ok( response );
+        var gamerDto = await _service.GetByIdAsync( id, Request.HttpContext.RequestAborted );
+        return Ok( _mapper.Map<GamerDto, GamerModel>( gamerDto ) );
     }
 
     /// <summary>
@@ -142,6 +132,10 @@ public class GamersController : ControllerBase
         if ( wasDeleted )
         {
             await _unitOfWork.SaveChangesAsync( Request.HttpContext.RequestAborted );
+        }
+        else
+        {
+            return NotFound();
         }
 
         return Ok( wasDeleted );

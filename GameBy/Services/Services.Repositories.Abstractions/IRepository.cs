@@ -2,7 +2,7 @@
 
 namespace Services.Repositories.Abstractions;
 
-public interface IEfRepository<T> where T : BaseEntity
+public interface IRepository<T> where T : BaseEntity
 {
     /// <summary>
     /// Получить сущность по Id.

@@ -1,8 +1,4 @@
-
-using Services.Repositories.Abstractions;
 using GameBy.DataAccess;
-using GameBy.DataAccess.Repositories;
-using GamerProfileService.Settings;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamerProfileService;
@@ -17,14 +13,7 @@ public class Program
 
         builder.Services.AddControllers();
 
-        var applicationSettings = builder.Configuration.Get<ApplicationSettings>();
-        builder.Services.AddDbContext<ApplicationDBContext>( optionsBuilder => {
-            optionsBuilder.UseNpgsql( applicationSettings.PostgreSQL_ConnectionString );
-            //optionsBuilder.UseSqlite( builder.Configuration[ "SQLite_ConnectionString" ] );
-        } );
-
-        builder.Services.AddTransient<IGamerRepository, GamerRepository>();
-        builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddServices( builder.Configuration );
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -55,5 +44,4 @@ public class Program
 
         app.Run();
     }
-
 }

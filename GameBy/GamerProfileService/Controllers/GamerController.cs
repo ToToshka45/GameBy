@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using GamerProfileService.Models;
 using GamerProfileService.Models.Gamer;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -26,48 +25,46 @@ public class GamerController : ControllerBase
     /// <summary>
     /// Получить данные всех игроков
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status200OK )]
-    public async Task<ActionResult<List<GamerResponse>>> GetGamersAsync()
+    [ProducesResponseType<List<GamerModel>>( StatusCodes.Status200OK )]
+    public async Task<List<GamerModel>> GetGamersAsync( CancellationToken cancellationToken )
     {
-        var gamers = await _service.GetAllAsync( Request.HttpContext.RequestAborted );
+        var gamers = await _service.GetAllAsync( cancellationToken );
 
-        return Ok( _mapper.Map<List<GamerDto>, List<GamerModel>>( gamers ) );
+        return _mapper.Map<List<GamerDto>, List<GamerModel>>( gamers );
     }
 
     /// <summary>
     /// Получить данные игрока по идентификатору
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet( "{id}" )]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status404NotFound )]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status200OK )]
-    public async Task<IActionResult> GetAsync( int id )
+    [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
+    [ProducesResponseType<GamerModel>( StatusCodes.Status200OK )]
+    public async Task<ActionResult<GamerModel>> GetAsync( int id, CancellationToken cancellationToken )
     {
-        var gamerDto = await _service.GetByIdAsync( id, Request.HttpContext.RequestAborted );
+        var gamerDto = await _service.GetByIdAsync( id, cancellationToken );
 
-        if ( gamerDto == null )
-        {
-            return NotFound( $"Игрок с id = {id} не найден" );
-        }
-
-        return Ok( _mapper.Map<GamerDto, GamerModel>( gamerDto ) );
+        return gamerDto == null ? NotFound( $"Игрок с id = {id} не найден" ) : Ok( _mapper.Map<GamerDto, GamerModel>( gamerDto ) );
     }
 
     /// <summary>
     /// Создать нового игрока
     /// </summary>
     /// <param name="createGamerModel"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status201Created )]
-    public async Task<IActionResult> CreateGamerAsync( CreateGamerModel createGamerModel )
+    [ProducesResponseType<int>( StatusCodes.Status201Created )]
+    public async Task<ActionResult<int>> CreateGamerAsync( CreateGamerModel createGamerModel, CancellationToken cancellationToken )
     {
-        var result = await _service.CreateAsync( _mapper.Map<CreateGamerModel, CreateGamerDto>( createGamerModel ), Request.HttpContext.RequestAborted );
+        var result = await _service.CreateAsync( _mapper.Map<CreateGamerModel, CreateGamerDto>( createGamerModel ), cancellationToken );
 
-        return Created( string.Empty, result );
+        return Created( string.Empty, result ); // TODO Anton: CreatedAtAction
     }
 
     /// <summary>
@@ -75,39 +72,31 @@ public class GamerController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <param name="updateGamerModel"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPut( "{id}" )]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status404NotFound )]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status204NoContent )]
-    public async Task<IActionResult> EditGamerAsync( int id, UpdateGamerModel updateGamerModel )
+    [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
+    [ProducesResponseType( StatusCodes.Status204NoContent )]
+    public async Task<IActionResult> EditGamerAsync( int id, UpdateGamerModel updateGamerModel, CancellationToken cancellationToken )
     {
-        var wasUpdated = await _service.UpdateAsync( id, _mapper.Map<UpdateGamerModel, UpdateGamerDto>( updateGamerModel ), Request.HttpContext.RequestAborted );
+        var wasUpdated = await _service.UpdateAsync( id, _mapper.Map<UpdateGamerModel, UpdateGamerDto>( updateGamerModel ), cancellationToken );
 
-        if ( !wasUpdated )
-        {
-            return NotFound( $"Игрок с id = {id} не найден" );
-        }
-
-        return NoContent();
+        return wasUpdated ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
     }
 
     /// <summary>
     /// Удалить игрока по идентификатору
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpDelete]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status404NotFound )]
-    [ProducesResponseType<IActionResult>( StatusCodes.Status200OK )]
-    public async Task<IActionResult> DeleteGamerAsync( int id )
+    [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
+    [ProducesResponseType( StatusCodes.Status204NoContent )]
+    public async Task<IActionResult> DeleteGamerAsync( int id, CancellationToken cancellationToken )
     {
-        var wasDeleted = await _service.DeleteAsync( id, Request.HttpContext.RequestAborted );
+        var wasDeleted = await _service.DeleteAsync( id, cancellationToken );
 
-        if ( !wasDeleted )
-        {
-            return NotFound( $"Игрок с id = {id} не найден" );
-        }
-
-        return Ok();
+        return wasDeleted ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
     }
 }

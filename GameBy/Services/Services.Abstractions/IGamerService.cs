@@ -23,6 +23,7 @@ namespace Services.Abstractions
         /// Создать игрока.
         /// </summary>
         /// <param name="createGamerDto"> ДТО игрока. </param>
+        /// <param name="cancellationToken"></param>
         /// <returns> Идентификатор. </returns>
         Task<int> CreateAsync( CreateGamerDto createGamerDto, CancellationToken cancellationToken );
 
@@ -31,12 +32,14 @@ namespace Services.Abstractions
         /// </summary>
         /// <param name="id"> Идентификатор. </param>
         /// <param name="updateGamerDto"> ДТО игрока. </param>
+        /// <param name="cancellationToken"></param>
         Task<bool> UpdateAsync( int id, UpdateGamerDto updateGamerDto, CancellationToken cancellationToken );
 
         /// <summary>
         /// Удалить игрока.
         /// </summary>
         /// <param name="id"> Идентификатор. </param>
+        /// <param name="cancellationToken"></param>
         Task<bool> DeleteAsync( int id, CancellationToken cancellationToken );
     }
 }

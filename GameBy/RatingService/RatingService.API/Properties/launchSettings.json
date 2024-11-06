@@ -1,11 +1,12 @@
-﻿{
+{
   "profiles": {
     "http": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionSettings__NpgsqlConnectionSetting": "host=localhost port=5432 dbname=rating-service user=admin password=rating-service-rules "
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5057"

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35219.272
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatingService.API", "RatingService.API\RatingService.API.csproj", "{85EEC85B-F741-4EE8-9B73-E38F78CDA73E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingService.API", "RatingService.API\RatingService.API.csproj", "{85EEC85B-F741-4EE8-9B73-E38F78CDA73E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatingService.Application", "RatingService.Application\RatingService.Application.csproj", "{87BF56E8-6643-4259-A06A-BBFE4A42221B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingService.Application", "RatingService.Application\RatingService.Application.csproj", "{87BF56E8-6643-4259-A06A-BBFE4A42221B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatingService.Infrastructure", "RatingService.Infrastructure\RatingService.Infrastructure.csproj", "{36948018-F4AC-460D-B08D-3D39019FCC00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingService.Infrastructure", "RatingService.Infrastructure\RatingService.Infrastructure.csproj", "{36948018-F4AC-460D-B08D-3D39019FCC00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatingService.Domain", "RatingService.Domain\RatingService.Domain.csproj", "{53B8E50E-1E92-4E80-AACD-CA44C12EAC06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingService.Domain", "RatingService.Domain\RatingService.Domain.csproj", "{53B8E50E-1E92-4E80-AACD-CA44C12EAC06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

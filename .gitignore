@@ -397,3 +397,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /GameBy/RatingService/RatingService.API/TODO.txt
+/GameBy/RatingService/RatingService.API/Properties/launchSettings.json

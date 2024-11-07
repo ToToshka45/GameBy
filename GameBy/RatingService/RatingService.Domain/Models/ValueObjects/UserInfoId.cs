@@ -1,10 +1,9 @@
-﻿namespace RatingService.Domain.Models.ValueObjects
-{
-    /// <summary>
-    /// The Id of the Entity, which is described in the provided Info. Can be a User, an Event, or other Entity if it exists.
-    /// </summary>
-    public class UserInfoId
-    { 
-        public Guid Id { get; }
-    }
+﻿namespace RatingService.Domain.Models.ValueObjects;
+
+public class UserInfoId
+{ 
+    public int Id { get; }
+    private UserInfoId(int id) => Id = id;
+
+    public static UserInfoId Create(int id) => new UserInfoId(id);
 }

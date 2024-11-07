@@ -4,11 +4,11 @@ namespace RatingService.Domain.Models.Entities;
 
 public class UserInfo
 {    
-    public UserInfoId Id { get; } = new UserInfoId();
+    public int Id { get; private set; }
     public UserId UserId { get; }
     public Rating Rating { get; }
-    private UserInfo(UserId userId) { UserId = userId; }
+    private UserInfo(UserId userId, Rating rating) { UserId = userId; Rating = rating; }
 
-    public static UserInfo Create(UserId id) => new UserInfo(id);
+    public static UserInfo Create(UserId id, Rating rating) => new UserInfo(id, rating);
 }
 

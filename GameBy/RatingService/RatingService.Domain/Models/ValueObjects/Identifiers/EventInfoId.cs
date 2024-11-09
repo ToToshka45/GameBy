@@ -1,4 +1,4 @@
-﻿namespace RatingService.Domain.Models.ValueObjects;
+﻿namespace RatingService.Domain.Models.ValueObjects.Identifiers;
 
 public class EventInfoId
 {

@@ -1,7 +1,8 @@
 ﻿namespace RatingService.Domain.Enums;
 
-public enum UserRole
+public enum EntityType
 {
     Organizer,
-    Gamer
+    Participant,
+    Event
 }

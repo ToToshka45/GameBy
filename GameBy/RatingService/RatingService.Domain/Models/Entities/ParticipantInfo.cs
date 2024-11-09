@@ -1,14 +1,27 @@
-﻿using RatingService.Domain.Models.ValueObjects;
+﻿using RatingService.Domain.Abstractions;
+using RatingService.Domain.Enums;
+using RatingService.Domain.Models.ValueObjects;
+using RatingService.Domain.Models.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Models.Entities;
 
-public class ParticipantInfo
+public class ParticipantInfo : BaseEntity
 {
-    public int Id { get; private set; }
     public ParticipantId ParticipantId { get; }
     public UserId UserId { get; }
+    public EventId EventId { get; }
+    public ParticipationState ParticipationState { get; }
     public Rating Rating { get; }
-    private ParticipantInfo(UserId userId, Rating rating) { UserId = userId; Rating = rating; }
+    private ParticipantInfo(ParticipantId participantId, UserId userId, EventId eventId, Rating rating, 
+        ParticipationState participationState)
+    {
+        UserId = userId;
+        Rating = rating;
+        EventId = eventId;
+        ParticipantId = participantId;
+        ParticipationState = participationState;
+    }
 
-    public static ParticipantInfo Create(UserId id, Rating rating) => new ParticipantInfo(id, rating);
+    public static ParticipantInfo Create(ParticipantId participantId, UserId userId, EventId eventId, Rating rating,
+        ParticipationState participationState) => new ParticipantInfo(participantId, userId, eventId, rating, participationState);
 }

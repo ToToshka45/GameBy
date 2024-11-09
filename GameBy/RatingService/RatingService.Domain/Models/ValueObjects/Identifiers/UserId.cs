@@ -1,6 +1,6 @@
-﻿namespace RatingService.Domain.Models.ValueObjects;
+﻿namespace RatingService.Domain.Models.ValueObjects.Identifiers;
 public class UserId
-{ 
+{
     public int Id { get; }
     private UserId(int id) => Id = id;
 

@@ -8,6 +8,6 @@ internal class ParticipantConfiguration : IEntityTypeConfiguration<ParticipantIn
 {
     public void Configure(EntityTypeBuilder<ParticipantInfo> builder)
     {
-        builder.HasKey(e => e.)
+        //builder.HasKey(e => e.)
     }
 }

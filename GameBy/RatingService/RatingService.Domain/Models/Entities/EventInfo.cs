@@ -4,7 +4,7 @@ using RatingService.Domain.Models.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Models.Entities;
 
-public class EventInfo : BaseEntity
+public class EventInfo : Entity
 {
     public EventId EventId { get; }
     public Rating Rating { get; set; }

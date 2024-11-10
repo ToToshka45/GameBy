@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 
 namespace RatingService.Domain.Abstractions;
-public interface IRepository<T> where T : BaseEntity
+public interface IRepository<T> where T : Entity
 {
     Task<bool> SaveChangesAsync(CancellationToken token);
     Task<bool> Add(T entity, CancellationToken token);

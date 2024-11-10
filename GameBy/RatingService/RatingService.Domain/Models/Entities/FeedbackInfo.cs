@@ -4,21 +4,24 @@ using RatingService.Domain.Models.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Models.Entities;
 
-public class FeedbackInfo : BaseEntity
+public class FeedbackInfo : Entity
 {
     public EventId EventId { get; }
     public AuthorId AuthorId { get; }
-    public ReceiverInfo ReceiverInfo { get; }
-    public FeedbackContent Content { get; }
-    private FeedbackInfo(EventId eventId, AuthorId authorId, ReceiverInfo receiverInfo, FeedbackContent content)
+    public ReceiverDetails ReceiverDetails { get; }
+    public FeedbackDetails Content { get; }
+    public DateTime CreationDate { get; }
+    public DateTime UpdateDate { get; private set; }
+    private FeedbackInfo(EventId eventId, AuthorId authorId, ReceiverDetails receiverInfo, FeedbackDetails content, DateTime createdAt)
     {
         EventId = eventId;
         AuthorId = authorId;
-        ReceiverInfo = receiverInfo;
+        ReceiverDetails = receiverInfo;
         Content = content;
+        CreationDate = createdAt;
     }
 
-    public static FeedbackInfo Create(EventId eventId, AuthorId authorId, ReceiverInfo receiverInfo, FeedbackContent content) => 
-        new FeedbackInfo(eventId, authorId, receiverInfo, content);
+    public static FeedbackInfo Create(EventId eventId, AuthorId authorId, ReceiverDetails receiverInfo, FeedbackDetails content, DateTime createdAt) => 
+        new FeedbackInfo(eventId, authorId, receiverInfo, content, createdAt);
 }
 

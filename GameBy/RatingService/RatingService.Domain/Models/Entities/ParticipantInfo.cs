@@ -5,7 +5,7 @@ using RatingService.Domain.Models.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Models.Entities;
 
-public class ParticipantInfo : BaseEntity
+public class ParticipantInfo : Entity
 {
     public ParticipantId ParticipantId { get; }
     public UserId UserId { get; }

@@ -26,19 +26,19 @@ public class UserInfo
     }
     public static UserInfo Create(UserId id, Rating rating) => new UserInfo(id, rating);
 
-    public void AddParticipantFeedback(FeedbackInfo feedback)
+    public void AddGamerFeedback(FeedbackInfo feedback)
     {
-        if (feedback.ReceiverInfo.EntityType != EntityType.Participant) 
-            throw new InvalidDataException($"Invalid Entity Type.Expected '{EntityType.Participant}', but received '{nameof(feedback.ReceiverInfo.EntityType)}'.");
+        if (feedback.ReceiverDetails.EntityType != EntityType.Gamer) 
+            throw new InvalidDataException($"Invalid Entity Type.Expected '{EntityType.Gamer}', but received '{nameof(feedback.ReceiverDetails.EntityType)}'.");
 
         _participantFeedbacksInfo.Add(feedback);
     }
     public void AddOrganizerFeedback(FeedbackInfo feedback)
     {
-        if (feedback.ReceiverInfo.EntityType != EntityType.Participant)
-            throw new InvalidDataException($"Invalid Entity Type.Expected '{EntityType.Participant}', but received '{nameof(feedback.ReceiverInfo.EntityType)}'.");
+        if (feedback.ReceiverDetails.EntityType != EntityType.Organizer)
+            throw new InvalidDataException($"Invalid Entity Type.Expected '{EntityType.Organizer}', but received '{nameof(feedback.ReceiverDetails.EntityType)}'.");
 
-        _participantFeedbacksInfo.Add(feedback);
+        _organizerFeedbacksInfo.Add(feedback);
     }
 }
 

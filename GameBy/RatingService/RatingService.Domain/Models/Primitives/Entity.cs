@@ -1,4 +1,4 @@
-﻿namespace RatingService.Domain.Abstractions;
+﻿namespace RatingService.Domain.Models.Primitives;
 
 public abstract class Entity : IEquatable<Entity>
 {
@@ -7,12 +7,12 @@ public abstract class Entity : IEquatable<Entity>
     {
         if (obj is null) return false;
         var entity = obj as Entity;
-        return this.Equals(entity);
+        return Equals(entity);
     }
 
     public override int GetHashCode()
     {
-        return this.Id.GetHashCode();
+        return Id.GetHashCode();
     }
 
     public bool Equals(Entity? other)

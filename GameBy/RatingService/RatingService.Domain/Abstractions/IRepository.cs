@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using RatingService.Domain.Models.Primitives;
+using System.Linq.Expressions;
 
 namespace RatingService.Domain.Abstractions;
 public interface IRepository<T> where T : Entity

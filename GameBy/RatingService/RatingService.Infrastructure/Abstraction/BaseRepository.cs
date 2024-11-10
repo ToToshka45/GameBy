@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RatingService.Domain.Abstractions;
+using RatingService.Domain.Models.Primitives;
 using RatingService.Infrastructure.DataAccess;
 using System.Linq.Expressions;
 

@@ -1,4 +1,4 @@
-﻿using RatingService.Domain.Abstractions;
+﻿using RatingService.Domain.Models.Primitives;
 using RatingService.Domain.Models.ValueObjects;
 using RatingService.Domain.Models.ValueObjects.Identifiers;
 

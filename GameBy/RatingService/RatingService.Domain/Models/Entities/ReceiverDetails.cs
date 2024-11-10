@@ -1,5 +1,5 @@
-﻿using RatingService.Domain.Abstractions;
-using RatingService.Domain.Enums;
+﻿using RatingService.Domain.Enums;
+using RatingService.Domain.Models.Primitives;
 
 namespace RatingService.Domain.Models.Entities
 {

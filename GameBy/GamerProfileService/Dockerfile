@@ -17,6 +17,9 @@ COPY ["Domain/Domain.Entities/Domain.Entities.csproj", "Build/Domain.Entities/"]
 COPY ["Infrastructure/Infrastructure.EntityFramework/Infrastructure.EntityFramework.csproj", "Build/Infrastructure.EntityFramework/"]
 COPY ["Infrastructure/Infrastructure.Repositories.Implementations/Infrastructure.Repositories.Implementations.csproj", "Build/Infrastructure.Repositories.Implementations/"]
 COPY ["Services/Services.Repositories.Abstractions/Services.Repositories.Abstractions.csproj", "Build/Services.Repositories.Abstractions/"]
+COPY ["Services/Services.Abstractions/Services.Abstractions.csproj", "Build/Services.Abstractions/"]
+COPY ["Services/Services.Implementations/Services.Implementations.csproj", "Build/Services.Implementations/"]
+COPY ["Services/Services.Contracts/Services.Contracts.csproj", "Build/Services.Contracts/"]
 RUN dotnet restore "./Build/GamerProfileService/GamerProfileService.csproj"
 COPY . .
 WORKDIR "/src/Build/GamerProfileService"

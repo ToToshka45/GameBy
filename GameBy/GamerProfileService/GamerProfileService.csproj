@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,6 +23,8 @@
     <ProjectReference Include="..\Domain\Domain.Entities\Domain.Entities.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.EntityFramework\Infrastructure.EntityFramework.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.Repositories.Implementations\Infrastructure.Repositories.Implementations.csproj" />
+    <ProjectReference Include="..\Services\Services.Abstractions\Services.Abstractions.csproj" />
+    <ProjectReference Include="..\Services\Services.Implementations\Services.Implementations.csproj" />
   </ItemGroup>
 
 </Project>

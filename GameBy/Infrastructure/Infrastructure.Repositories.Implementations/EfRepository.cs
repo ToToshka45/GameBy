@@ -1,10 +1,10 @@
 ﻿using Domain.Entities;
-using Services.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Services.Repositories.Abstractions;
 
 namespace GameBy.DataAccess.Repositories;
 
-public class EfRepository<T> : IEfRepository<T> where T : BaseEntity
+public class EfRepository<T> : IRepository<T> where T : BaseEntity
 {
     public readonly DbContext Context;
     public readonly DbSet<T> _entitySet;

@@ -10,7 +10,7 @@ public interface IEfRepository<T> where T : BaseEntity
     /// <param name="id"> Id сущности. </param>
     /// <param name="cancellationToken"></param>
     /// <returns> Cущность. </returns>
-    Task<T?> GetAsync( int id, CancellationToken cancellationToken = default );
+    Task<T?> GetAsync( int id, CancellationToken? cancellationToken = default );
 
     /// <summary>
     /// Получить набор сущностей по набору Id.

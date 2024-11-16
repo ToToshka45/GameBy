@@ -1,4 +1,4 @@
-﻿using RatingService.Domain.Models.Primitives;
+﻿using RatingService.Domain.Primitives;
 using System.Linq.Expressions;
 
 namespace RatingService.Domain.Abstractions;

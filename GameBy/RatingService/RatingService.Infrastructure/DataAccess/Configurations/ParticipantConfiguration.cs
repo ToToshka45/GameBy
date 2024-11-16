@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RatingService.Domain.Models.Entities;
+using RatingService.Domain.Entities;
 
 namespace RatingService.Infrastructure.DataAccess.Configurations;
 

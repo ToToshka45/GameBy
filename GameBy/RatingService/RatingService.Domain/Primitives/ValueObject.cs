@@ -1,4 +1,4 @@
-﻿namespace RatingService.Domain.Models.Primitives;
+﻿namespace RatingService.Domain.Primitives;
 
 public abstract class ValueObject : IEquatable<ValueObject>
 {

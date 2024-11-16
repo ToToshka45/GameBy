@@ -1,6 +1,21 @@
-﻿using System.ComponentModel;
+﻿namespace RatingService.Domain.Enums;
 
-namespace RatingService.Domain.Enums;
+public enum EntityType
+{
+    Organizer,
+    Gamer,
+    Event
+}
+
+public enum Category
+{
+    RPG,
+    Strategy,
+    Mafia,
+    Quiz,
+    Poker,
+    Hide_and_seek
+}
 
 public enum ParticipationState
 {

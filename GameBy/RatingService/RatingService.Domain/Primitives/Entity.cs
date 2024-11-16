@@ -1,12 +1,18 @@
-﻿namespace RatingService.Domain.Models.Primitives;
+﻿namespace RatingService.Domain.Primitives;
 
-public abstract class Entity : IEquatable<Entity>
+public abstract class Entity<TId> where TId : notnull
 {
-    public int Id { get; }
+    public TId Id { get; protected set; }
+
+    protected Entity(TId id)
+    {
+        Id = id;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is null) return false;
-        var entity = obj as Entity;
+        var entity = obj as Entity<TId>;
         return Equals(entity);
     }
 
@@ -15,7 +21,7 @@ public abstract class Entity : IEquatable<Entity>
         return Id.GetHashCode();
     }
 
-    public bool Equals(Entity? other)
+    public bool Equals(Entity<TId>? other)
     {
         return other is null ? false : Id.Equals(other.Id);
     }

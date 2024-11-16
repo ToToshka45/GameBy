@@ -8,21 +8,19 @@ namespace RatingService.Domain.Aggregates;
 public class RatingUpdate : AggregateRoot<int>
 {
     public UserId UserId { get; }
-    public EventId EventId { get; }
+    public Event Event { get; }
 
     public DateTime CreationDate { get; }
     public Category Category { get; }
+    public Rating Value { get; }
 
-    // values
-    public Rating RatingValue { get; }
-
-    public RatingUpdate(int id, UserId userId, DateTime creationDate, Rating value, Category category, EventId eventId) : base(id)
+    public RatingUpdate(int id, UserId userId, DateTime creationDate, Rating value, Category category, Event eventEntity) : base(id)
     {
         UserId = userId;
         CreationDate = creationDate;
-        RatingValue = value;
+        Value = value;
         Category = category;
-        EventId = eventId;
+        Event = eventEntity;
     }
 
 }

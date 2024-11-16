@@ -2,11 +2,11 @@
 using RatingService.Domain.ValueObjects;
 using RatingService.Domain.ValueObjects.Identifiers;
 
-namespace RatingService.Domain.Entities;
+namespace RatingService.Domain.Aggregates;
 
-public class Feedback : Entity<int>
+public class Feedback : AggregateRoot<int>
 {
-    public EventId EventId { get; }
+    public Event Event { get; }
     public AuthorId AuthorId { get; }
     public Receiver Receiver { get; }
     public FeedbackContent Content { get; private set; }
@@ -15,13 +15,13 @@ public class Feedback : Entity<int>
 
     public Feedback(
         int id,
-        EventId eventId,
+        Event eventId,
         AuthorId authorId,
         Receiver receiverInfo,
         string content,
         DateTime createdAt) : base(id)
     {
-        EventId = eventId;
+        Event = eventId;
         AuthorId = authorId;
         Receiver = receiverInfo;
         Content = new FeedbackContent(content);

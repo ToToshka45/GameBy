@@ -1,5 +1,4 @@
-﻿using RatingService.Domain.Entities;
-using RatingService.Domain.Enums;
+﻿using RatingService.Domain.Enums;
 using RatingService.Domain.Primitives;
 using RatingService.Domain.ValueObjects.Identifiers;
 
@@ -14,8 +13,8 @@ public class UserInfo : AggregateRoot<int>
     private List<Feedback> _gamerFeedbacks = [];
     public IReadOnlyList<Feedback> GamerFeedbacks => _gamerFeedbacks;
 
-    private List<Feedback> _organizerFeedbacksInfo = [];
-    public IReadOnlyList<Feedback> OrganizerFeedbacksInfo => _organizerFeedbacksInfo;
+    private List<Feedback> _organizerFeedbacks = [];
+    public IReadOnlyList<Feedback> OrganizerFeedbacks => _organizerFeedbacks;
 
     public UserInfo(int id, UserId userId, UserRating ratingInfo) : base(id)
     {
@@ -44,7 +43,7 @@ public class UserInfo : AggregateRoot<int>
         if (feedback.Receiver.EntityType != EntityType.Organizer)
             throw new InvalidDataException($"Invalid Entity Type.Expected '{EntityType.Organizer}', but received '{nameof(feedback.Receiver.EntityType)}'.");
 
-        _organizerFeedbacksInfo.Add(feedback);
+        _organizerFeedbacks.Add(feedback);
     }
 
     public void RemoveOrganizerFeedback(FeedbackId feedbackId)

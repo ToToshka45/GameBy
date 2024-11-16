@@ -6,7 +6,8 @@ using System.Linq.Expressions;
 
 namespace RatingService.Infrastructure.Abstractions;
 
-public abstract class BaseRepository<T>(RatingServiceDbContext storage) : IRepository<T> where T : Entity
+public abstract class BaseRepository<T>(RatingServiceDbContext storage) 
+    : IRepository<T, int> where T : AggregateRoot<int>
 {
     private readonly DbSet<T> _dbSet = storage.Set<T>();
 

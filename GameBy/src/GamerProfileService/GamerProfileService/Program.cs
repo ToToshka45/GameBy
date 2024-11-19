@@ -1,4 +1,6 @@
-using GameBy.DataAccess;
+﻿using GameBy.DataAccess;
+using GamerProfileService.Middlewares;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamerProfileService;
@@ -21,6 +23,8 @@ public class Program
 
         var app = builder.Build();
 
+        //app.UseHttpLogging();
+
         using ( var scope = app.Services.CreateScope() )
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
@@ -37,8 +41,21 @@ public class Program
 
         app.UseHttpsRedirection();
 
-        app.UseAuthorization();
+        app.MapTestMiddlewares();
+        app.UseTestMiddlewares();
 
+        // My Middlewares
+        // Кеширование запроса
+        app.UseLibrarySimpleCaching();
+        app.UseResponseCaching(); // TODO: Не работает
+
+        // Хелсчеки
+        app.UseHealthChecks( "/db_ef_healthcheck", new HealthCheckOptions // TODO: хз, мб и работает, дёргаю, лога не вижу
+        {
+            Predicate = healthCheck => healthCheck.Tags.Contains( "db_ef_healthcheck" )
+        } );
+
+        app.UseAuthorization();
 
         app.MapControllers();
 

@@ -13,11 +13,15 @@ namespace GamerProfileService.Controllers;
 [Route( "api/v1/[controller]" )]
 public class GamerController : ControllerBase
 {
+    private readonly ILogger<GamerController> _logger;
+
     private readonly IGamerService _service;
     private readonly IMapper _mapper;
 
-    public GamerController( IGamerService service, IMapper mapper )
+    public GamerController( ILogger<GamerController> logger, IGamerService service, IMapper mapper )
     {
+        _logger = logger;
+
         _service = service;
         _mapper = mapper;
     }

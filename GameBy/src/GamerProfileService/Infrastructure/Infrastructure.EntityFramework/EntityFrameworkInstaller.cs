@@ -19,13 +19,13 @@ namespace Infrastructure.EntityFramework
 
             #region health checks
 
-            //services.AddHealthChecks()
-            //    .AddDbContextCheck<ApplicationDBContext>(
-            //        tags: new[] { "db_ef_healthcheck" },
-            //        customTestQuery: async ( context, token ) =>
-            //        {
-            //            return await context.Lessons.AnyAsync( token );
-            //        } );
+            services.AddHealthChecks()
+                .AddDbContextCheck<ApplicationDBContext>(
+                    tags: new[] { "db_ef_healthcheck" },
+                    customTestQuery: async ( context, token ) =>
+                    {
+                        return await context.Gamers.AnyAsync( token );
+                    } );
 
             #endregion
 

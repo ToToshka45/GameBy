@@ -19,7 +19,7 @@ jobs:
     
     # переменные окружения
     env:
-      PROJECT_PATH: GameBy/GamerProfileService/GamerProfileService.csproj
+      PROJECT_PATH: GameBy/src/GamerProfileService/GamerProfileService/GamerProfileService.csproj
 
     steps:
     - name: Checkout repository

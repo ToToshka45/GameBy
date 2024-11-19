@@ -10,11 +10,8 @@
 
   <ItemGroup>
     <Compile Remove="Abstractions\**" />
-    <Compile Remove="Services\**" />
     <EmbeddedResource Remove="Abstractions\**" />
-    <EmbeddedResource Remove="Services\**" />
     <None Remove="Abstractions\**" />
-    <None Remove="Services\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +21,10 @@
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Services\" />
 	</ItemGroup>
 
 </Project>

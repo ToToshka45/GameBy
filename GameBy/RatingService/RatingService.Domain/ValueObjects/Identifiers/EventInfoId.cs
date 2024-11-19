@@ -1,6 +1,6 @@
 ﻿namespace RatingService.Domain.ValueObjects.Identifiers;
 
-public class EventInfoId : BaseEntityId
+public class ExternalEventId : BaseEntityId
 {
-    public EventInfoId(int id) : base(id) { }
+    public ExternalEventId(int id) : base(id) { }
 }

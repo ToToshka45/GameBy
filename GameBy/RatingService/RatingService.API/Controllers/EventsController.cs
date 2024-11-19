@@ -4,7 +4,8 @@ namespace RatingService.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RatingServiceBaseController : ControllerBase
+    public class EventsController : ControllerBase
     {
+
     }
 }

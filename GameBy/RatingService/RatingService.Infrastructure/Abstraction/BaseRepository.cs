@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace RatingService.Infrastructure.Abstractions;
 
 public abstract class BaseRepository<T>(RatingServiceDbContext storage) 
-    : IRepository<T, int> where T : AggregateRoot<int>
+    : IRepository<T, int> where T : Entity<int>
 {
     private readonly DbSet<T> _dbSet = storage.Set<T>();
 
@@ -19,29 +19,35 @@ public abstract class BaseRepository<T>(RatingServiceDbContext storage)
 
     public virtual async Task<bool> Delete(int id, CancellationToken token)
     {
-        var entity = await Get(id, token);
+        var entity = await GetById(id, token);
         ArgumentNullException.ThrowIfNull(entity);
         _dbSet.Remove(entity);
         return await SaveChangesAsync(token);
     }
 
-    public virtual async Task<T?> Get(int id, CancellationToken token)
+    public virtual async Task<ICollection<T>> GetAll(CancellationToken token)
     {
-        return await _dbSet.FirstOrDefaultAsync(e => e.Id == id, token);
+        return await _dbSet.ToListAsync(token);
     }
 
-    public virtual async Task<bool> Update(int id, T entity, CancellationToken token)
+    public virtual async Task<T?> GetById(int id, CancellationToken token)
     {
-        var storedEntity = await Get(id, token);
-        ArgumentNullException.ThrowIfNull(entity);
-        entity = storedEntity!;
-        _dbSet.Update(entity);
-        return await SaveChangesAsync(token);
+        return await _dbSet.FirstOrDefaultAsync(e => e.Id == id, token);
     }
     public async Task<T?> GetByFilter(Expression<Func<T, bool>> filter, CancellationToken token)
     {
         return await _dbSet.FirstOrDefaultAsync(filter, token);
     }
+
+    public virtual async Task<bool> Update(int id, T entity, CancellationToken token)
+    {
+        var storedEntity = await GetById(id, token);
+        ArgumentNullException.ThrowIfNull(entity);
+        entity = storedEntity!;
+        _dbSet.Update(entity);
+        return await SaveChangesAsync(token);
+    }
+   
 
     public async Task<bool> SaveChangesAsync(CancellationToken token)
     {

@@ -6,25 +6,25 @@ using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Entities;
 
-public class ParticipantInfo : Entity<int>
+public class Participant : Entity<int>
 {
-    public ParticipantId ParticipantId { get; }
-    public UserId UserId { get; }
-    public Event Event { get; }
+    public ExternalParticipantId ParticipantId { get; }
+    public ExternalEventId EventId { get; }
+    public ExternalUserId UserId { get; }
     public ParticipationState ParticipationState { get; private set; }
-    public ParticipantRating Rating { get; }
+    public Rating Rating { get; }
 
-    public ParticipantInfo(
+    public Participant(
         int id,
-        ParticipantId participantId,
-        UserId userId,
-        Event eventEntity,
-        ParticipantRating rating,
+        ExternalParticipantId participantId,
+        ExternalUserId userId,
+        ExternalEventId eventId,
+        Rating rating,
         ParticipationState participationState) : base(id)
     {
         UserId = userId;
         Rating = rating;
-        Event = eventEntity;
+        EventId = eventId;
         ParticipantId = participantId;
         ParticipationState = participationState;
     }

@@ -1,18 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RatingService.Domain.Aggregates;
 using RatingService.Domain.Entities;
-using RatingService.Domain.ValueObjects;
-using System.Reflection;
+using RatingService.Infrastructure.DataAccess.Configurations;
 
 namespace RatingService.Infrastructure.DataAccess;
 
 public class RatingServiceDbContext : DbContext
 {
-    public DbSet<ParticipantInfo> Participants { get; set; }
-    public DbSet<Rating> Ratings { get; set; }
-    public DbSet<UserRating> UsersInfo { get; set; }
-    //public DbSet<Participant> Participants { get; set; }
-    //public DbSet<Participant> Participants { get; set; }
+    public required DbSet<EventInfo> Events { get; set; }
+    public required DbSet<UserInfo> Users { get; set; }
+    public required DbSet<UserRatingUpdate> RatingUpdates { get; set; }
 
     public RatingServiceDbContext(DbContextOptions<RatingServiceDbContext> opts) : base(opts)
     {   
@@ -22,13 +20,13 @@ public class RatingServiceDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         // Model configuring
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfiguration(new EventConfiguration());
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
 
-        // TODO
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
     }
 }

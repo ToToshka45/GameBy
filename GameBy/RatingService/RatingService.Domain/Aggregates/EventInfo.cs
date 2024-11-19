@@ -8,21 +8,24 @@ namespace RatingService.Domain.Aggregates;
 
 public class EventInfo : AggregateRoot<int>
 {
-    public Event Event { get; }
-    public EventRating EventRating { get; }
+    public ExternalEventId EventId { get; }
+    public Category Category { get; }
+    public Rating Rating { get; }
 
-    // Feedbacks
+    //Feedbacks
     private List<Feedback> _feedbacks = [];
-    public IReadOnlyList<Feedback> Feedbacks => _feedbacks.AsReadOnly();
+    public IReadOnlyList<Feedback> Feedbacks => _feedbacks;
 
-    private List<ParticipantInfo> _participants = [];
-    public IReadOnlyList<ParticipantInfo> Participants => _participants.AsReadOnly();
+    private List<Participant> _participants = [];
+    public IReadOnlyList<Participant> Participants => _participants;
 
+    // collection of RatingUpdates
 
-    public EventInfo(int id, Event eventEntity, EventRating eventRating) : base(id)
+    public EventInfo(int id, ExternalEventId eventId, Rating eventRating, Category category) : base(id)
     {
-        Event = eventEntity;
-        EventRating = eventRating;
+        EventId = eventId;
+        Rating = eventRating;
+        Category = category;
     }
 
     public void AddFeedback(Feedback feedbackInfo)
@@ -39,7 +42,7 @@ public class EventInfo : AggregateRoot<int>
             _feedbacks.AddRange(feedbackInfo.Where(f => f.Receiver.EntityType == EntityType.Event));
     }
 
-    public void ChangeParticipantState(ParticipantId participantId, ParticipationState state)
+    public void ChangeParticipantState(ExternalParticipantId participantId, ParticipationState state)
     {
         var participant = _participants.FirstOrDefault(p => p.Id == participantId.Value);
         if (participant == null) return; // Result.Failure

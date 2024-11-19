@@ -1,14 +1,17 @@
-﻿using RatingService.Domain.Exceptions;
+﻿using RatingService.Domain.Enums;
+using RatingService.Domain.Exceptions;
 using RatingService.Domain.Primitives;
 
 namespace RatingService.Domain.ValueObjects;
 
 public class Rating : ValueObject
 {
+    public Category Category { get; }
     public float Value { get; }
-    public Rating(float value)
+    public Rating(float value, Category category)
     {
         Validate(value);
+        Category = category;
         Value = value;
     }
 
@@ -20,6 +23,7 @@ public class Rating : ValueObject
 
     protected override IEnumerable<object> GetAtomicValues()
     {
+        yield return Category;
         yield return Value;
     }
 }

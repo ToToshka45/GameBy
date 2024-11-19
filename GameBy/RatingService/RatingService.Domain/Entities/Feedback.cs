@@ -1,12 +1,13 @@
-﻿using RatingService.Domain.Primitives;
+﻿using RatingService.Domain.Enums;
+using RatingService.Domain.Primitives;
 using RatingService.Domain.ValueObjects;
 using RatingService.Domain.ValueObjects.Identifiers;
 
-namespace RatingService.Domain.Aggregates;
+namespace RatingService.Domain.Entities;
 
-public class Feedback : AggregateRoot<int>
+public class Feedback : Entity<int>
 {
-    public Event Event { get; }
+    public ExternalEventId EventId { get; }
     public AuthorId AuthorId { get; }
     public Receiver Receiver { get; }
     public FeedbackContent Content { get; private set; }
@@ -15,13 +16,13 @@ public class Feedback : AggregateRoot<int>
 
     public Feedback(
         int id,
-        Event eventId,
+        ExternalEventId eventId,
         AuthorId authorId,
         Receiver receiverInfo,
         string content,
         DateTime createdAt) : base(id)
     {
-        Event = eventId;
+        EventId = eventId;
         AuthorId = authorId;
         Receiver = receiverInfo;
         Content = new FeedbackContent(content);

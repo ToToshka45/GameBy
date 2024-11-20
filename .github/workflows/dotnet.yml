@@ -12,10 +12,21 @@ on:
   # ручной запуск
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  build:
+  build-and-push-image:
     # среда
     runs-on: ubuntu-latest
+
+    # Sets the permissions granted to the GITHUB_TOKEN for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
     
     # переменные окружения
     env:

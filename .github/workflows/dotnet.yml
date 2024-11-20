@@ -6,7 +6,7 @@ name: .NET
 # триггер
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "imagePush" ]
   pull_request:
     branches: [ "main" ]
   # ручной запуск

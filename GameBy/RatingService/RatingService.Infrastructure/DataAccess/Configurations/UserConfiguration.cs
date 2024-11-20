@@ -10,11 +10,10 @@ internal class UserConfiguration : IEntityTypeConfiguration<UserInfo>
     {
         builder.HasKey(e => e.Id);
 
-        builder.ComplexProperty(e => e.UserId);
-        //builder.ComplexProperty(x => x.Rating);
+        //builder.ComplexProperty(e => e.ExternalUserId);
 
-        //builder.HasMany(e => e.Feedbacks).WithOne().HasForeignKey(f => f.Id);
-        //builder.HasMany(e => e.Participants).WithOne().HasForeignKey(f => f.Id);
-
+        builder.HasMany(e => e.GamerFeedbacks).WithOne().HasForeignKey(f => f.Id);
+        builder.HasMany(e => e.OrganizerFeedbacks).WithOne().HasForeignKey(f => f.Id);
+        builder.HasMany(e => e.RatingsByCategory).WithOne().HasForeignKey(f => f.Id);
     }
 }

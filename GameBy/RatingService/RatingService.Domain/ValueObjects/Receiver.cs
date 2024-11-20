@@ -17,6 +17,8 @@ namespace RatingService.Domain.ValueObjects
             EntityType = entityType;
         }
 
+        private Receiver() { }
+
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return EntityId;

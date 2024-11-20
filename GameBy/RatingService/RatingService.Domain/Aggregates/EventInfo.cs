@@ -1,14 +1,13 @@
 ﻿using RatingService.Domain.Entities;
 using RatingService.Domain.Enums;
 using RatingService.Domain.Primitives;
-using RatingService.Domain.ValueObjects;
 using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Aggregates;
 
 public class EventInfo : AggregateRoot<int>
 {
-    public ExternalEventId EventId { get; }
+    public int ExternalEventId { get; }
     public Category Category { get; }
     public Rating Rating { get; }
 
@@ -21,12 +20,14 @@ public class EventInfo : AggregateRoot<int>
 
     // collection of RatingUpdates
 
-    public EventInfo(int id, ExternalEventId eventId, Rating eventRating, Category category) : base(id)
+    public EventInfo(int eventId, Rating eventRating, Category category)
     {
-        EventId = eventId;
+        ExternalEventId = eventId;
         Rating = eventRating;
         Category = category;
     }
+
+    private EventInfo() { }
 
     public void AddFeedback(Feedback feedbackInfo)
     {

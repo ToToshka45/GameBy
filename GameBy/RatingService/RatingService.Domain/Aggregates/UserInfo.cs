@@ -9,7 +9,7 @@ namespace RatingService.Domain.Aggregates;
 
 public class UserInfo : AggregateRoot<int>
 {
-    public ExternalUserId UserId { get; }
+    public int ExternalUserId { get; }
 
     private List<Rating> _ratings { get; } = [];
     public IReadOnlyCollection<Rating> RatingsByCategory => _ratings;
@@ -22,11 +22,13 @@ public class UserInfo : AggregateRoot<int>
 
     // collection of RatingUpdates
 
-    public UserInfo(int id, ExternalUserId userId) : base(id)
+    public UserInfo(int userId)
     {
-        UserId = userId;
+        ExternalUserId = userId;
         InitializeRatings();
     }       
+
+    private UserInfo() { }
 
     public void SetRating(Rating rating)
     {

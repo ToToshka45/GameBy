@@ -2,11 +2,10 @@
 
 public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
 {
-    public TId Id { get; protected set; }
+    public TId Id { get; }
 
-    protected Entity(TId id)
+    protected Entity()
     {
-        Id = id;
     }
 
     public override bool Equals(object? obj)

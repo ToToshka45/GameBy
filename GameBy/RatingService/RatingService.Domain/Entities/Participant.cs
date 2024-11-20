@@ -1,34 +1,31 @@
-﻿using RatingService.Domain.Aggregates;
-using RatingService.Domain.Enums;
+﻿using RatingService.Domain.Enums;
 using RatingService.Domain.Primitives;
-using RatingService.Domain.ValueObjects;
-using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Entities;
 
 public class Participant : Entity<int>
 {
-    public ExternalParticipantId ParticipantId { get; }
-    public ExternalEventId EventId { get; }
-    public ExternalUserId UserId { get; }
+    public int ExternalParticipantId { get; }
+    public int ExternalEventId { get; }
+    public int ExternalUserId { get; }
     public ParticipationState ParticipationState { get; private set; }
     public Rating Rating { get; }
 
     public Participant(
-        int id,
-        ExternalParticipantId participantId,
-        ExternalUserId userId,
-        ExternalEventId eventId,
+        int participantId,
+        int userId,
+        int eventId,
         Rating rating,
-        ParticipationState participationState) : base(id)
+        ParticipationState participationState)
     {
-        UserId = userId;
+        ExternalUserId = userId;
         Rating = rating;
-        EventId = eventId;
-        ParticipantId = participantId;
+        ExternalEventId = eventId;
+        ExternalParticipantId = participantId;
         ParticipationState = participationState;
     }
 
+    private Participant() { }
     public void SetState(ParticipationState state)
     {
         ParticipationState = state;

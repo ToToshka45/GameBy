@@ -1,33 +1,32 @@
-﻿using RatingService.Domain.Enums;
-using RatingService.Domain.Primitives;
+﻿using RatingService.Domain.Primitives;
 using RatingService.Domain.ValueObjects;
-using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Entities;
 
 public class Feedback : Entity<int>
 {
-    public ExternalEventId EventId { get; }
-    public AuthorId AuthorId { get; }
+    public int ExternalEventId { get; }
+    public int AuthorId { get; }
     public Receiver Receiver { get; }
     public FeedbackContent Content { get; private set; }
     public DateTime CreationDate { get; }
     public DateTime UpdateDate { get; }
 
     public Feedback(
-        int id,
-        ExternalEventId eventId,
-        AuthorId authorId,
+        int eventId,
+        int authorId,
         Receiver receiverInfo,
-        string content,
-        DateTime createdAt) : base(id)
+        FeedbackContent content,
+        DateTime createdAt)
     {
-        EventId = eventId;
+        ExternalEventId = eventId;
         AuthorId = authorId;
         Receiver = receiverInfo;
-        Content = new FeedbackContent(content);
+        Content = content;
         CreationDate = createdAt;
     }
+
+    private Feedback() { }
 
     public void SetContent(string content)
     {

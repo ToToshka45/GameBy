@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Logging;
 using RatingService.Domain.Aggregates;
 using RatingService.Domain.Entities;
-using RatingService.Infrastructure.DataAccess.Configurations;
+using System.Reflection;
+using EventInfo = RatingService.Domain.Aggregates.EventInfo;
 
 namespace RatingService.Infrastructure.DataAccess;
 
@@ -20,7 +21,7 @@ public class RatingServiceDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         // Model configuring
-        modelBuilder.ApplyConfiguration(new EventConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

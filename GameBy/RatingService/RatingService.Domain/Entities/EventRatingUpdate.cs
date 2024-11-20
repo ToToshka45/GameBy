@@ -1,23 +1,22 @@
-﻿using RatingService.Domain.Enums;
-using RatingService.Domain.Primitives;
-using RatingService.Domain.ValueObjects;
+﻿using RatingService.Domain.Primitives;
 using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Entities;
 
 public class EventRatingUpdate : Entity<int>
 {
-    public AuthorId AuthorId { get; }
-    public ExternalEventId EventId { get; }
+    public int AuthorId { get; }
+    public int ExternalEventId { get; }
     public DateTime CreationDate { get; }
-    public Rating Value { get; }
+    public Rating Rating { get; }
 
-    public EventRatingUpdate(int id, AuthorId authorId, DateTime creationDate, Rating value, ExternalEventId eventId) : base(id)
+    public EventRatingUpdate(int authorId, DateTime creationDate, Rating rating, int eventId)
     {
         AuthorId = authorId;
         CreationDate = creationDate;
-        Value = value;
-        EventId = eventId;
+        Rating = rating;
+        ExternalEventId = eventId;
     }
 
+    private EventRatingUpdate() { }
 }

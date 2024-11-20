@@ -17,12 +17,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RatingService.Application\RatingService.Application.csproj" />
-    <ProjectReference Include="..\RatingService.Domain\RatingService.Domain.csproj" />
+    <ProjectReference Include="..\RatingService.Common\RatingService.Common.csproj" />
     <ProjectReference Include="..\RatingService.Infrastructure\RatingService.Infrastructure.csproj" />
   </ItemGroup>
 

@@ -10,6 +10,8 @@ public class FeedbackContent : ValueObject
         Content = content;
     }
 
+    private FeedbackContent() { }
+
     protected override IEnumerable<object> GetAtomicValues()
     {
         yield return Content;

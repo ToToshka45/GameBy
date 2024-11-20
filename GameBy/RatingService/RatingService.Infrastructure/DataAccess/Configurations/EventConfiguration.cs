@@ -10,9 +10,9 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
     {
         builder.HasKey(e => e.Id);
 
-        builder.ComplexProperty(e => e.EventId);
-        builder.ComplexProperty(x => x.Rating);
+        //builder.ComplexProperty(e => e.EventId);
 
+        builder.HasOne(e => e.Rating).WithOne().HasForeignKey<EventInfo>(e => e.Id);
         builder.HasMany(e => e.Feedbacks).WithOne().HasForeignKey(f => f.Id);
         builder.HasMany(e => e.Participants).WithOne().HasForeignKey(f => f.Id);
 

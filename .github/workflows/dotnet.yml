@@ -54,15 +54,18 @@ jobs:
       with:
         dotnet-version: 8.0.x
         
-    - name: Restore dependencies
-      run: dotnet restore ${{ env.PROJECT_PATH }}
+ #   - name: Restore dependencies
+ #     run: dotnet restore ${{ env.PROJECT_PATH }}
       
-    - name: Build project
-      run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+ #   - name: Build project
+ #     run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
       
  #   - name: Run tests
  #     run: dotnet test --no-build --verbosity normal
  #     run: dotnet test ${{ env.PROJECT_NAME_TESTS }}/${{ env.PROJECT_NAME_TESTS }}.csproj
+ 
+    - name: PWD
+      run: pwd
 
     - name: Build and push Docker image
       id: push

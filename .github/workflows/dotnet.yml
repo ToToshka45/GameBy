@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: Build and Test GamerProfileService
 
 # триггер
 on:
@@ -12,21 +12,10 @@ on:
   # ручной запуск
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   build-and-push-image:
     # среда
     runs-on: ubuntu-latest
-
-    # Sets the permissions granted to the GITHUB_TOKEN for the actions in this job.
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
     
     # переменные окружения
     env:
@@ -35,51 +24,18 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Log in to the GitHub Container registry
-      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
         
- #   - name: Restore dependencies
- #     run: dotnet restore ${{ env.PROJECT_PATH }}
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.PROJECT_PATH }}
       
- #   - name: Build project
- #     run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+    - name: Build project
+      run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
       
  #   - name: Run tests
  #     run: dotnet test --no-build --verbosity normal
  #     run: dotnet test ${{ env.PROJECT_NAME_TESTS }}/${{ env.PROJECT_NAME_TESTS }}.csproj
- 
-    - name: PWD
-      run: pwd
-
-    - name: Build and push Docker image
-      id: push
-      uses: docker/build-push-action@v2
-      with:
-        context: GameBy/src/GamerProfileService
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        file: GameBy/src/GamerProfileService/GamerProfileService/Dockerfile
-
-    - name: Generate artifact attestation
-      uses: actions/attest-build-provenance@v1
-      with:
-        subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        subject-digest: ${{ steps.push.outputs.digest }}
-        push-to-registry: true

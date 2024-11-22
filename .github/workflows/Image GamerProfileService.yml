@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: "gameBy/gamerProfileService"
+  IMAGE_NAME: "gamerProfileService"
 
 jobs:
   build-and-push-image:

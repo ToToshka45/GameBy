@@ -1,3 +1,5 @@
+# https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-docker-images
+
 name: Create new image of GamerProfileService
 
 # триггер
@@ -9,7 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: "gamerProfileService"
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:

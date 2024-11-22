@@ -6,7 +6,7 @@ name: Build and Test GamerProfileService
 # триггер
 on:
   push:
-    branches: [ "main", "imagePush" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   # ручной запуск

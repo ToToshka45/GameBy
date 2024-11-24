@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Education.Middlewares;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using GameBy.DataAccess.Repositories;
 using GamerProfileService.Mapping;
+using GamerProfileService.Models.Gamer;
 using GamerProfileService.Settings;
 using Infrastructure.EntityFramework;
 using Microsoft.AspNetCore.HttpLogging;
@@ -29,7 +32,8 @@ namespace GamerProfileService
                     //.InstallLogging()
                     .InstallServices()
                     .ConfigureContext( applicationSettings.PostgreSQL_ConnectionString )
-                    .InstallRepositories();
+                    .InstallRepositories()
+                    .InstallFluentValidation();
 
             return services;
         }
@@ -116,6 +120,17 @@ namespace GamerProfileService
                 {
                     "SampleHealthCheck"
                 } );
+
+            return serviceCollection;
+        }
+
+        private static IServiceCollection InstallFluentValidation( this IServiceCollection serviceCollection )
+        {
+            serviceCollection.AddFluentValidationAutoValidation();
+            serviceCollection.AddFluentValidationClientsideAdapters();
+
+            // Если валидаторов много, то можно сразу зарегистрировать валидаторы для конкретной Assembly.
+            serviceCollection.AddValidatorsFromAssemblyContaining<Program>();
 
             return serviceCollection;
         }

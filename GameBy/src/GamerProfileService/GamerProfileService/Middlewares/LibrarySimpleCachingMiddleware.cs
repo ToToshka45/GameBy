@@ -25,6 +25,10 @@ public class LibrarySimpleCachingMiddleware
             else
                 await SaveDataToCacheEndExecuteNext(context, memoryCache, _next);
         }
+        else
+        {
+            await _next( context );
+        }
     }
 
     private async Task GetDataFromCache(HttpContext context, IMemoryCache memoryCache, string key)

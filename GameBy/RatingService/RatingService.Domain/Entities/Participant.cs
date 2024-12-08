@@ -9,13 +9,13 @@ public class Participant : Entity<int>
     public int ExternalEventId { get; }
     public int ExternalUserId { get; }
     public ParticipationState ParticipationState { get; private set; }
-    public Rating Rating { get; }
+    public UserRating Rating { get; }
 
     public Participant(
         int participantId,
         int userId,
         int eventId,
-        Rating rating,
+        UserRating rating,
         ParticipationState participationState)
     {
         ExternalUserId = userId;

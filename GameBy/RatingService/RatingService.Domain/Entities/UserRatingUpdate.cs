@@ -8,9 +8,9 @@ public class UserRatingUpdate : Entity<int>
     public int ExternalEventId { get; }
     public int RatingOwnerId { get; }
     public DateTime CreationDate { get; }
-    public Rating Rating { get; }
+    public UserRating Rating { get; }
 
-    public UserRatingUpdate(int authorId, DateTime creationDate, Rating rating, 
+    public UserRatingUpdate(int authorId, DateTime creationDate, UserRating rating, 
         int eventId, int userId)
     {
         AuthorId = authorId;

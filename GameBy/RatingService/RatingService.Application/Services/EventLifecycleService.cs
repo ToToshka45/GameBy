@@ -18,18 +18,37 @@ public class EventLifecycleService : IEventLifecycleService
         _logger = logger;
     }
 
-    public async Task AddNewEventAsync(CreateEventDto @event, CancellationToken token)
+    public async Task<EventInfo> AddNewEventAsync(CreateEventDto newEvent, CancellationToken token)
     {
         try
         {
-            var eventInfo = @event.ToEventInfo();
-            await _eventRepo.Add(eventInfo, token);
+            var eventInfo = newEvent.ToEventInfo();
+            return await _eventRepo.Add(eventInfo, token);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error has occured while adding a new Event instance.");
             throw;
         }
+    }
+
+    public async Task<EventInfo?> GetEventInfoAsync(int id, CancellationToken token)
+    {
+        try
+        {
+            var eventInfo = await _eventRepo.GetById(id, token);
+            return eventInfo;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error has occured while retrieveing a stored Event instance.");
+            throw;
+        }
+    }
+
+    public async Task<ICollection<EventInfo>> GetEventsAsync(CancellationToken token)
+    {
+        return await _eventRepo.GetAll(token);
     }
 
     public async Task AddParticipantsAsync(CancellationToken token)

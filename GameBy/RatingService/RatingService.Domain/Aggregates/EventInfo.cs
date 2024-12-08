@@ -14,7 +14,7 @@ public class EventInfo : AggregateRoot<int>
     /// <summary>
     /// For recalculating rating`s value a method <see cref="Rating.Recalculate(float)"/> must be called.
     /// </summary>
-    public Rating Rating { get; }
+    public EventRating Rating { get; }
 
     //Feedbacks
     private List<Feedback> _feedbacks = [];
@@ -30,7 +30,7 @@ public class EventInfo : AggregateRoot<int>
         CreatedAt = createdAt;
         Category = category;
         // set a base value for Rating
-        Rating = new Rating(category);
+        Rating = new EventRating(eventId, category);
     }
 
     // for EFCore

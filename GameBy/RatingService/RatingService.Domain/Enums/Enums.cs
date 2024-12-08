@@ -1,4 +1,7 @@
-﻿namespace RatingService.Domain.Enums;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace RatingService.Domain.Enums;
 
 public enum EntityType
 {

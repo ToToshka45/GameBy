@@ -1,7 +1,7 @@
-﻿using RatingService.Domain.Entities;
+﻿using Microsoft.Extensions.Logging;
+using RatingService.Domain.Entities;
 using RatingService.Domain.Enums;
 using RatingService.Domain.Primitives;
-using RatingService.Domain.ValueObjects;
 using RatingService.Domain.ValueObjects.Identifiers;
 using RatingService.Infrastructure.Utilities;
 
@@ -11,8 +11,8 @@ public class UserInfo : AggregateRoot<int>
 {
     public int ExternalUserId { get; }
 
-    private List<Rating> _ratings { get; } = [];
-    public IReadOnlyCollection<Rating> RatingsByCategory => _ratings;
+    private List<UserRating> _ratings { get; } = [];
+    public IReadOnlyCollection<UserRating> RatingsByCategory => _ratings;
 
     private List<Feedback> _gamerFeedbacks = [];
     public IReadOnlyList<Feedback> GamerFeedbacks => _gamerFeedbacks;
@@ -25,12 +25,12 @@ public class UserInfo : AggregateRoot<int>
     public UserInfo(int userId)
     {
         ExternalUserId = userId;
-        InitializeRatings();
+        InitializeRatings(userId);
     }       
 
     private UserInfo() { }
 
-    public void SetRating(Rating rating)
+    public void SetRating(UserRating rating)
     {
         if (TryGetRating(rating.Category, out var existingRating))
         {
@@ -76,16 +76,16 @@ public class UserInfo : AggregateRoot<int>
     /// <summary>
     /// Add default ratings (0) for each <see cref="Category"/> type.
     /// </summary>
-    private void InitializeRatings()
+    private void InitializeRatings(int userId)
     {
         Category[] categories = Utilities.GetCategories();
         foreach (var category in categories)
         {
-            SetRating(new Rating(category));
+            SetRating(new UserRating(userId, category));
         }
     }
 
-    private bool TryGetRating(Category category, out Rating? rating)
+    private bool TryGetRating(Category category, out UserRating? rating)
     {
         rating = _ratings.FirstOrDefault(r => r.Category == category);
         return rating is null ? false : true;

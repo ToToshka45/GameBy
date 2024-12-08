@@ -5,7 +5,7 @@ namespace RatingService.Domain.Abstractions;
 public interface IRepository<T> where T : Entity<int>
 {
     Task<bool> SaveChangesAsync(CancellationToken token);
-    Task<bool> Add(T entity, CancellationToken token);
+    Task<T> Add(T entity, CancellationToken token);
     Task<ICollection<T>> GetAll(CancellationToken token);
     Task<T?> GetById(int id, CancellationToken token);
     Task<T?> GetByFilter(Expression<Func<T, bool>> filter, CancellationToken token);

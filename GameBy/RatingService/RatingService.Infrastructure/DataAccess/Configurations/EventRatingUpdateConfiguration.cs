@@ -10,6 +10,8 @@ internal class EventRatingUpdateConfiguration : IEntityTypeConfiguration<EventRa
     {
         builder.HasKey(e => e.Id);
 
+        builder.ToTable("events_rating_updates");
+
         //builder.ComplexProperty(e => e.AuthorId);
         //builder.ComplexProperty(e => e.ExternalEventId);
 

@@ -81,7 +81,7 @@ public class UserInfo : AggregateRoot<int>
         Category[] categories = Utilities.GetCategories();
         foreach (var category in categories)
         {
-            SetRating(new Rating(default, category));
+            SetRating(new Rating(category));
         }
     }
 

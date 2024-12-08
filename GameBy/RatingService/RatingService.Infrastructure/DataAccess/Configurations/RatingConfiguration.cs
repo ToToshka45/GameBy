@@ -9,5 +9,7 @@ internal class RatingConfiguration : IEntityTypeConfiguration<Rating>
     public void Configure(EntityTypeBuilder<Rating> builder)
     {
         builder.HasKey(e => e.Id);
+
+        builder.ToTable("ratings");
     }
 }

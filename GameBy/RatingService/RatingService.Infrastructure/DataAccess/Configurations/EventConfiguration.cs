@@ -8,6 +8,7 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
 {
     public void Configure(EntityTypeBuilder<EventInfo> builder)
     {
+        builder.ToTable("events_info");
         builder.HasKey(e => e.Id);
 
         //builder.ComplexProperty(e => e.EventId);

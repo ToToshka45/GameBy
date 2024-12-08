@@ -10,9 +10,7 @@ internal class UserRatingUpdateConfiguration : IEntityTypeConfiguration<UserRati
     {
         builder.HasKey(e => e.Id);
 
-        //builder.ComplexProperty(e => e.AuthorId);
-        //builder.ComplexProperty(e => e.RatingOwnerId);
-        //builder.ComplexProperty(e => e.ExternalEventId);
+        builder.ToTable("users_rating_updates");
 
         builder.HasOne(e => e.Rating).WithOne().HasForeignKey<UserRatingUpdate>(ur => ur.Id);
     }

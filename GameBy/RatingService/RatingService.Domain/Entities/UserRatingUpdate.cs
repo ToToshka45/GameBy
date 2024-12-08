@@ -1,5 +1,4 @@
 ﻿using RatingService.Domain.Primitives;
-using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Entities;
 

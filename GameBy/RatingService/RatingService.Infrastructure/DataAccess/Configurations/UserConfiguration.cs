@@ -10,6 +10,8 @@ internal class UserConfiguration : IEntityTypeConfiguration<UserInfo>
     {
         builder.HasKey(e => e.Id);
 
+        builder.ToTable("users_info");
+
         //builder.ComplexProperty(e => e.ExternalUserId);
 
         builder.HasMany(e => e.GamerFeedbacks).WithOne().HasForeignKey(f => f.Id);

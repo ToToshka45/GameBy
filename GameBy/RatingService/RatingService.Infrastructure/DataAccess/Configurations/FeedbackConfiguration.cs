@@ -10,7 +10,9 @@ internal class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
     {
         builder.HasKey(e => e.Id);
 
+        builder.ToTable("feedbacks");
+
         builder.OwnsOne(f => f.Receiver);
-        builder.OwnsOne(f => f.Content);
+        builder.OwnsOne(f => f.Content).Property(c => c.Content).HasMaxLength(250);
     }
 }

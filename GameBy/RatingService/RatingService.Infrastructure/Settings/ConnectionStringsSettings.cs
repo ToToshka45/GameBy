@@ -2,7 +2,7 @@
 
 public class ConnectionStringsSettings
 {
-    public string NpgsqlConnectionString { get; set; } = default!;
-    public string SQLiteConnectionString { get; set; } = default!;
+    public string Npgsql { get; set; } = default!;
+    public string SQLite { get; set; } = default!;
 
 }

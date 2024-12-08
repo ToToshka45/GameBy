@@ -1,0 +1,16 @@
+services:
+  ratings.db:
+    container_name: postgres
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: rating_service
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - dbstorage:/var/lib/postgresql/data
+
+volumes:
+  dbstorage:

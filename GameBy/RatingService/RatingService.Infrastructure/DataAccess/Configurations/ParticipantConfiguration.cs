@@ -10,6 +10,8 @@ internal class ParticipantConfiguration : IEntityTypeConfiguration<Participant>
     {
         builder.HasKey(e => e.Id);
 
+        builder.ToTable("participants");
+
         builder.HasOne(p => p.Rating).WithOne().HasForeignKey<Participant>(p => p.Id);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RatingService.Infrastructure.DataAccess;
 
 #nullable disable
@@ -10,92 +11,98 @@ using RatingService.Infrastructure.DataAccess;
 namespace RatingService.Infrastructure.Migrations
 {
     [DbContext(typeof(RatingServiceDbContext))]
-    [Migration("20241120200532_InitialMigration")]
+    [Migration("20241121191844_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("RatingService.Domain.Aggregates.EventInfo", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events");
+                    b.ToTable("events_info", (string)null);
                 });
 
             modelBuilder.Entity("RatingService.Domain.Aggregates.UserInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("users_info", (string)null);
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.EventRatingUpdate", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventRatingUpdate");
+                    b.ToTable("events_rating_updates", (string)null);
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.Feedback", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("UserInfoId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Feedback");
+                    b.ToTable("feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.Participant", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ParticipationState")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Participant");
+                    b.ToTable("participants", (string)null);
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.Rating", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rating");
+                    b.ToTable("ratings", (string)null);
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.UserRatingUpdate", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("RatingUpdates");
+                    b.ToTable("users_rating_updates", (string)null);
                 });
 
             modelBuilder.Entity("RatingService.Domain.Aggregates.EventInfo", b =>
@@ -141,11 +148,16 @@ namespace RatingService.Infrastructure.Migrations
                     b.OwnsOne("RatingService.Domain.ValueObjects.FeedbackContent", "Content", b1 =>
                         {
                             b1.Property<int>("FeedbackId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Content")
+                                .IsRequired()
+                                .HasMaxLength(250)
+                                .HasColumnType("character varying(250)");
 
                             b1.HasKey("FeedbackId");
 
-                            b1.ToTable("Feedback");
+                            b1.ToTable("feedbacks");
 
                             b1.WithOwner()
                                 .HasForeignKey("FeedbackId");
@@ -154,11 +166,11 @@ namespace RatingService.Infrastructure.Migrations
                     b.OwnsOne("RatingService.Domain.ValueObjects.Receiver", "Receiver", b1 =>
                         {
                             b1.Property<int>("FeedbackId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.HasKey("FeedbackId");
 
-                            b1.ToTable("Feedback");
+                            b1.ToTable("feedbacks");
 
                             b1.WithOwner()
                                 .HasForeignKey("FeedbackId");

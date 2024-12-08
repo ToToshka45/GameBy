@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: ratings
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root_pass
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - 5434:5432
+    networks:
+      - external-network
+
+  ratings-db-gui:
+    container_name: pgadmin4
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 8088:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - external-network
+
+volumes:
+  pg-data:
+  pgadmin:
+
+
+networks:
+  external-network:
+    external: true

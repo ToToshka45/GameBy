@@ -7,8 +7,13 @@ namespace RatingService.Domain.Aggregates;
 
 public class EventInfo : AggregateRoot<int>
 {
+    public string Title { get; private set; }
     public int ExternalEventId { get; }
-    public Category Category { get; }
+    public DateTime CreatedAt { get; }
+    public Category Category { get; set; }
+    /// <summary>
+    /// For recalculating rating`s value a method <see cref="Rating.Recalculate(float)"/> must be called.
+    /// </summary>
     public Rating Rating { get; }
 
     //Feedbacks
@@ -18,15 +23,17 @@ public class EventInfo : AggregateRoot<int>
     private List<Participant> _participants = [];
     public IReadOnlyList<Participant> Participants => _participants;
 
-    // collection of RatingUpdates
-
-    public EventInfo(int eventId, Rating eventRating, Category category)
+    public EventInfo(string title, int eventId, DateTime createdAt, Category category)
     {
+        Title = title;
         ExternalEventId = eventId;
-        Rating = eventRating;
+        CreatedAt = createdAt;
         Category = category;
+        // set a base value for Rating
+        Rating = new Rating(category);
     }
 
+    // for EFCore
     private EventInfo() { }
 
     public void AddFeedback(Feedback feedbackInfo)
@@ -50,5 +57,8 @@ public class EventInfo : AggregateRoot<int>
 
         participant.SetState(state);
     }
+
+    // TODO: decide, should we allow to change a category of event?
+    public void ChangeCategory(Category category) => Category = category;
 }
 

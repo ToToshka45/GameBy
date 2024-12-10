@@ -1,0 +1,9 @@
+﻿namespace WebApi.Dto
+{
+    public class LoginResultResponse
+    {
+        public string AccessToken { get; set; }
+
+        public string RefreshToken { get; set; }
+    }
+}

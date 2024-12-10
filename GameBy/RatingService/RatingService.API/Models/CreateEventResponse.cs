@@ -7,4 +7,5 @@ public sealed class CreateEventResponse
     public int EventId { get; set; }
     public DateTime CreationDate { get; set; }
     public string Category { get; set; } = default!;
+    public string State { get; set; } = default!;
 }

@@ -12,6 +12,7 @@ internal class ParticipantConfiguration : IEntityTypeConfiguration<Participant>
 
         builder.ToTable("participants");
 
+        builder.Property(P => P.ParticipationState).HasConversion<string>();
         builder.HasOne(p => p.Rating).WithOne().HasForeignKey<Participant>(p => p.Id);
     }
 }

@@ -13,6 +13,7 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Category).HasConversion<string>();
+        builder.Property(e => e.State).HasConversion<string>();
         //builder.ComplexProperty(e => e.EventId);
 
         builder.HasOne(e => e.Rating).WithOne().HasForeignKey<EventInfo>(e => e.Id);

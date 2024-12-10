@@ -6,5 +6,5 @@ namespace RatingService.Application.Configurations.Mappings;
 internal static class MappingExtensions
 {
     public static EventInfo ToEventInfo(this CreateEventDto dto) =>
-        new(dto.Title, dto.ExternalEventId, dto.CreationDate, dto.Category);
+        new(dto.Title, dto.ExternalEventId, dto.CreationDate, dto.Category, dto.State);
 }

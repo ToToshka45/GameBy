@@ -17,13 +17,13 @@ public class Feedback : Entity<int>
         int authorId,
         Receiver receiverInfo,
         FeedbackContent content,
-        DateTime createdAt)
+        DateTime CreationDate)
     {
         ExternalEventId = eventId;
         AuthorId = authorId;
         Receiver = receiverInfo;
         Content = content;
-        CreationDate = createdAt;
+        CreationDate = CreationDate;
     }
 
     private Feedback() { }

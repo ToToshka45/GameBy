@@ -4,12 +4,13 @@ using RatingService.Domain.Entities;
 
 namespace RatingService.Infrastructure.DataAccess.Configurations;
 
-internal class EventRatingConfiguration : IEntityTypeConfiguration<EventRating>
+internal class UserRatingConfiguration : IEntityTypeConfiguration<UserRating>
 {
-    public void Configure(EntityTypeBuilder<EventRating> builder)
+    public void Configure(EntityTypeBuilder<UserRating> builder)
     {
-        builder.ToTable("events_ratings");
+        builder.ToTable("users_ratings");
         builder.HasKey(e => e.Id);
+
         builder.Property(er => er.Category).HasConversion<string>();
     }
 }

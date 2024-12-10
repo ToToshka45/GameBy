@@ -9,8 +9,9 @@ public class EventInfo : AggregateRoot<int>
 {
     public string Title { get; private set; }
     public int ExternalEventId { get; }
-    public DateTime CreatedAt { get; }
-    public Category Category { get; set; }
+    public DateTime CreationDate { get; }
+    public Category Category { get; private set; }
+    public EventProgressionState State { get; private set; }
     /// <summary>
     /// For recalculating rating`s value a method <see cref="Rating.Recalculate(float)"/> must be called.
     /// </summary>
@@ -23,13 +24,13 @@ public class EventInfo : AggregateRoot<int>
     private List<Participant> _participants = [];
     public IReadOnlyList<Participant> Participants => _participants;
 
-    public EventInfo(string title, int eventId, DateTime createdAt, Category category)
+    public EventInfo(string title, int eventId, DateTime creationDate, Category category, EventProgressionState state)
     {
         Title = title;
         ExternalEventId = eventId;
-        CreatedAt = createdAt;
+        CreationDate = creationDate;
         Category = category;
-        // set a base value for Rating
+        State = state;
         Rating = new EventRating(eventId, category);
     }
 

@@ -12,4 +12,6 @@ public sealed class CreateEventRequest
     public required DateTime CreationDate { get; set; }
     [JsonPropertyName("category")]
     public required string Category { get; set; }
+    [JsonPropertyName("state")]
+    public required string State { get; set; }
 }

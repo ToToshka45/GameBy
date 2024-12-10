@@ -1,5 +1,6 @@
 ﻿using RatingService.API.Models;
 using RatingService.Application.Models.Dtos;
+using RatingService.Common.Models.Extensions;
 using RatingService.Domain.Aggregates;
 using RatingService.Domain.Enums;
 
@@ -7,10 +8,12 @@ namespace RatingService.API.Configurations.Mappings;
 
 internal static class MappingExtensions
 {
-    internal static CreateEventDto ToDto(this CreateEventRequest req) =>
-        new(req.Title, req.EventId, req.CreationDate, Enum.Parse<Category>(req.Category)); // TODO: check that a passed category exists, somewhere before the mapping
-
-    internal static IEnumerable<GetEventInfoResponse> ToShortResponseList(this IEnumerable<EventInfo> events)
+    internal static CreateEventDto ToDto(this CreateEventRequest req) => 
+        new(req.Title, req.EventId, req.CreationDate, 
+            req.Category.TryParseOrDefault(Category.Unknown),
+            req.State.TryParseOrDefault(EventProgressionState.Announced));
+    
+    internal static IEnumerable<GetEventInfoResponse> ToResponseList(this IEnumerable<EventInfo> events)
     {
         var responseList = new List<GetEventInfoResponse>();
         foreach (var e in events)
@@ -20,11 +23,20 @@ internal static class MappingExtensions
                 Id = e.Id,
                 Title = e.Title,
                 Category = e.Category.ToString(),
-                CreatedAt = e.CreatedAt,
+                CreationDate = e.CreationDate,
                 ExternalEventId = e.ExternalEventId,
                 Rating = e.Rating.Value
             });
         }
         return responseList;
     }
+
+    internal static CreateEventResponse ToResponse(this EventInfo eventCreated) => new() { 
+        Id = eventCreated.Id,
+        Title = eventCreated.Title,
+        CreationDate = eventCreated.CreationDate,
+        Category = eventCreated.Category.ToString(),
+        State = eventCreated.State.ToString(),
+        EventId = eventCreated.ExternalEventId
+    };
 }

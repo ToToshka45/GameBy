@@ -1,0 +1,34 @@
+﻿services:
+  #Gamer Profile Service Db
+  game-by-gamer-profile-service-db:
+    image: "postgres:latest"
+    container_name: game-by-gamer-profile-service-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  #Gamer Profile Service Api
+  game-by-gamer-profile-service-api:
+    build: src/Gb.GamerProfileService/
+    container_name: game-by-gamer-profile-service-api
+    restart: always
+    environment:
+      - ConnectionStrings__GameByGamerProfileServiceDb=Host=game-by-gamer-profile-service-db;Database=game_by_gamer_profile_service_db;Username=postgres;Password=password;Port=5432
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports: 
+      - "8091:8080"
+    depends_on: 
+      - game-by-gamer-profile-service-db
+
+volumes:
+  pg-data:
+  
+# networks:
+  # default:
+    # name: myLocalNetwork # создана извне: docker network create --driver=bridge myLocalNetwork
+    # external: true

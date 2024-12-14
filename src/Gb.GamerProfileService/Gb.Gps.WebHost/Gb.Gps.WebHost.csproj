@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>35eb3eb1-2055-47d4-87e9-e1b218ebb9f8</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gb.Gps.Domain.Entities\Gb.Gps.Domain.Entities.csproj" />
+    <ProjectReference Include="..\Gb.Gps.Infrastructure.EntityFramework\Gb.Gps.Infrastructure.EntityFramework.csproj" />
+    <ProjectReference Include="..\Gb.Gps.Infrastructure.Repositories.Implementations\Gb.Gps.Infrastructure.Repositories.Implementations.csproj" />
+    <ProjectReference Include="..\Gb.Gps.Services.Abstractions\Gb.Gps.Services.Abstractions.csproj" />
+    <ProjectReference Include="..\Gb.Gps.Services.Implementations\Gb.Gps.Services.Implementations.csproj" />
+  </ItemGroup>
+
+</Project>

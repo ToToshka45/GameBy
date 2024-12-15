@@ -8,7 +8,7 @@ namespace Services.Contracts.Gamer
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string Nickname { get; set; } = null!;
-        //public DateOnly DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public string AboutMe { get; set; } = null!;
         public string Country { get; set; } = null!;
         public string City { get; set; } = null!;

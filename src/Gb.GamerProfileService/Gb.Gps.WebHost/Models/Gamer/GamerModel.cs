@@ -1,4 +1,7 @@
-﻿namespace GamerProfileService.Models
+﻿using Gb.Gps.Services.Contracts;
+using Gb.Gps.WebHost.Models;
+
+namespace GamerProfileService.Models
 {
     public class GamerModel
     {
@@ -10,5 +13,7 @@
         public string? Country { get; set; }
         public string? City { get; set; }
         public string? ContactMe { get; set; }
+        public int RankId { get; set; }
+        public RankModel? Rank { get; set; }
     }
 }

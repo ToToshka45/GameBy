@@ -11,10 +11,9 @@ namespace Infrastructure.EntityFramework
         {
             services.AddDbContext<ApplicationDBContext>( options =>
             {
-                options
-                    //.UseLazyLoadingProxies() // lazy loading
-                    .UseNpgsql( configuration.GetConnectionString( "GameByGamerProfileServiceDb" ) );
-                    //.UseSqlite( connectionString ) );
+                options.UseNpgsql( configuration.GetConnectionString( "GameByGamerProfileServiceDb" ) );
+                //.UseSqlite( connectionString ) );
+                options.UseLazyLoadingProxies(); // lazy loading
             } );
 
         #region health checks

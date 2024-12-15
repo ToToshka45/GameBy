@@ -5,9 +5,10 @@ namespace GamerProfileService.Models
         public string Name { get; set; } = null!;
         public string Nickname { get; set; } = null!;
         //public DateOnly DateOfBirth { get; set; }
-        public string? AboutMe { get; set; }
-        public string? Country { get; set; }
-        public string? City { get; set; }
-        public string? ContactMe { get; set; }
+        public string? AboutMe { get; set; } = null!;
+        public string? Country { get; set; } = null!;
+        public string? City { get; set; } = null!;
+        public string? ContactMe { get; set; } = null!;
+        public int RankId { get; set; }
     }
 }

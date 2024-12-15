@@ -5,7 +5,7 @@
         public string AboutCondition { get; set; }
         public string AboutReward { get; set; }
         public int RankId { get; set; }
-        public Rank Rank { get; set; }
-        public List<GamerAchievement> GamerAchievements { get; set; } = new();
+        public virtual Rank Rank { get; set; }
+        public virtual List<GamerAchievement> GamerAchievements { get; set; } = new();
     }
 }

@@ -18,16 +18,16 @@ namespace Services.Implementations.Mapping
                 .ForMember( d => d.AboutCondition, map => map.MapFrom( m => m.AboutCondition ) )
                 .ForMember( d => d.AboutReward, map => map.MapFrom( m => m.AboutReward ) )
                 .ForMember( d => d.RankId, map => map.MapFrom( m => m.RankId ) )
-                .ForMember( d => d.Rank, map => map.MapFrom( m => m.Rank ) )
-                .ForMember( d => d.GamerAchievements, map => map.MapFrom( m => m.GamerAchievements ) );
+                .ForMember( d => d.Rank, map => map.Ignore() )
+                .ForMember( d => d.GamerAchievements, map => map.Ignore() );
 
             CreateMap<UpdateAchievementDto, Achievement>()
                 .ForMember( d => d.Id, map => map.Ignore() )
                 .ForMember( d => d.AboutCondition, map => map.MapFrom( m => m.AboutCondition ) )
                 .ForMember( d => d.AboutReward, map => map.MapFrom( m => m.AboutReward ) )
                 .ForMember( d => d.RankId, map => map.MapFrom( m => m.RankId ) )
-                .ForMember( d => d.Rank, map => map.MapFrom( m => m.Rank ) )
-                .ForMember( d => d.GamerAchievements, map => map.MapFrom( m => m.GamerAchievements ) );
+                .ForMember( d => d.Rank, map => map.Ignore() )
+                .ForMember( d => d.GamerAchievements, map => map.Ignore() );
         }
     }
 }

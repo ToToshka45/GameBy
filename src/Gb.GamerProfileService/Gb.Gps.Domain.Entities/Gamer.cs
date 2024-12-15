@@ -16,7 +16,7 @@ public class Gamer : BaseEntity
     public string? City { get; set; }
     public string? ContactMe { get; set; }
     //public string PhotoPath? { get; set; }
-    public List<GamerAchievement> GamerAchievements { get; set; } = new();
+    public virtual List<GamerAchievement> GamerAchievements { get; set; } = new();
     public int? RankId { get; set; }
-    public Rank? Rank { get; set; }
+    public virtual Rank? Rank { get; set; }
 }

@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using GamerProfileService.Controllers;
-using GamerProfileService.Models.Gamer;
 using Gb.Gps.Services.Abstractions;
 using Gb.Gps.Services.Contracts;
 using Gb.Gps.WebHost.Models;
 using Microsoft.AspNetCore.Mvc;
-using Services.Abstractions;
-using Services.Contracts.Gamer;
 
 namespace Gb.Gps.WebHost.Controllers
 {
@@ -19,14 +15,14 @@ namespace Gb.Gps.WebHost.Controllers
     {
         private readonly ILogger<AchievementController> _logger;
 
-        private readonly IAchievementService _service;
+        private readonly IAchievementService _achievementService;
         private readonly IMapper _mapper;
 
         public AchievementController( ILogger<AchievementController> logger, IAchievementService service, IMapper mapper )
         {
             _logger = logger;
 
-            _service = service;
+            _achievementService = service;
             _mapper = mapper;
         }
 
@@ -37,9 +33,9 @@ namespace Gb.Gps.WebHost.Controllers
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType<List<AchievementModel>>( StatusCodes.Status200OK )]
-        public async Task<List<AchievementModel>> GetGamersAsync( CancellationToken cancellationToken )
+        public async Task<List<AchievementModel>> GetAchievementsAsync( CancellationToken cancellationToken )
         {
-            var achievements = await _service.GetAllAsync( cancellationToken );
+            var achievements = await _achievementService.GetAllAsync( cancellationToken );
 
             return _mapper.Map<List<AchievementDto>, List<AchievementModel>>( achievements );
         }
@@ -55,7 +51,7 @@ namespace Gb.Gps.WebHost.Controllers
         [ProducesResponseType<AchievementModel>( StatusCodes.Status200OK )]
         public async Task<ActionResult<AchievementModel>> GetAsync( int id, CancellationToken cancellationToken )
         {
-            var achievementDto = await _service.GetByIdAsync( id, cancellationToken );
+            var achievementDto = await _achievementService.GetByIdAsync( id, cancellationToken );
 
             return achievementDto == null ? NotFound( $"Игрок с id = {id} не найден" ) : Ok( _mapper.Map<AchievementDto, AchievementModel>( achievementDto ) );
         }
@@ -68,9 +64,9 @@ namespace Gb.Gps.WebHost.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType<int>( StatusCodes.Status201Created )]
-        public async Task<ActionResult<int>> CreateGamerAsync( CreateAchievementModel createAchievementModel, CancellationToken cancellationToken )
+        public async Task<ActionResult<int>> CreateAchievementAsync( CreateAchievementModel createAchievementModel, CancellationToken cancellationToken )
         {
-            var result = await _service.CreateAsync( _mapper.Map<CreateAchievementModel, CreateAchievementDto>( createAchievementModel ), cancellationToken );
+            var result = await _achievementService.CreateAsync( _mapper.Map<CreateAchievementModel, CreateAchievementDto>( createAchievementModel ), cancellationToken );
 
             return Created( string.Empty, result ); // TODO Anton: CreatedAtAction
         }
@@ -85,9 +81,9 @@ namespace Gb.Gps.WebHost.Controllers
         [HttpPut( "{id}" )]
         [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
         [ProducesResponseType( StatusCodes.Status204NoContent )]
-        public async Task<IActionResult> EditGamerAsync( int id, UpdateAchievementModel updateAchievementModel, CancellationToken cancellationToken )
+        public async Task<IActionResult> EditAchievementAsync( int id, UpdateAchievementModel updateAchievementModel, CancellationToken cancellationToken )
         {
-            var wasUpdated = await _service.UpdateAsync( id, _mapper.Map<UpdateAchievementModel, UpdateAchievementDto>( updateAchievementModel ), cancellationToken );
+            var wasUpdated = await _achievementService.UpdateAsync( id, _mapper.Map<UpdateAchievementModel, UpdateAchievementDto>( updateAchievementModel ), cancellationToken );
 
             return wasUpdated ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
         }
@@ -101,9 +97,9 @@ namespace Gb.Gps.WebHost.Controllers
         [HttpDelete]
         [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
         [ProducesResponseType( StatusCodes.Status204NoContent )]
-        public async Task<IActionResult> DeleteGamerAsync( int id, CancellationToken cancellationToken )
+        public async Task<IActionResult> DeleteAchievementAsync( int id, CancellationToken cancellationToken )
         {
-            var wasDeleted = await _service.DeleteAsync( id, cancellationToken );
+            var wasDeleted = await _achievementService.DeleteAsync( id, cancellationToken );
 
             return wasDeleted ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
         }

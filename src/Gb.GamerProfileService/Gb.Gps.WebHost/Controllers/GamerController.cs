@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using GamerProfileService.Models;
+using Gb.Gps.Services.Abstractions;
+using Gb.Gps.Services.Contracts;
+using Gb.Gps.WebHost.Models;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts.Gamer;
@@ -15,14 +18,16 @@ public class GamerController : ControllerBase
 {
     private readonly ILogger<GamerController> _logger;
 
-    private readonly IGamerService _service;
+    private readonly IGamerService _gamerService;
+    private readonly IRankService _rankService;
     private readonly IMapper _mapper;
 
-    public GamerController( ILogger<GamerController> logger, IGamerService service, IMapper mapper )
+    public GamerController( ILogger<GamerController> logger, IGamerService gamerService, IRankService rankService, IMapper mapper )
     {
         _logger = logger;
 
-        _service = service;
+        _gamerService = gamerService;
+        _rankService = rankService;
         _mapper = mapper;
     }
 
@@ -35,7 +40,7 @@ public class GamerController : ControllerBase
     [ProducesResponseType<List<GamerModel>>( StatusCodes.Status200OK )]
     public async Task<List<GamerModel>> GetGamersAsync( CancellationToken cancellationToken )
     {
-        var gamers = await _service.GetAllAsync( cancellationToken );
+        var gamers = await _gamerService.GetAllAsync( cancellationToken );
 
         return _mapper.Map<List<GamerDto>, List<GamerModel>>( gamers );
     }
@@ -51,7 +56,7 @@ public class GamerController : ControllerBase
     [ProducesResponseType<GamerModel>( StatusCodes.Status200OK )]
     public async Task<ActionResult<GamerModel>> GetAsync( int id, CancellationToken cancellationToken )
     {
-        var gamerDto = await _service.GetByIdAsync( id, cancellationToken );
+        var gamerDto = await _gamerService.GetByIdAsync( id, cancellationToken );
 
         return gamerDto == null ? NotFound( $"Игрок с id = {id} не найден" ) : Ok( _mapper.Map<GamerDto, GamerModel>( gamerDto ) );
     }
@@ -66,7 +71,15 @@ public class GamerController : ControllerBase
     [ProducesResponseType<int>( StatusCodes.Status201Created )]
     public async Task<ActionResult<int>> CreateGamerAsync( CreateGamerModel createGamerModel, CancellationToken cancellationToken )
     {
-        var result = await _service.CreateAsync( _mapper.Map<CreateGamerModel, CreateGamerDto>( createGamerModel ), cancellationToken );
+        var rankId = createGamerModel.RankId;
+        var rankDto = await _rankService.GetByIdAsync( rankId, cancellationToken );
+
+        if ( rankDto is null )
+        {
+            return NotFound( $"Звание с id = {rankId} не найдено" );
+        }
+
+        var result = await _gamerService.CreateAsync( _mapper.Map<CreateGamerModel, CreateGamerDto>( createGamerModel ), cancellationToken );
 
         return Created( string.Empty, result ); // TODO Anton: CreatedAtAction
     }
@@ -83,7 +96,15 @@ public class GamerController : ControllerBase
     [ProducesResponseType( StatusCodes.Status204NoContent )]
     public async Task<IActionResult> EditGamerAsync( int id, UpdateGamerModel updateGamerModel, CancellationToken cancellationToken )
     {
-        var wasUpdated = await _service.UpdateAsync( id, _mapper.Map<UpdateGamerModel, UpdateGamerDto>( updateGamerModel ), cancellationToken );
+        var rankId = updateGamerModel.RankId;
+        var rankDto = await _rankService.GetByIdAsync( rankId, cancellationToken );
+
+        if ( rankDto is null )
+        {
+            return NotFound( $"Звание с id = {rankId} не найдено" );
+        }
+
+        var wasUpdated = await _gamerService.UpdateAsync( id, _mapper.Map<UpdateGamerModel, UpdateGamerDto>( updateGamerModel ), cancellationToken );
 
         return wasUpdated ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
     }
@@ -99,8 +120,10 @@ public class GamerController : ControllerBase
     [ProducesResponseType( StatusCodes.Status204NoContent )]
     public async Task<IActionResult> DeleteGamerAsync( int id, CancellationToken cancellationToken )
     {
-        var wasDeleted = await _service.DeleteAsync( id, cancellationToken );
+        var wasDeleted = await _gamerService.DeleteAsync( id, cancellationToken );
 
         return wasDeleted ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
     }
+
+
 }

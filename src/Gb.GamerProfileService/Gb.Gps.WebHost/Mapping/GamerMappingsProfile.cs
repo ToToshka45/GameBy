@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using GamerProfileService.Models.Gamer;
+using GamerProfileService.Models;
 using Services.Contracts.Gamer;
 
 namespace GamerProfileService.Mapping

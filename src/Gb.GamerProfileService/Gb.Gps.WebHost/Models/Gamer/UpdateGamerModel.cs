@@ -1,4 +1,4 @@
-﻿namespace GamerProfileService.Models.Gamer
+﻿namespace GamerProfileService.Models
 {
     public class UpdateGamerModel
     {

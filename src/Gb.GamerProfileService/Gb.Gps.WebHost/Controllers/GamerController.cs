@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using GamerProfileService.Models.Gamer;
+using GamerProfileService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts.Gamer;

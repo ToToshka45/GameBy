@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Gb.Gps.Domain.Entities\Gb.Gps.Domain.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,16 +1,18 @@
-﻿using AutoMapper;
+﻿using AchievementProfileService.Mapping;
+using AutoMapper;
 using Education.Middlewares;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using GameBy.DataAccess.Repositories;
 using GamerProfileService.Mapping;
-using GamerProfileService.Models.Gamer;
-using GamerProfileService.Settings;
+using Gb.Gps.Services.Abstractions;
+using Gb.Gps.Services.Implementations;
 using Infrastructure.EntityFramework;
 using Infrastructure.Repositories.Implementations;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using RankProfileService.Mapping;
 using Services.Abstractions;
 using Services.Implementations;
 using Services.Repositories.Abstractions;
@@ -51,7 +53,11 @@ namespace GamerProfileService
             var configuration = new MapperConfiguration( cfg =>
             {
                 cfg.AddProfile<GamerMappingsProfile>();
+                cfg.AddProfile<RankMappingsProfile>();
+                cfg.AddProfile<AchievementMappingsProfile>();
                 cfg.AddProfile<Services.Implementations.Mapping.GamerMappingsProfile>();
+                cfg.AddProfile<Services.Implementations.Mapping.RankMappingsProfile>();
+                cfg.AddProfile<Services.Implementations.Mapping.AchievementMappingsProfile>();
             } );
 
             configuration.AssertConfigurationIsValid();
@@ -62,6 +68,8 @@ namespace GamerProfileService
         private static IServiceCollection InstallServices( this IServiceCollection serviceCollection )
         {
             serviceCollection.AddTransient<IGamerService, GamerService>();
+            serviceCollection.AddTransient<IRankService, RankService>();
+            serviceCollection.AddTransient<IAchievementService, AchievementService>();
 
             return serviceCollection;
         }

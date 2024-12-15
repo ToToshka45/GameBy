@@ -19,7 +19,12 @@ public class Program
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+
+        builder.Services.AddOpenApiDocument( options =>
+        {
+            options.Title = "Gamer Profile Service API Doc";
+            options.Version = "1.0";
+        } );
 
         var app = builder.Build();
 
@@ -35,8 +40,12 @@ public class Program
         if ( app.Environment.IsDevelopment() )
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI();
+
+            app.UseOpenApi();
+            app.UseSwaggerUi( x =>
+            {
+                x.DocExpansion = "list";
+            } );
         }
 
         app.UseHttpsRedirection();

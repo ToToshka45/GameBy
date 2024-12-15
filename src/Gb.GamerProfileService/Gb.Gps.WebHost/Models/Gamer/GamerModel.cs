@@ -13,7 +13,7 @@ namespace GamerProfileService.Models
         public string? Country { get; set; }
         public string? City { get; set; }
         public string? ContactMe { get; set; }
-        public int RankId { get; set; }
+        //public int RankId { get; set; }
         public RankModel? Rank { get; set; }
     }
 }

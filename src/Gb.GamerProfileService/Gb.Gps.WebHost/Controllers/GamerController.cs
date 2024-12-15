@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using GamerProfileService.Models;
 using Gb.Gps.Services.Abstractions;
-using Gb.Gps.Services.Contracts;
 using Gb.Gps.WebHost.Models;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -123,6 +122,31 @@ public class GamerController : ControllerBase
         var wasDeleted = await _gamerService.DeleteAsync( id, cancellationToken );
 
         return wasDeleted ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
+    }
+
+    /// <summary>
+    /// Установить звание игроку
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="setGamerRankModel"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPut( "setrank/{id}" )]
+    [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
+    [ProducesResponseType( StatusCodes.Status204NoContent )]
+    public async Task<IActionResult> SetGamerRankAsync( int id, SetGamerRankModel setGamerRankModel, CancellationToken cancellationToken )
+    {
+        var rankId = setGamerRankModel.RankId;
+        var rankDto = await _rankService.GetByIdAsync( rankId, cancellationToken );
+
+        if ( rankDto is null )
+        {
+            return NotFound( $"Звание с id = {rankId} не найдено" );
+        }
+
+        var wasUpdated = await _gamerService.SetRankAsync( id, _mapper.Map<SetGamerRankModel, SetGamerRankDto>( setGamerRankModel ), cancellationToken );
+
+        return wasUpdated ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
     }
 
 

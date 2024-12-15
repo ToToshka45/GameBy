@@ -69,5 +69,22 @@ namespace Services.Implementations
 
             return wasDeleted;
         }
+
+        public async Task<bool> SetRankAsync( int id, SetGamerRankDto setGamerRankDto, CancellationToken cancellationToken )
+        {
+            var gamer = await _gamerRepository.GetAsync( id, cancellationToken );
+
+            if ( gamer == null )
+            {
+                return false;
+            }
+
+            gamer.RankId = setGamerRankDto.RankId;
+
+            await _gamerRepository.UpdateAsync( gamer, cancellationToken );
+            await _gamerRepository.SaveChangesAsync( cancellationToken );
+
+            return true;
+        }
     }
 }

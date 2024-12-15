@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using GamerProfileService.Models;
-using Gb.Gps.Services.Contracts;
 using Gb.Gps.WebHost.Models;
 using Services.Contracts.Gamer;
 
@@ -14,7 +13,7 @@ namespace GamerProfileService.Mapping
         public GamerMappingsProfile()
         {
             CreateMap<GamerDto, GamerModel>()
-                .ForMember( d => d.Id, map => map.Ignore() )
+                .ForMember( d => d.Id, map => map.MapFrom( m => m.Id ) )
                 .ForMember( d => d.Name, map => map.MapFrom( m => m.Name ) )
                 .ForMember( d => d.Nickname, map => map.MapFrom( m => m.Nickname ) )
                 .ForMember( d => d.DateOfBirth, map => map.MapFrom( m => m.DateOfBirth ) )
@@ -23,12 +22,13 @@ namespace GamerProfileService.Mapping
                 .ForMember( d => d.City, map => map.MapFrom( m => m.City ) )
                 .ForMember( d => d.ContactMe, map => map.MapFrom( m => m.ContactMe ) )
                 //.ForMember( d => d.GamerAchievements, map => map.Ignore() )
-                .ForMember( d => d.RankId, map => map.MapFrom( m => m.RankId ) )
+                //.ForMember( d => d.RankId, map => map.Ignore( m => m.RankId ) )
                 .ForMember( d => d.Rank, map => map.MapFrom( m => new RankModel { Id = m.Rank.Id, Name = m.Rank.Name } ) );
 
 
             CreateMap<CreateGamerModel, CreateGamerDto>();
             CreateMap<UpdateGamerModel, UpdateGamerDto>();
+            CreateMap<SetGamerRankModel, SetGamerRankDto>();
         }
     }
 }

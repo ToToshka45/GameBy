@@ -41,5 +41,13 @@ namespace Services.Abstractions
         /// <param name="id"> Идентификатор. </param>
         /// <param name="cancellationToken"></param>
         Task<bool> DeleteAsync( int id, CancellationToken cancellationToken );
+
+        /// <summary>
+        /// Установить звание игроку.
+        /// </summary>
+        /// <param name="id"> Идентификатор. </param>
+        /// <param name="setGamerRankDto"> ДТО игрока. </param>
+        /// <param name="cancellationToken"></param>
+        Task<bool> SetRankAsync( int id, SetGamerRankDto setGamerRankDto, CancellationToken cancellationToken );
     }
 }

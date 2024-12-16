@@ -29,6 +29,7 @@ namespace GamerProfileService.Mapping
             CreateMap<CreateGamerModel, CreateGamerDto>();
             CreateMap<UpdateGamerModel, UpdateGamerDto>();
             CreateMap<SetGamerRankModel, SetGamerRankDto>();
+            CreateMap<GiveAchievementToGamerModel, GiveAchievementToGamerDto>();
         }
     }
 }

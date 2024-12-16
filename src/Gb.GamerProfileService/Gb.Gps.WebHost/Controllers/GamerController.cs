@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Domain.Entities;
 using GamerProfileService.Models;
 using Gb.Gps.Services.Abstractions;
+using Gb.Gps.Services.Contracts;
 using Gb.Gps.WebHost.Models;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -19,14 +21,16 @@ public class GamerController : ControllerBase
 
     private readonly IGamerService _gamerService;
     private readonly IRankService _rankService;
+    private readonly IAchievementService _achievementService;
     private readonly IMapper _mapper;
 
-    public GamerController( ILogger<GamerController> logger, IGamerService gamerService, IRankService rankService, IMapper mapper )
+    public GamerController( ILogger<GamerController> logger, IGamerService gamerService, IRankService rankService, IAchievementService achievementService, IMapper mapper )
     {
         _logger = logger;
 
         _gamerService = gamerService;
         _rankService = rankService;
+        _achievementService = achievementService;
         _mapper = mapper;
     }
 
@@ -131,7 +135,7 @@ public class GamerController : ControllerBase
     /// <param name="setGamerRankModel"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    [HttpPut( "setrank/{id}" )]
+    [HttpPut( "set-rank/{id}" )]
     [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
     [ProducesResponseType( StatusCodes.Status204NoContent )]
     public async Task<IActionResult> SetGamerRankAsync( int id, SetGamerRankModel setGamerRankModel, CancellationToken cancellationToken )
@@ -149,5 +153,73 @@ public class GamerController : ControllerBase
         return wasUpdated ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
     }
 
+    /// <summary>
+    /// Дать игроку достижение
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="giveAchievementToGamerModel"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPut( "give-achievement/{id}" )]
+    [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
+    [ProducesResponseType( StatusCodes.Status204NoContent )]
+    public async Task<IActionResult> GiveAchievementToGamerAsync( int id, GiveAchievementToGamerModel giveAchievementToGamerModel, CancellationToken cancellationToken )
+    {
+        var achievementId = giveAchievementToGamerModel.AchievementId;
+        var achievementDto = await _achievementService.GetByIdAsync( achievementId, cancellationToken );
+
+        if ( achievementDto is null )
+        {
+            return NotFound( $"Достижение с id = {achievementDto} не найдено" );
+        }
+
+        var wasUpdated = await _gamerService.GiveAchievementAsync( id, _mapper.Map<GiveAchievementToGamerModel, GiveAchievementToGamerDto>( giveAchievementToGamerModel ), cancellationToken );
+
+        return wasUpdated ? NoContent() : NotFound( $"Игрок с id = {id} не найден" );
+    }
+
+    /// <summary>
+    /// Получить данные о достижениях игрока по его идентификатору
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpGet( "earned-achievements/{id}" )]
+    [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
+    [ProducesResponseType<List<GamerModel>>( StatusCodes.Status200OK )]
+    public async Task<ActionResult<List<AchievementModel>>> GetEarnedAchievementsAsync( int id, CancellationToken cancellationToken )
+    {
+        var gamerDto = await _gamerService.GetByIdAsync( id, cancellationToken );
+        if ( gamerDto is null )
+        {
+            return NotFound( $"Игрок с id = {id} не найден" );
+        }
+
+        var earnedAchievementsDtos = await _gamerService.GetEarnedAchievementsByIdAsync( id, cancellationToken );
+
+        return _mapper.Map<List<AchievementDto>, List<AchievementModel>>( earnedAchievementsDtos );
+    }
+
+    /// <summary>
+    /// Получить данные о доступных званиях игрока по его идентификатору
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpGet( "available-ranks/{id}" )]
+    [ProducesResponseType<string>( StatusCodes.Status404NotFound )]
+    [ProducesResponseType<List<GamerModel>>( StatusCodes.Status200OK )]
+    public async Task<ActionResult<List<RankModel>>> GetAvailableRanksAsync( int id, CancellationToken cancellationToken )
+    {
+        var gamerDto = await _gamerService.GetByIdAsync( id, cancellationToken );
+        if ( gamerDto is null )
+        {
+            return NotFound( $"Игрок с id = {id} не найден" );
+        }
+
+        var availableRanksDtos = await _gamerService.GetAvailableRanksByIdAsync( id, cancellationToken );
+
+        return _mapper.Map<List<RankDto>, List<RankModel>>( availableRanksDtos );
+    }
 
 }

@@ -1,4 +1,5 @@
-﻿using Services.Contracts.Gamer;
+﻿using Gb.Gps.Services.Contracts;
+using Services.Contracts.Gamer;
 
 namespace Services.Abstractions
 {
@@ -46,8 +47,32 @@ namespace Services.Abstractions
         /// Установить звание игроку.
         /// </summary>
         /// <param name="id"> Идентификатор. </param>
-        /// <param name="setGamerRankDto"> ДТО игрока. </param>
+        /// <param name="setGamerRankDto"> ДТО установки звания. </param>
         /// <param name="cancellationToken"></param>
         Task<bool> SetRankAsync( int id, SetGamerRankDto setGamerRankDto, CancellationToken cancellationToken );
+
+        /// <summary>
+        /// Выдать достижение игроку.
+        /// </summary>
+        /// <param name="id"> Идентификатор. </param>
+        /// <param name="giveAchievementToGamerDto"> ДТО выдачи достижения. </param>
+        /// <param name="cancellationToken"></param>
+        Task<bool> GiveAchievementAsync( int id, GiveAchievementToGamerDto giveAchievementToGamerDto, CancellationToken cancellationToken );
+
+        /// <summary>
+        /// Получить достижения игрока. 
+        /// </summary>
+        /// <param name="id"> Идентификатор. </param>
+        /// <param name="cancellationToken"> Токен отмены </param>
+        /// <returns> Список достижений. </returns>
+        Task<List<AchievementDto>> GetEarnedAchievementsByIdAsync( int id, CancellationToken cancellationToken );
+
+        /// <summary>
+        /// Получить доступные игроку звания. 
+        /// </summary>
+        /// <param name="id"> Идентификатор. </param>
+        /// <param name="cancellationToken"> Токен отмены </param>
+        /// <returns> Список званий. </returns>
+        Task<List<RankDto>> GetAvailableRanksByIdAsync( int id, CancellationToken cancellationToken );
     }
 }

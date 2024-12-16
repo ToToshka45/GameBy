@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Entities;
+using Gb.Gps.Services.Contracts;
 using Services.Abstractions;
 using Services.Contracts.Gamer;
 using Services.Repositories.Abstractions;
@@ -85,6 +86,52 @@ namespace Services.Implementations
             await _gamerRepository.SaveChangesAsync( cancellationToken );
 
             return true;
+        }
+
+        public async Task<bool> GiveAchievementAsync( int id, GiveAchievementToGamerDto giveAchievementToGamerDto, CancellationToken cancellationToken )
+        {
+            var gamer = await _gamerRepository.GetAsync( id, cancellationToken );
+
+            if ( gamer == null )
+            {
+                return false;
+            }
+
+            var newGamerAchievement = new GamerAchievement() { GamerId = id, AchievementId = giveAchievementToGamerDto.AchievementId };
+            gamer.GamerAchievements.Add( newGamerAchievement );
+
+            await _gamerRepository.UpdateAsync( gamer, cancellationToken );
+            await _gamerRepository.SaveChangesAsync( cancellationToken );
+
+            return true;
+        }
+
+        public async Task<List<AchievementDto>> GetEarnedAchievementsByIdAsync( int id, CancellationToken cancellationToken )
+        {
+            var result = new List<AchievementDto>();
+            var gamer = await _gamerRepository.GetAsync( id, cancellationToken );
+
+            foreach ( var gamerAchievement in gamer.GamerAchievements )
+            {
+                var achievement = _mapper.Map<Achievement, AchievementDto>( gamerAchievement.Achievement );
+                result.Add( achievement );
+            }
+
+            return result;
+        }
+
+        public async Task<List<RankDto>> GetAvailableRanksByIdAsync( int id, CancellationToken cancellationToken )
+        {
+            var result = new List<RankDto>();
+            var gamer = await _gamerRepository.GetAsync( id, cancellationToken );
+
+            foreach ( var gamerAchievement in gamer.GamerAchievements )
+            {
+                var rank = _mapper.Map<Rank, RankDto>( gamerAchievement.Achievement.Rank );
+                result.Add( rank );
+            }
+
+            return result;
         }
     }
 }

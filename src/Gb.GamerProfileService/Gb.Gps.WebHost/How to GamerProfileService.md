@@ -4,7 +4,7 @@ http://localhost:8091/swagger/index.html
 http://localhost:8080/weatherforecast
 
 # Базы данных
-docker-compose up game-by-gamer-profile-service-db
+docker-compose up game-by-gamer-profile-service-db game-by-gamer-profile-service-redis
 
 # Сервисы
 docker-compose up game-by-gamer-profile-service-api

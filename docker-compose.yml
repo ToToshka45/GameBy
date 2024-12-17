@@ -11,6 +11,16 @@
       - pg-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+      
+  #Gamer Profile Service Redis
+  game-by-gamer-profile-service-redis:
+    image: redis:latest
+    container_name: game-by-gamer-profile-service-redis
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
 
   #Gamer Profile Service Api
   game-by-gamer-profile-service-api:
@@ -19,11 +29,13 @@
     restart: always
     environment:
       - ConnectionStrings__GameByGamerProfileServiceDb=Host=game-by-gamer-profile-service-db;Database=game_by_gamer_profile_service_db;Username=postgres;Password=password;Port=5432
+      - ConnectionStrings__GameByGamerProfileServiceRedis=Host=game-by-gamer-profile-service-redis,ssl=False,abortConnect=False,port=6379
       - ASPNETCORE_ENVIRONMENT=Development
     ports: 
       - "8091:8080"
     depends_on: 
       - game-by-gamer-profile-service-db
+      - game-by-gamer-profile-service-redis
 
 volumes:
   pg-data:

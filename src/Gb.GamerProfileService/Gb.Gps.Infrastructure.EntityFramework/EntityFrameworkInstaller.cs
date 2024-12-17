@@ -7,7 +7,7 @@ namespace Infrastructure.EntityFramework
 {
     public static class EntityFrameworkInstaller
     {
-        public static IServiceCollection ConfigureContext( this IServiceCollection services, IConfiguration configuration )
+        public static IServiceCollection InstallContext( this IServiceCollection services, IConfiguration configuration )
         {
             services.AddDbContext<ApplicationDBContext>( options =>
             {

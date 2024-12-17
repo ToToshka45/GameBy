@@ -34,9 +34,10 @@ namespace GamerProfileService
                     .InstallHealthChecks()
                     //.InstallLogging()
                     .InstallServices()
-                    .ConfigureContext( configuration )
+                    .InstallContext( configuration )
                     .InstallRepositories()
-                    .InstallFluentValidation();
+                    .InstallFluentValidation()
+                    .InstallCache( configuration );
 
             return services;
         }
@@ -142,6 +143,20 @@ namespace GamerProfileService
 
             // Если валидаторов много, то можно сразу зарегистрировать валидаторы для конкретной Assembly.
             serviceCollection.AddValidatorsFromAssemblyContaining<Program>();
+
+            return serviceCollection;
+        }
+
+        private static IServiceCollection InstallCache( this IServiceCollection serviceCollection, IConfiguration configuration )
+        {
+            // distributed cache
+            serviceCollection.AddDistributedMemoryCache();
+            serviceCollection.AddStackExchangeRedisCache( options =>
+            {
+                options.Configuration = configuration.GetConnectionString( "GameByGamerProfileServiceRedis" );
+            } );
+
+            serviceCollection.AddScoped<ICacheService, CacheService>();
 
             return serviceCollection;
         }

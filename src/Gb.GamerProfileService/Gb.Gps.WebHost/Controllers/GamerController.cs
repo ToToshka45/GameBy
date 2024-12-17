@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Domain.Entities;
 using GamerProfileService.Models;
 using Gb.Gps.Services.Abstractions;
 using Gb.Gps.Services.Contracts;
@@ -23,8 +22,11 @@ public class GamerController : ControllerBase
     private readonly IRankService _rankService;
     private readonly IAchievementService _achievementService;
     private readonly IMapper _mapper;
+    private readonly ICacheService _cacheService;
 
-    public GamerController( ILogger<GamerController> logger, IGamerService gamerService, IRankService rankService, IAchievementService achievementService, IMapper mapper )
+    private const string REDIS_GAMER_PREFIX = "Gamer_";
+
+    public GamerController( ILogger<GamerController> logger, IGamerService gamerService, IRankService rankService, IAchievementService achievementService, IMapper mapper, ICacheService cacheService )
     {
         _logger = logger;
 
@@ -32,6 +34,7 @@ public class GamerController : ControllerBase
         _rankService = rankService;
         _achievementService = achievementService;
         _mapper = mapper;
+        _cacheService = cacheService;
     }
 
     /// <summary>
@@ -59,9 +62,25 @@ public class GamerController : ControllerBase
     [ProducesResponseType<GamerModel>( StatusCodes.Status200OK )]
     public async Task<ActionResult<GamerModel>> GetAsync( int id, CancellationToken cancellationToken )
     {
+        var redisGamerKey = REDIS_GAMER_PREFIX + id;
+
+        var gamerModel = await _cacheService.GetAsync<GamerModel>( redisGamerKey );
+        if ( gamerModel is not null )
+        {
+            return Ok( gamerModel );
+        }
+
         var gamerDto = await _gamerService.GetByIdAsync( id, cancellationToken );
 
-        return gamerDto == null ? NotFound( $"Игрок с id = {id} не найден" ) : Ok( _mapper.Map<GamerDto, GamerModel>( gamerDto ) );
+        if ( gamerDto is null )
+        {
+            return NotFound( $"Игрок с id = {id} не найден" );
+        }
+
+        gamerModel = _mapper.Map<GamerDto, GamerModel>( gamerDto );
+        await _cacheService.SetAsync<GamerModel>( redisGamerKey, gamerModel );
+
+        return Ok( gamerModel );
     }
 
     /// <summary>

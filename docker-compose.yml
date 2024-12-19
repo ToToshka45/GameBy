@@ -29,7 +29,7 @@
     restart: always
     environment:
       - ConnectionStrings__GameByGamerProfileServiceDb=Host=game-by-gamer-profile-service-db;Database=game_by_gamer_profile_service_db;Username=postgres;Password=password;Port=5432
-      - ConnectionStrings__GameByGamerProfileServiceRedis=Host=game-by-gamer-profile-service-redis,ssl=False,abortConnect=False,port=6379
+      - ConnectionStrings__GameByGamerProfileServiceRedis=game-by-gamer-profile-service-redis:6379,ssl=False,abortConnect=False
       - ASPNETCORE_ENVIRONMENT=Development
     ports: 
       - "8091:8080"

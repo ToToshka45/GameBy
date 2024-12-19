@@ -20,6 +20,7 @@ jobs:
     # переменные окружения
     env:
       PROJECT_PATH: src/Gb.GamerProfileService/Gb.Gps.WebHost/Gb.Gps.WebHost.csproj
+      PROJECT_PATH_TESTS: src/Gb.GamerProfileService/Gb.Gps.UnitTests/Gb.Gps.UnitTests.csproj
 
     steps:
     - name: Checkout repository
@@ -36,6 +37,5 @@ jobs:
     - name: Build project
       run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
       
- #   - name: Run tests
- #     run: dotnet test --no-build --verbosity normal
- #     run: dotnet test ${{ env.PROJECT_NAME_TESTS }}/${{ env.PROJECT_NAME_TESTS }}.csproj
+    - name: Run tests
+      run: dotnet test ${{ env.PROJECT_PATH_TESTS }} # --verbosity normal

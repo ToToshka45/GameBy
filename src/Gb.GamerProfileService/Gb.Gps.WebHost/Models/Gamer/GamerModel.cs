@@ -6,8 +6,8 @@ namespace GamerProfileService.Models
     public class GamerModel
     {
         public int Id { get; set; }
-        public required string Name { get; set; }
-        public required string Nickname { get; set; }
+        public string Name { get; set; }
+        public string Nickname { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string? AboutMe { get; set; }
         public string? Country { get; set; }

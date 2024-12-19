@@ -36,6 +36,6 @@ jobs:
     - name: Build project
       run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
       
- #   - name: Run tests
- #     run: dotnet test --no-build --verbosity normal
- #     run: dotnet test ${{ env.PROJECT_NAME_TESTS }}/${{ env.PROJECT_NAME_TESTS }}.csproj
+    - name: Run tests
+      run: dotnet test --no-build --verbosity normal
+#      run: dotnet test ${{ env.PROJECT_NAME_TESTS }}/${{ env.PROJECT_NAME_TESTS }}.csproj

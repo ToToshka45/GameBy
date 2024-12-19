@@ -6,10 +6,10 @@ using System.Linq.Expressions;
 
 namespace RatingService.Infrastructure.Abstractions;
 
-public class BaseRepository<T>(RatingServiceDbContext storage) 
+public class BaseRepository<T>(RatingServiceDbContext storage)
     : IRepository<T> where T : Entity<int>
 {
-    private readonly DbSet<T> _dbSet = storage.Set<T>();
+    protected readonly DbSet<T> _dbSet = storage.Set<T>();
 
     public virtual async Task<T> Add(T entity, CancellationToken token)
     {
@@ -49,7 +49,18 @@ public class BaseRepository<T>(RatingServiceDbContext storage)
         return await SaveChangesAsync(token);
     }
 
-    public async Task<bool> SaveChangesAsync(CancellationToken token)
+    public async Task<T?> GetEntityWithIncludesAsync(int id, CancellationToken token, params Expression<Func<T, object>>[] includes)
+    {
+        var query = _dbSet.Where(e => e.Id == id);
+        if (includes.Count() > 0)
+        {
+            foreach (var include in includes)
+                query = query.Include(include);
+        }
+        return await query.FirstOrDefaultAsync();
+    }
+
+    protected async Task<bool> SaveChangesAsync(CancellationToken token)
     {
         return await storage.SaveChangesAsync(token) > 0;
     }

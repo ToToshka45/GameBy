@@ -28,6 +28,9 @@ public enum EventProgressionState
     Postponed
 }
 
+/// <summary>
+/// Participation states of a Gamer in the Event.
+/// </summary>
 public enum ParticipationState
 {
     /// <summary>

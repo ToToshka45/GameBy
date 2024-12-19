@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using RatingService.API.Models;
 using RatingService.Application.Abstractions;
 using RatingService.API.Configurations.Mappings;
+using RatingService.API.Models.Events;
 
 namespace RatingService.API.Controllers
 {
@@ -21,14 +21,14 @@ namespace RatingService.API.Controllers
         [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest req, CancellationToken token)
         {
-            var result = await _service.AddNewEventAsync(req.ToDto(), token);
-            return CreatedAtAction(nameof(GetEventInfo), new { result.Id }, result.ToResponse());
+            var id = await _service.AddNewEventAsync(req.ToDto(), token);
+            return CreatedAtAction(nameof(GetEventById), new { id }, req);
         }
 
         [HttpGet("get-events")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
-        public async Task<ActionResult<GetEventInfoResponse>> GetEvents(CancellationToken token)
+        public async Task<ActionResult<GetEventResponse>> GetEvents(CancellationToken token)
         {
             var events = await _service.GetEventsAsync(token);
             return Ok(events.ToResponseList());
@@ -37,9 +37,9 @@ namespace RatingService.API.Controllers
         [HttpGet("get-event-info/{id:int}")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
-        public async Task<ActionResult<GetEventInfoResponse>> GetEventInfo(int id, CancellationToken token)
+        public async Task<ActionResult<GetEventResponse>> GetEventById(int id, CancellationToken token)
         {
-            var eventInfo = await _service.GetEventInfoAsync(id, token);
+            var eventInfo = await _service.GetEventByIdAsync(id, token);
             return Ok(eventInfo);
         }
 

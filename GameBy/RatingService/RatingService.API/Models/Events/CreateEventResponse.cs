@@ -1,8 +1,8 @@
-﻿namespace RatingService.API.Models;
+﻿namespace RatingService.API.Models.Events;
 
 public sealed class CreateEventResponse
 {
-    public int Id {  get; set; }
+    public int Id { get; set; }
     public string Title { get; set; } = default!;
     public int EventId { get; set; }
     public DateTime CreationDate { get; set; }

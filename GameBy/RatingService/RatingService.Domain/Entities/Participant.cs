@@ -5,8 +5,17 @@ namespace RatingService.Domain.Entities;
 
 public class Participant : Entity<int>
 {
+    /// <summary>
+    /// The Id of a Participant by which its Entity is stored in the Event Service.
+    /// </summary>
     public int ExternalParticipantId { get; }
+    /// <summary>
+    /// The Id of an Event by which its Entity is stored in the Event Service.
+    /// </summary>
     public int ExternalEventId { get; }
+    /// <summary>
+    /// The Id of a User by which its entity is stored in the Event Service.
+    /// </summary>
     public int ExternalUserId { get; }
     public ParticipationState ParticipationState { get; private set; }
     public ParticipantRating Rating { get; }
@@ -26,6 +35,7 @@ public class Participant : Entity<int>
         Rating = new ParticipantRating(Id, category);
     }
 
+    /// EF Core necessity 
     private Participant() { }
     public void SetState(ParticipationState state)
     {

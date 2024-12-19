@@ -1,5 +1,5 @@
 ﻿using RatingService.Domain.Enums;
 
-namespace RatingService.Application.Models.Dtos;
+namespace RatingService.Application.Models.Dtos.Events;
 
 public record CreateEventDto(string Title, int ExternalEventId, DateTime CreationDate, Category Category, EventProgressionState State);

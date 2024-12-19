@@ -59,6 +59,8 @@ public class EventInfo : AggregateRoot<int>
         participant.SetState(state);
     }
 
+    public void AddParticipant(Participant participant) => _participants.Add(participant);
+
     // TODO: decide, should we allow to change a category of event?
     public void ChangeCategory(Category category) => Category = category;
 }

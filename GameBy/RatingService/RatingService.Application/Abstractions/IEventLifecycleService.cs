@@ -1,11 +1,13 @@
-﻿using RatingService.Application.Models.Dtos;
+﻿using RatingService.Application.Models.Dtos.Events;
 using RatingService.Domain.Aggregates;
+using RatingService.Domain.Entities;
 
 namespace RatingService.Application.Abstractions;
 
 public interface IEventLifecycleService
 {
-    Task<EventInfo> AddNewEventAsync(CreateEventDto newEvent, CancellationToken token);
-    Task<ICollection<EventInfo>> GetEventsAsync(CancellationToken token);
-    Task<EventInfo?> GetEventInfoAsync(int id, CancellationToken token);
+    Task<int?> AddNewEventAsync(CreateEventDto newEvent, CancellationToken token);
+    Task<ICollection<GetEventDto>> GetEventsAsync(CancellationToken token);
+    Task<GetEventDto?> GetEventByIdAsync(int id, CancellationToken token);
+    Task AddParticipantAsync(int eventId, Participant participant, CancellationToken token);
 }

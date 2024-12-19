@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using RatingService.Domain.Entities;
+﻿using RatingService.Domain.Entities;
 using RatingService.Domain.Enums;
 using RatingService.Domain.Primitives;
 using RatingService.Domain.ValueObjects.Identifiers;
@@ -10,9 +9,11 @@ namespace RatingService.Domain.Aggregates;
 public class UserInfo : AggregateRoot<int>
 {
     public int ExternalUserId { get; }
-
+    public string UserName { get; }
     private List<UserRating> _ratings { get; } = [];
     public IReadOnlyCollection<UserRating> RatingsByCategory => _ratings;
+    //private List<Participant> _participations { get; } = [];
+    //public IReadOnlyCollection<Participant> Participations => _participations;
 
     private List<Feedback> _gamerFeedbacks = [];
     public IReadOnlyList<Feedback> GamerFeedbacks => _gamerFeedbacks;
@@ -22,9 +23,10 @@ public class UserInfo : AggregateRoot<int>
 
     // collection of RatingUpdates
 
-    public UserInfo(int userId)
+    public UserInfo(int userId, string username)
     {
         ExternalUserId = userId;
+        UserName = username;
         InitializeRatings(userId);
     }       
 
@@ -72,7 +74,7 @@ public class UserInfo : AggregateRoot<int>
         var feedback = _gamerFeedbacks.First(x => x.Id == feedbackId.Value);
         _gamerFeedbacks.Remove(feedback);
     }
-    
+
     /// <summary>
     /// Add default ratings (0) for each <see cref="Category"/> type.
     /// </summary>

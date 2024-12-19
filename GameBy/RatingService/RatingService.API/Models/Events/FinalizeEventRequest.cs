@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RatingService.API.Models;
+namespace RatingService.API.Models.Events;
 
 public sealed class FinalizeEventRequest
 {

@@ -37,7 +37,7 @@ public class UserLifecycleService : IUserLifecycleService
     {
         var user = await _userRepo.GetById(id, token);
         if (user == null) { return null; }
-        return user.ToGetUserDto();
+        return user.ToDto();
     }
 
     public async Task<GetUserRatingsDto?> GetUserRatingsAsync(int id, CancellationToken token)

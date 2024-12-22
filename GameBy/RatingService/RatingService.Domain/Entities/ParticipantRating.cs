@@ -1,12 +1,11 @@
-﻿using RatingService.Domain.Enums;
-
-namespace RatingService.Domain.Entities;
+﻿namespace RatingService.Domain.Entities;
 
 public class ParticipantRating : Rating
 {
     public int ParticipantId { get; }
-    public ParticipantRating(int participantId, Category category) : base(category)
+    public ParticipantRating(int participantId)
     {
+        Value = 0;
         ParticipantId = participantId;
     }
 

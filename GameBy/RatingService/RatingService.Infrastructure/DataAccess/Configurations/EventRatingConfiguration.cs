@@ -10,6 +10,5 @@ internal class EventRatingConfiguration : IEntityTypeConfiguration<EventRating>
     {
         builder.ToTable("events_ratings");
         builder.HasKey(e => e.Id);
-        builder.Property(er => er.Category).HasConversion<string>();
     }
 }

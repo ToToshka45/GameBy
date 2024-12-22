@@ -25,7 +25,8 @@ public enum EventProgressionState
     RegistrationClosed,
     Completed,
     Cancelled,
-    Postponed
+    Postponed,
+    Unclarified
 }
 
 /// <summary>
@@ -52,5 +53,9 @@ public enum ParticipationState
     /// <summary>
     /// A Gamer has participated in an event.
     /// </summary>
-    Participated
+    Participated,
+    /// <summary>
+    /// Clarification is required.
+    /// </summary>
+    Unclarified
 }

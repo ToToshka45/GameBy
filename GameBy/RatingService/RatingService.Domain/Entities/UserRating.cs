@@ -5,9 +5,11 @@ namespace RatingService.Domain.Entities;
 public class UserRating : Rating
 {
     public int UserId { get; }
-    public UserRating(int userId, Category category) : base(category)
+    public Category Category { get; }
+    public UserRating(int userId, Category category)
     {
         UserId = userId;
+        Category = category;
     }
 
     private UserRating() { }

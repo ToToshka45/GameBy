@@ -5,13 +5,11 @@ namespace RatingService.API.Models;
 public sealed class AddParticipantRequest
 {
     [JsonPropertyName("participantId")]
-    public required int ParticipantId { get; set; }
+    public required int ExternalParticipantId { get; set; }
     [JsonPropertyName("userId")]
-    public required int UserId { get; set; }
+    public required int ExternalUserId { get; set; }
     [JsonPropertyName("eventId")]
-    public required int EventId { get; set; }
-    [JsonPropertyName("participation-state")]
-    public required string ParticipationState { get; set; }
-    [JsonPropertyName("state")]
+    public required int ExternalEventId { get; set; }
+    [JsonPropertyName("participation_state")]
     public required string State { get; set; }
 }

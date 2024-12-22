@@ -10,7 +10,5 @@ internal class ParticipantRatingConfiguration : IEntityTypeConfiguration<Partici
     {
         builder.ToTable("participants_ratings");
         builder.HasKey(e => e.Id);
-
-        builder.Property(er => er.Category).HasConversion<string>();
     }
 }

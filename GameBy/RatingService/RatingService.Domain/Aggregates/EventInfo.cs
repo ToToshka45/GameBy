@@ -31,7 +31,7 @@ public class EventInfo : AggregateRoot<int>
         CreationDate = creationDate;
         Category = category;
         State = state;
-        Rating = new EventRating(eventId, category);
+        Rating = new EventRating(eventId);
     }
 
     // for EFCore

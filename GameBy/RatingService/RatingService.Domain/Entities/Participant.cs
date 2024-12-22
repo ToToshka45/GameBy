@@ -24,15 +24,14 @@ public class Participant : Entity<int>
         int participantId,
         int userId,
         int eventId,
-        ParticipationState participationState, 
-        Category category)
+        ParticipationState participationState)
     {
         ExternalUserId = userId;
         ExternalEventId = eventId;
         ExternalParticipantId = participantId;
         ParticipationState = participationState;
 
-        Rating = new ParticipantRating(Id, category);
+        Rating = new ParticipantRating(Id);
     }
 
     /// EF Core necessity 

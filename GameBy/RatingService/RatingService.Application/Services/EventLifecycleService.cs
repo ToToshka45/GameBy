@@ -2,9 +2,9 @@
 using RatingService.Application.Abstractions;
 using RatingService.Application.Configurations.Mappings;
 using RatingService.Application.Models.Dtos.Events;
+using RatingService.Application.Models.Dtos.Participants;
 using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
-using RatingService.Domain.Entities;
 
 namespace RatingService.Application.Services;
 
@@ -54,17 +54,17 @@ public class EventLifecycleService : IEventLifecycleService
     public async Task<ICollection<GetEventDto>> GetEventsAsync(CancellationToken token)
     {
         var events = await _eventRepo.GetAll(token);
-        return events.ToGetEventsDto();
+        return events.ToDtoList();
     }
 
-    public async Task AddParticipantAsync(int eventId, Participant participant, CancellationToken token)
+    public async Task AddParticipantAsync(int eventId, AddParticipantDto dto, CancellationToken token)
     {
         try
         {
             var storedEvent = await _eventRepo.GetById(eventId, token);
             if (storedEvent is null) return;
 
-            storedEvent.AddParticipant(participant);
+            storedEvent.AddParticipant(dto.ToParticipant());
             await _eventRepo.Update(eventId, storedEvent, token);
         }
         catch (Exception ex)
@@ -72,5 +72,10 @@ public class EventLifecycleService : IEventLifecycleService
             _logger.LogError(ex, "Error has occured while trying to add a new Participant to an Event.");
             throw;
         }
+    }
+
+    public Task FinalizeEventAsync(FinalizeEventDto dto, CancellationToken token)
+    {
+        throw new NotImplementedException();
     }
 }

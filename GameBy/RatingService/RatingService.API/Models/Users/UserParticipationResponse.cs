@@ -1,6 +1,3 @@
-﻿namespace RatingService.API.Models.Users
-{
-    public sealed class UserParticipationResponse
-    {
-    }
-}
+﻿namespace RatingService.API.Models.Users;
+
+public sealed record UserParticipationResponse();

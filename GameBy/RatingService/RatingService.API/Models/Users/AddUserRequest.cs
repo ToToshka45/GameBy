@@ -1,13 +1,12 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RatingService.API.Models.Users
-{
-    public class AddUserRequest
-    {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
+namespace RatingService.API.Models.Users;
 
-        [JsonPropertyName("username")]
-        public string UserName { get; set; }
-    }
+public sealed class AddUserRequest
+{
+    [JsonPropertyName("id")]
+    public required int ExternalUserId { get; set; }
+
+    [JsonPropertyName("username")]
+    public required string UserName { get; set; }
 }

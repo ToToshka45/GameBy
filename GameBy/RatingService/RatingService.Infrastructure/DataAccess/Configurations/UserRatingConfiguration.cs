@@ -11,6 +11,6 @@ internal class UserRatingConfiguration : IEntityTypeConfiguration<UserRating>
         builder.ToTable("users_ratings");
         builder.HasKey(e => e.Id);
 
-        builder.Property(er => er.Category).HasConversion<string>();
+        builder.Property(er => er.Category).HasColumnName("category").HasConversion<string>();
     }
 }

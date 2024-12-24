@@ -1,6 +1,17 @@
 services:
+  ratings.api:
+    container_name: ratings.api
+    build: .
+    restart: always
+    environment:
+      - ConnectionStrings:Npgsql=Host=ratings.db;Port=5432;Database=rating_service;Username=admin;Password=admin
+    ports:
+      - 5100:5001 #http
+    depends_on:
+      - ratings.db
+
   ratings.db:
-    container_name: postgres
+    container_name: ratings.db
     image: postgres:14
     restart: always
     environment:

@@ -3,18 +3,21 @@ using RatingService.Application.Abstractions;
 using RatingService.Application.Configurations.Mappings;
 using RatingService.Application.Models.Dtos.Events;
 using RatingService.Application.Models.Dtos.Participants;
+using RatingService.Domain.Abstraction;
 using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
+using RatingService.Domain.Entities;
 
 namespace RatingService.Application.Services;
 
 public class EventLifecycleService : IEventLifecycleService
 {
-    private readonly IRepository<EventInfo> _eventRepo;
+    //private readonly IRepository<EventInfo> _eventRepo;
+    private readonly IEventLifecycleRepository _eventRepo;
     private readonly IRepository<UserInfo> _userRepo;
     private readonly ILogger<EventLifecycleService> _logger;
 
-    public EventLifecycleService(IRepository<EventInfo> eventRepo, ILogger<EventLifecycleService> logger, IRepository<UserInfo> userRepo)
+    public EventLifecycleService(IEventLifecycleRepository eventRepo, IRepository<UserInfo> userRepo, ILogger<EventLifecycleService> logger)
     {
         _eventRepo = eventRepo;
         _logger = logger;
@@ -57,15 +60,17 @@ public class EventLifecycleService : IEventLifecycleService
         return events.ToDtoList();
     }
 
-    public async Task AddParticipantAsync(int eventId, AddParticipantDto dto, CancellationToken token)
+    public async Task<int?> AddParticipantAsync(int eventId, AddParticipantDto dto, CancellationToken token)
     {
         try
         {
             var storedEvent = await _eventRepo.GetById(eventId, token);
-            if (storedEvent is null) return;
+            if (storedEvent is null) return null;
 
             storedEvent.AddParticipant(dto.ToParticipant());
             await _eventRepo.Update(eventId, storedEvent, token);
+            var participant = await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token);
+            return participant is null ? null : participant.Id;
         }
         catch (Exception ex)
         {
@@ -77,5 +82,10 @@ public class EventLifecycleService : IEventLifecycleService
     public Task FinalizeEventAsync(FinalizeEventDto dto, CancellationToken token)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<Participant>> GetParticipantsByEventIdAsync(int eventId, CancellationToken token)
+    {
+        return await _eventRepo.GetParticipantsByEventId(eventId, token);
     }
 }

@@ -44,8 +44,8 @@ public class BaseRepository<T>(RatingServiceDbContext storage)
     {
         var storedEntity = await GetById(id, token);
         ArgumentNullException.ThrowIfNull(entity);
-        entity = storedEntity!;
-        _dbSet.Update(entity);
+        storedEntity = entity;
+        _dbSet.Update(storedEntity);
         return await SaveChangesAsync(token);
     }
 

@@ -10,10 +10,14 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
     public void Configure(EntityTypeBuilder<EventInfo> builder)
     {
         builder.ToTable("events_info");
+
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Category).HasConversion<string>();
-        builder.Property(e => e.State).HasConversion<string>();
+        builder.Property(e => e.ExternalEventId).HasColumnName("external_event_id");
+        builder.Property(e => e.Category).HasColumnName("category").HasConversion<string>();
+        builder.Property(e => e.State).HasColumnName("state").HasConversion<string>();
+        builder.Property(e => e.Title).HasColumnName("title");
+        builder.Property(e => e.CreationDate).HasColumnName("creation_date");
         //builder.ComplexProperty(e => e.EventId);
 
         builder.HasOne(e => e.Rating).WithOne().HasForeignKey<EventInfo>(e => e.Id);

@@ -12,6 +12,10 @@ internal class EventRatingUpdateConfiguration : IEntityTypeConfiguration<EventRa
 
         builder.ToTable("events_rating_updates");
 
+        builder.Property(e => e.EventId).HasColumnName("event_id");
+        builder.Property(e => e.AuthorId).HasColumnName("author_id");
+        builder.Property(e => e.CreationDate).HasColumnName("creation_date");
+
         //builder.ComplexProperty(e => e.AuthorId);
         //builder.ComplexProperty(e => e.ExternalEventId);
 

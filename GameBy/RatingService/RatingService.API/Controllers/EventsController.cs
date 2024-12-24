@@ -3,6 +3,7 @@ using RatingService.Application.Abstractions;
 using RatingService.API.Configurations.Mappings;
 using RatingService.API.Models.Events;
 using RatingService.API.Models;
+using RatingService.Domain.Entities;
 
 namespace RatingService.API.Controllers
 {
@@ -43,16 +44,6 @@ namespace RatingService.API.Controllers
             return Ok(eventInfo.ToResponse());
         }
 
-        // Participants
-
-        [HttpPost("{eventId:int}/participants/add")]
-        [ProducesResponseType(typeof(IActionResult), 201)]
-        public async Task<IActionResult> AddParticipant(int eventId, AddParticipantRequest req, CancellationToken token)
-        {
-            // TODO: create a domain event
-            await _service.AddParticipantAsync(eventId, req.ToDto(), token);
-            return Created();
-        }
 
         /// <summary>
         /// Finalizes an event, setting the correct state and updating the info about registered participants.
@@ -67,6 +58,26 @@ namespace RatingService.API.Controllers
             // TODO: create a domain event
             await _service.FinalizeEventAsync(req.ToDto(), token);
             return Ok();
+        }
+
+
+        // Participants
+
+        [HttpPost("{eventId:int}/participants/add")]
+        [ProducesResponseType(typeof(IActionResult), 201)]
+        public async Task<IActionResult> AddParticipant(int eventId, AddParticipantRequest req, CancellationToken token)
+        {
+            // TODO: create a domain event
+            var result = await _service.AddParticipantAsync(eventId, req.ToDto(), token);
+            return Created();
+        }
+
+
+        [HttpGet("{eventId:int}/participants/get-all")]
+        [ProducesResponseType(typeof(IActionResult), 200)]
+        public async Task<ActionResult<Participant>> GetParticipantsByEventId(int eventId, CancellationToken token)
+        {
+            return Ok(await _service.GetParticipantsByEventIdAsync(eventId, token));
         }
 
     }

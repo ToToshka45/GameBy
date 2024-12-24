@@ -4,8 +4,8 @@ namespace RatingService.Domain.Entities;
 
 public class UserRatingUpdate : Entity<int>
 {
+    public int EventId { get; }
     public int AuthorId { get; }
-    public int ExternalEventId { get; }
     public int RatingOwnerId { get; }
     public DateTime CreationDate { get; }
     public UserRating Rating { get; }
@@ -16,7 +16,7 @@ public class UserRatingUpdate : Entity<int>
         AuthorId = authorId;
         CreationDate = creationDate;
         Rating = rating;
-        ExternalEventId = eventId;
+        EventId = eventId;
         RatingOwnerId = userId;
     }
 

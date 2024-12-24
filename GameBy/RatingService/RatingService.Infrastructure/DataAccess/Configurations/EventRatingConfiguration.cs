@@ -10,5 +10,7 @@ internal class EventRatingConfiguration : IEntityTypeConfiguration<EventRating>
     {
         builder.ToTable("events_ratings");
         builder.HasKey(e => e.Id);
+
+        builder.Property(e => e.EventId).HasColumnName("event_id");
     }
 }

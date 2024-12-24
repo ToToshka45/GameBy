@@ -5,10 +5,13 @@ namespace RatingService.Domain.Entities;
 
 public class Feedback : Entity<int>
 {
-    public int ExternalEventId { get; }
+    /// <summary>
+    /// Internal Id.
+    /// </summary>
+    public int EventId { get; }
     public int AuthorId { get; }
     public Receiver Receiver { get; }
-    public FeedbackContent Content { get; private set; }
+    public string Content { get; private set; }
     public DateTime CreationDate { get; }
     public DateTime UpdateDate { get; }
 
@@ -16,10 +19,10 @@ public class Feedback : Entity<int>
         int eventId,
         int authorId,
         Receiver receiverInfo,
-        FeedbackContent content,
-        DateTime CreationDate)
+        string content,
+        DateTime creationDate)
     {
-        ExternalEventId = eventId;
+        EventId = eventId;
         AuthorId = authorId;
         Receiver = receiverInfo;
         Content = content;
@@ -31,7 +34,7 @@ public class Feedback : Entity<int>
     public void SetContent(string content)
     {
         //if (String.IsNullOrEmpty(content)) return Result.Failure();
-        Content = new FeedbackContent(content);
+        Content = content;
     }
 }
 

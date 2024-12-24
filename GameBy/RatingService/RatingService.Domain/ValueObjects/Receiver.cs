@@ -11,6 +11,7 @@ namespace RatingService.Domain.ValueObjects
     {
         public int EntityId { get; }
         public EntityType EntityType { get; }
+
         public Receiver(int entityId, EntityType entityType)
         {
             EntityId = entityId;

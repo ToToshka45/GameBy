@@ -12,6 +12,11 @@ internal class UserRatingUpdateConfiguration : IEntityTypeConfiguration<UserRati
 
         builder.ToTable("users_rating_updates");
 
+        builder.Property(e => e.EventId).HasColumnName("event_id");
+        builder.Property(e => e.AuthorId).HasColumnName("author_id");
+        builder.Property(e => e.RatingOwnerId).HasColumnName("rating_owner_id");
+        builder.Property(e => e.CreationDate).HasColumnName("creation_date");
+
         builder.HasOne(e => e.Rating).WithOne().HasForeignKey<UserRatingUpdate>(ur => ur.Id);
     }
 }

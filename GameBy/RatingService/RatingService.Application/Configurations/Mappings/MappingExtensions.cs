@@ -10,7 +10,7 @@ internal static class MappingExtensions
 {
     // events
     public static EventInfo ToEventInfo(this CreateEventDto dto) =>
-        new(dto.Title, dto.ExternalEventId, dto.CreationDate, dto.Category, dto.State);
+        new(dto.Title, dto.ExternalEventId, dto.CreationDate.ToUniversalTime(), dto.Category, dto.State);
     public static GetEventDto ToDto(this EventInfo @event) =>
         new(@event.Id, @event.Title, @event.ExternalEventId, @event.CreationDate, @event.Category, @event.State, @event.Rating);
     public static ICollection<GetEventDto> ToDtoList(this IEnumerable<EventInfo> events) =>

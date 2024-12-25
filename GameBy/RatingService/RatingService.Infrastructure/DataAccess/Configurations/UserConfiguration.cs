@@ -17,8 +17,8 @@ internal class UserConfiguration : IEntityTypeConfiguration<UserInfo>
 
         //builder.ComplexProperty(e => e.ExternalUserId);
 
-        builder.HasMany(e => e.GamerFeedbacks).WithOne().HasForeignKey(f => f.Id);
-        builder.HasMany(e => e.OrganizerFeedbacks).WithOne().HasForeignKey(f => f.Id);
-        builder.HasMany(e => e.RatingsByCategory).WithOne().HasForeignKey(f => f.Id);
+        //builder.HasMany(e => e.GamerFeedbacks).WithOne().HasForeignKey(f => f.Id);
+        //builder.HasMany(e => e.OrganizerFeedbacks).WithOne().HasForeignKey(f => f.Id);
+        //builder.HasMany(e => e.RatingsByCategory).WithOne().HasForeignKey(f => f.Id);
     }
 }

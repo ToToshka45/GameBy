@@ -2,23 +2,14 @@
 
 namespace RatingService.Domain.Entities;
 
-public class UserRatingUpdate : Entity<int>
+public class UserRatingUpdate : RatingUpdate
 {
-    public int EventId { get; }
-    public int AuthorId { get; }
     public int RatingOwnerId { get; }
-    public DateTime CreationDate { get; }
-    public UserRating Rating { get; }
 
-    public UserRatingUpdate(int authorId, DateTime creationDate, UserRating rating, 
-        int eventId, int userId)
+    public UserRatingUpdate(int authorId, DateTime creationDate, int eventId, int userId) 
+        : base(authorId, creationDate, eventId)
     {
-        AuthorId = authorId;
-        CreationDate = creationDate;
-        Rating = rating;
-        EventId = eventId;
         RatingOwnerId = userId;
     }
-
     private UserRatingUpdate() { }
 }

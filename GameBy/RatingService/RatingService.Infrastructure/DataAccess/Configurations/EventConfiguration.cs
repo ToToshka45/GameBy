@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RatingService.Domain.Aggregates;
-using RatingService.Domain.Enums;
 
 namespace RatingService.Infrastructure.DataAccess.Configurations;
 
@@ -18,13 +17,12 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
         builder.Property(e => e.State).HasColumnName("state").HasConversion<string>();
         builder.Property(e => e.Title).HasColumnName("title");
         builder.Property(e => e.CreationDate).HasColumnName("creation_date");
-        //builder.ComplexProperty(e => e.EventId);
 
         builder.HasOne(e => e.Rating).WithOne().HasForeignKey<EventInfo>(e => e.Id);
         builder.Navigation(e => e.Rating).AutoInclude();
 
-        builder.HasMany(e => e.Feedbacks).WithOne().HasForeignKey(f => f.Id);
-        builder.HasMany(e => e.Participants).WithOne().HasForeignKey(f => f.Id);
-
+        //builder.HasMany(e => e.Feedbacks).WithOne().HasForeignKey(f => f.Id);
+        //builder.HasMany(e => e.Participants).WithOne().HasForeignKey(e => e.EventId);
+        //builder.Navigation(e => e.Participants).AutoInclude();
     }
 }

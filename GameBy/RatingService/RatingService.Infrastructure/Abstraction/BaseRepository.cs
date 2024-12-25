@@ -31,9 +31,11 @@ public class BaseRepository<T>(RatingServiceDbContext storage)
         return await _dbSet.AsNoTracking().ToListAsync(token);
     }
 
-    public virtual async Task<T?> GetById(int id, CancellationToken token)
+    public virtual async Task<T?> GetById(int id, CancellationToken token, bool asNoTracking = true)
     {
-        return await _dbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id, token);
+        var query = _dbSet.Where(e => e.Id == id);
+        if (asNoTracking) query = query.AsNoTracking();
+        return await query.FirstOrDefaultAsync(token);
     }
     public async Task<T?> GetByFilter(Expression<Func<T, bool>> filter, CancellationToken token)
     {
@@ -45,7 +47,7 @@ public class BaseRepository<T>(RatingServiceDbContext storage)
         var storedEntity = await GetById(id, token);
         ArgumentNullException.ThrowIfNull(entity);
         storedEntity = entity;
-        _dbSet.Update(storedEntity);
+        _dbSet.Update(entity);
         return await SaveChangesAsync(token);
     }
 
@@ -60,7 +62,7 @@ public class BaseRepository<T>(RatingServiceDbContext storage)
         return await query.FirstOrDefaultAsync();
     }
 
-    protected async Task<bool> SaveChangesAsync(CancellationToken token)
+    public async Task<bool> SaveChangesAsync(CancellationToken token)
     {
         return await storage.SaveChangesAsync(token) > 0;
     }

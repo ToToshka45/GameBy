@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RatingService.Domain.Aggregates;
 using RatingService.Domain.Entities;
 
 namespace RatingService.Infrastructure.DataAccess.Configurations;
@@ -20,5 +21,8 @@ internal class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
         builder.Property(c => c.UpdateDate).HasColumnName("update_date");
 
         builder.OwnsOne(f => f.Receiver).Property(r => r.EntityType).HasConversion<string>();
+
+        builder.HasOne<EventInfo>().WithMany().HasForeignKey(e => e.EventId);
+
     }
 }

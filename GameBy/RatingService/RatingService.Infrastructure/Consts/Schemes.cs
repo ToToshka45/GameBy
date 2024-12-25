@@ -2,5 +2,5 @@
 
 internal static class Schemes
 {
-    internal static string RatingServiceBaseSchema = "rating_services";
+    internal static string RatingServiceBaseSchema = "ratings";
 }

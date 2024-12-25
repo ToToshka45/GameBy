@@ -16,7 +16,8 @@ internal class UserRatingUpdateConfiguration : IEntityTypeConfiguration<UserRati
         builder.Property(e => e.AuthorId).HasColumnName("author_id");
         builder.Property(e => e.RatingOwnerId).HasColumnName("rating_owner_id");
         builder.Property(e => e.CreationDate).HasColumnName("creation_date");
+        builder.Property(e => e.RatingId).HasColumnName("rating_id");
 
-        builder.HasOne(e => e.Rating).WithOne().HasForeignKey<UserRatingUpdate>(ur => ur.Id);
+        builder.HasOne<UserRating>().WithMany().HasForeignKey(ur => ur.RatingId);
     }
 }

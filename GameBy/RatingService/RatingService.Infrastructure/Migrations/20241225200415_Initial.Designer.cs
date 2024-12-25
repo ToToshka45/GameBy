@@ -12,15 +12,15 @@ using RatingService.Infrastructure.DataAccess;
 namespace RatingService.Infrastructure.Migrations
 {
     [DbContext(typeof(RatingServiceDbContext))]
-    [Migration("20241224162525_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241225200415_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("rating_services")
+                .HasDefaultSchema("ratings")
                 .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -56,7 +56,7 @@ namespace RatingService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("events_info", "rating_services");
+                    b.ToTable("events_info", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Aggregates.UserInfo", b =>
@@ -78,7 +78,7 @@ namespace RatingService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("users_info", "rating_services");
+                    b.ToTable("users_info", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.EventRating", b =>
@@ -98,13 +98,16 @@ namespace RatingService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("events_ratings", "rating_services");
+                    b.ToTable("events_ratings", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.EventRatingUpdate", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("integer")
@@ -118,15 +121,24 @@ namespace RatingService.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("event_id");
 
+                    b.Property<int>("RatingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("rating_id");
+
                     b.HasKey("Id");
 
-                    b.ToTable("events_rating_updates", "rating_services");
+                    b.HasIndex("RatingId");
+
+                    b.ToTable("events_rating_updates", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.Feedback", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("integer")
@@ -146,6 +158,9 @@ namespace RatingService.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("event_id");
 
+                    b.Property<int?>("EventInfoId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update_date");
@@ -153,11 +168,20 @@ namespace RatingService.Infrastructure.Migrations
                     b.Property<int?>("UserInfoId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("UserInfoId1")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("EventInfoId");
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("feedbacks", "rating_services");
+                    b.HasIndex("UserInfoId1");
+
+                    b.ToTable("feedbacks", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.Participant", b =>
@@ -165,13 +189,24 @@ namespace RatingService.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer")
+                        .HasColumnName("event_id");
+
+                    b.Property<int?>("EventInfoId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ExternalEventId")
+                        .HasColumnType("integer")
+                        .HasColumnName("external_event_id");
+
                     b.Property<int>("ExternalParticipantId")
                         .HasColumnType("integer")
                         .HasColumnName("external_participant_id");
 
                     b.Property<int>("ExternalUserId")
                         .HasColumnType("integer")
-                        .HasColumnName("external_user_id");
+                        .HasColumnName("user_id");
 
                     b.Property<string>("ParticipationState")
                         .IsRequired()
@@ -180,7 +215,11 @@ namespace RatingService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("participants", "rating_services");
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("EventInfoId");
+
+                    b.ToTable("participants", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.ParticipantRating", b =>
@@ -196,31 +235,47 @@ namespace RatingService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("participants_ratings", "rating_services");
+                    b.ToTable("participants_ratings", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.UserRating", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("category");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UserInfoId")
+                        .HasColumnType("integer");
+
                     b.Property<float>("Value")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
 
-                    b.ToTable("users_ratings", "rating_services");
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserInfoId");
+
+                    b.ToTable("users_ratings", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.UserRatingUpdate", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("integer")
@@ -234,13 +289,19 @@ namespace RatingService.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("event_id");
 
+                    b.Property<int>("RatingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("rating_id");
+
                     b.Property<int>("RatingOwnerId")
                         .HasColumnType("integer")
                         .HasColumnName("rating_owner_id");
 
                     b.HasKey("Id");
 
-                    b.ToTable("users_rating_updates", "rating_services");
+                    b.HasIndex("RatingId");
+
+                    b.ToTable("users_rating_updates", "ratings");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Aggregates.EventInfo", b =>
@@ -256,32 +317,32 @@ namespace RatingService.Infrastructure.Migrations
 
             modelBuilder.Entity("RatingService.Domain.Entities.EventRatingUpdate", b =>
                 {
-                    b.HasOne("RatingService.Domain.Entities.EventRating", "Rating")
-                        .WithOne()
-                        .HasForeignKey("RatingService.Domain.Entities.EventRatingUpdate", "Id")
+                    b.HasOne("RatingService.Domain.Entities.EventRating", null)
+                        .WithMany()
+                        .HasForeignKey("RatingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Rating");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.Feedback", b =>
                 {
                     b.HasOne("RatingService.Domain.Aggregates.EventInfo", null)
-                        .WithMany("Feedbacks")
-                        .HasForeignKey("Id")
+                        .WithMany()
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RatingService.Domain.Aggregates.UserInfo", null)
-                        .WithMany("OrganizerFeedbacks")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("RatingService.Domain.Aggregates.EventInfo", null)
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("EventInfoId");
 
                     b.HasOne("RatingService.Domain.Aggregates.UserInfo", null)
                         .WithMany("GamerFeedbacks")
                         .HasForeignKey("UserInfoId");
+
+                    b.HasOne("RatingService.Domain.Aggregates.UserInfo", null)
+                        .WithMany("OrganizerFeedbacks")
+                        .HasForeignKey("UserInfoId1");
 
                     b.OwnsOne("RatingService.Domain.ValueObjects.Receiver", "Receiver", b1 =>
                         {
@@ -294,7 +355,7 @@ namespace RatingService.Infrastructure.Migrations
 
                             b1.HasKey("FeedbackId");
 
-                            b1.ToTable("feedbacks", "rating_services");
+                            b1.ToTable("feedbacks", "ratings");
 
                             b1.WithOwner()
                                 .HasForeignKey("FeedbackId");
@@ -307,10 +368,14 @@ namespace RatingService.Infrastructure.Migrations
             modelBuilder.Entity("RatingService.Domain.Entities.Participant", b =>
                 {
                     b.HasOne("RatingService.Domain.Aggregates.EventInfo", null)
-                        .WithMany("Participants")
-                        .HasForeignKey("Id")
+                        .WithMany()
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("RatingService.Domain.Aggregates.EventInfo", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("EventInfoId");
 
                     b.HasOne("RatingService.Domain.Entities.ParticipantRating", "Rating")
                         .WithOne()
@@ -324,21 +389,23 @@ namespace RatingService.Infrastructure.Migrations
             modelBuilder.Entity("RatingService.Domain.Entities.UserRating", b =>
                 {
                     b.HasOne("RatingService.Domain.Aggregates.UserInfo", null)
-                        .WithMany("RatingsByCategory")
-                        .HasForeignKey("Id")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("RatingService.Domain.Aggregates.UserInfo", null)
+                        .WithMany("RatingsByCategory")
+                        .HasForeignKey("UserInfoId");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Entities.UserRatingUpdate", b =>
                 {
-                    b.HasOne("RatingService.Domain.Entities.UserRating", "Rating")
-                        .WithOne()
-                        .HasForeignKey("RatingService.Domain.Entities.UserRatingUpdate", "Id")
+                    b.HasOne("RatingService.Domain.Entities.UserRating", null)
+                        .WithMany()
+                        .HasForeignKey("RatingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Rating");
                 });
 
             modelBuilder.Entity("RatingService.Domain.Aggregates.EventInfo", b =>

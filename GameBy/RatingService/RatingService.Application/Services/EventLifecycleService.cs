@@ -43,8 +43,9 @@ public class EventLifecycleService : IEventLifecycleService
     {
         try
         {
-            var eventInfo = await _eventRepo.GetById(id, token);
-            if (eventInfo is null) return null;
+            //var eventInfo = await _eventRepo.GetById(id, token);
+            var eventInfo = await _eventRepo.GetEntityWithIncludesAsync(id, token, [e => e.Participants]);
+            if (eventInfo == null) { return null; }
             return eventInfo.ToDto();
         }
         catch (Exception ex)
@@ -64,12 +65,17 @@ public class EventLifecycleService : IEventLifecycleService
     {
         try
         {
-            var storedEvent = await _eventRepo.GetById(eventId, token);
+            //var storedEvent = await _eventRepo.GetEntityWithIncludesAsync(eventId, token, [e => e.Participants]);
+            var storedEvent = await _eventRepo.GetById(eventId, token, false);
             if (storedEvent is null) return null;
 
-            storedEvent.AddParticipant(dto.ToParticipant());
-            await _eventRepo.Update(eventId, storedEvent, token);
-            var participant = await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token);
+            storedEvent.ValidateParticipant(dto.ExternalParticipantId);
+            var participant = dto.ToParticipant();
+            participant.SetInnerEventRelation(storedEvent.Id);
+            storedEvent.AddParticipant(participant);
+            await _eventRepo.SaveChangesAsync(token);
+
+            participant = await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token);
             return participant is null ? null : participant.Id;
         }
         catch (Exception ex)

@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace RatingService.Domain.Exceptions;
+﻿namespace RatingService.Domain.Exceptions;
 
 public class InvalidRatingValueException : Exception
 {

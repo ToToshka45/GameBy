@@ -12,7 +12,6 @@ public class EventLifecycleRepository(RatingServiceDbContext storage)
 {
     private readonly DbSet<Participant> _participantStorage = storage.Set<Participant>();
 
-    //public async Task
     public async Task<IEnumerable<Participant>> GetParticipantsByEventId(int eventId, CancellationToken cancellationToken)
     {
         return await _participantStorage.Where(e => e.EventId == eventId).ToListAsync(cancellationToken);

@@ -15,10 +15,11 @@ internal class EventRatingUpdateConfiguration : IEntityTypeConfiguration<EventRa
         builder.Property(e => e.EventId).HasColumnName("event_id");
         builder.Property(e => e.AuthorId).HasColumnName("author_id");
         builder.Property(e => e.CreationDate).HasColumnName("creation_date");
+        builder.Property(e => e.RatingId).HasColumnName("rating_id");
 
         //builder.ComplexProperty(e => e.AuthorId);
         //builder.ComplexProperty(e => e.ExternalEventId);
 
-        builder.HasOne(e => e.Rating).WithOne().HasForeignKey<EventRatingUpdate>(er => er.Id);
+        builder.HasOne<EventRating>().WithMany().HasForeignKey(er => er.RatingId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using RatingService.Domain.Entities;
 using RatingService.Domain.Enums;
+using RatingService.Domain.Exceptions;
 using RatingService.Domain.Primitives;
 using RatingService.Domain.ValueObjects.Identifiers;
 
@@ -63,5 +64,10 @@ public class EventInfo : AggregateRoot<int>
 
     // TODO: decide, should we allow to change a category of event?
     public void ChangeCategory(Category category) => Category = category;
-}
 
+    public void ValidateParticipant(int participantId)
+    {
+        if (_participants.Any(p => p.ExternalParticipantId == participantId))
+            throw new ParticipantExistsException(participantId);
+    }
+}

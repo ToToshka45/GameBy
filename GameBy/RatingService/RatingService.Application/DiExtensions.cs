@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using RatingService.Application.Abstractions;
 using RatingService.Application.Services;
+using RatingService.Application.Services.Abstractions;
 
 namespace RatingService.Application;
 

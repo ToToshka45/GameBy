@@ -17,7 +17,7 @@ internal static class MappingExtensions
 
     internal static CreateEventDto ToDto(this CreateEventRequest req) => 
         new(req.Title, req.EventId, req.CreationDate, 
-            req.Category.TryParseOrDefault(Category.Unknown),
+            req.Category.TryParseOrDefault(EventCategory.Unclarified),
             req.State.TryParseOrDefault(EventProgressionState.Announced));
 
     internal static GetEventResponse ToResponse(this GetEventDto req) =>

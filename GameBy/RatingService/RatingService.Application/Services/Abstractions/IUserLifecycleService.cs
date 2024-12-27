@@ -1,6 +1,6 @@
 ﻿using RatingService.Application.Models.Dtos.Users;
 
-namespace RatingService.Application.Abstractions;
+namespace RatingService.Application.Services.Abstractions;
 
 public interface IUserLifecycleService
 {

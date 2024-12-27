@@ -7,15 +7,15 @@ public enum EntityType
     Event
 }
 
-public enum Category
+public enum EventCategory
 {
     RPG,
     Strategy,
     Mafia,
     Quiz,
     Poker,
-    Hide_and_seek,
-    Unknown
+    HideAndSeek,
+    Unclarified
 }
 
 public enum EventProgressionState

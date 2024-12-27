@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using RatingService.Application.Abstractions;
 using RatingService.API.Configurations.Mappings;
 using RatingService.API.Models.Events;
 using RatingService.API.Models;
 using RatingService.Domain.Entities;
+using RatingService.Application.Services.Abstractions;
 
 namespace RatingService.API.Controllers
 {

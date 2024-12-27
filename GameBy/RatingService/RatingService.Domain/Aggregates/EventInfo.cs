@@ -6,17 +6,17 @@ using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Aggregates;
 
-public class EventInfo : AggregateRoot<int>
+public class EventInfo : AggregateRoot
 {
     public string Title { get; private set; }
     public int ExternalEventId { get; }
     public DateTime CreationDate { get; }
-    public Category Category { get; private set; }
+    public EventCategory Category { get; private set; }
     public EventProgressionState State { get; private set; }
     /// <summary>
     /// For recalculating rating`s value a method <see cref="Rating.Recalculate(float)"/> must be called.
     /// </summary>
-    public EventRating Rating { get; }
+    public Rating Rating { get; }
 
     //Feedbacks
     private List<Feedback> _feedbacks = [];
@@ -25,14 +25,14 @@ public class EventInfo : AggregateRoot<int>
     private List<Participant> _participants = [];
     public IReadOnlyList<Participant> Participants => _participants;
 
-    public EventInfo(string title, int eventId, DateTime creationDate, Category category, EventProgressionState state)
+    public EventInfo(string title, int eventId, DateTime creationDate, EventCategory category, EventProgressionState state)
     {
         Title = title;
         ExternalEventId = eventId;
         CreationDate = creationDate;
         Category = category;
         State = state;
-        Rating = new EventRating(eventId);
+        Rating = new Rating(eventId, EntityType.Event);
     }
 
     // for EFCore
@@ -63,7 +63,7 @@ public class EventInfo : AggregateRoot<int>
     public void AddParticipant(Participant participant) => _participants.Add(participant);
 
     // TODO: decide, should we allow to change a category of event?
-    public void ChangeCategory(Category category) => Category = category;
+    public void ChangeCategory(EventCategory category) => Category = category;
 
     public void ValidateParticipant(int participantId)
     {

@@ -10,8 +10,9 @@ internal class EventRatingUpdateConfiguration : IEntityTypeConfiguration<EventRa
     {
         builder.HasKey(e => e.Id);
 
-        builder.ToTable("events_rating_updates");
+        builder.ToTable("event_rating_updates");
 
+        builder.Property(e => e.Value).HasColumnName("value").HasColumnType("decimal(3,2)");
         builder.Property(e => e.EventId).HasColumnName("event_id");
         builder.Property(e => e.AuthorId).HasColumnName("author_id");
         builder.Property(e => e.CreationDate).HasColumnName("creation_date");

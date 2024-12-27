@@ -1,17 +1,17 @@
-﻿using RatingService.Domain.Enums;
+﻿//using RatingService.Domain.Enums;
 
-namespace RatingService.Domain.Entities;
+//namespace RatingService.Domain.Entities;
 
-public class UserRating : Rating
-{
-    public int UserId { get; }
-    public Category Category { get; }
-    public UserRating(int userId, Category category)
-    {
-        UserId = userId;
-        Category = category;
-    }
+//public class UserRating : Rating
+//{
+//    public int UserId { get; }
+//    public EntityType EntityType { get; }
+//    public UserRating(int userId, EntityType entityType)
+//    {
+//        UserId = userId;
+//        EntityType = entityType;
+//    }
 
-    private UserRating() { }
-}
+//    private UserRating() { }
+//}
 

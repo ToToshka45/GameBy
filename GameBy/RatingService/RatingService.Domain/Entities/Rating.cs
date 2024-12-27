@@ -1,23 +1,39 @@
-﻿using RatingService.Domain.Exceptions;
+﻿using RatingService.Domain.Enums;
+using RatingService.Domain.Exceptions;
 using RatingService.Domain.Primitives;
 
 namespace RatingService.Domain.Entities;
 
-public abstract class Rating : Entity<int>
+public class Rating : Entity<int>
 {
     public float Value { get; protected set; }
-    protected Rating()
+    public int SubjectId { get; }
+    public EntityType EntityType { get; }
+
+    private List<RatingUpdate> _updates = [];
+    public IReadOnlyList<RatingUpdate> Updates => _updates;
+
+    public Rating(int subjectId, EntityType entityType)
     {
+        SubjectId = subjectId;
+        EntityType = entityType;
     }
 
-    // TODO: decide if this logic must be in a separate service and not in the entity itself
-    public virtual float Recalculate(float value)
-    {
-        Validate(value);
-        var recalculated = value;
-        // recalculating logic
+    private Rating() { }
 
-        return recalculated;
+    // TODO: decide if this logic must be in a separate service and not in the entity itself
+    public virtual void Recalculate()
+    {
+        var sum = _updates.Sum(u => u.Value);
+        var count = _updates.Count();
+        Value = sum / count;
+    }
+
+    public void AddRatingUpdate(RatingUpdate update) => _updates.Add(update);
+    public void SetUpdatedValue(float newValue)
+    {
+        Validate(newValue);
+        Value = newValue;
     }
 
     private void Validate(float value)

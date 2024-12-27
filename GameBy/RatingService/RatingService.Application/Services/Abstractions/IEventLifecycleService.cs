@@ -2,7 +2,7 @@
 using RatingService.Application.Models.Dtos.Participants;
 using RatingService.Domain.Entities;
 
-namespace RatingService.Application.Abstractions;
+namespace RatingService.Application.Services.Abstractions;
 
 public interface IEventLifecycleService
 {

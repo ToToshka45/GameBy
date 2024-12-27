@@ -5,11 +5,11 @@ namespace RatingService.Infrastructure.Utilities;
 internal static class Utilities
 {
     /// <summary>
-    /// Returns all the categories from the enum-class <see cref="Category"/>.
+    /// Returns all the categories from the enum-class <see cref="EventCategory"/>.
     /// </summary>
     /// <returns></returns>
-    internal static Category[] GetCategories()
+    internal static EventCategory[] GetCategories()
     {
-        return (Category[])Enum.GetValues(typeof(Category));
+        return (EventCategory[])Enum.GetValues(typeof(EventCategory));
     }
 }

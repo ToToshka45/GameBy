@@ -6,14 +6,15 @@ using RatingService.Infrastructure.Utilities;
 
 namespace RatingService.Domain.Aggregates;
 
-public class UserInfo : AggregateRoot<int>
+public class UserInfo : AggregateRoot
 {
     public int ExternalUserId { get; }
     public string UserName { get; }
-    private List<UserRating> _ratings { get; } = [];
-    public IReadOnlyCollection<UserRating> RatingsByCategory => _ratings;
-    //private List<Participant> _participations { get; } = [];
-    //public IReadOnlyCollection<Participant> Participations => _participations;
+    //private List<Rating> _ratings { get; } = [];
+    //public IReadOnlyCollection<Rating> RatingsByCategory => _ratings;
+    
+    public Rating OrganizerRating { get; }
+    public Rating GamerRating { get; }
 
     private List<Feedback> _gamerFeedbacks = [];
     public IReadOnlyList<Feedback> GamerFeedbacks => _gamerFeedbacks;
@@ -21,32 +22,20 @@ public class UserInfo : AggregateRoot<int>
     private List<Feedback> _organizerFeedbacks = [];
     public IReadOnlyList<Feedback> OrganizerFeedbacks => _organizerFeedbacks;
 
-    // collection of RatingUpdates
-
     public UserInfo(int userId, string username)
     {
         ExternalUserId = userId;
         UserName = username;
-        InitializeRatings(userId);
+        GamerRating = new(userId, EntityType.Gamer);
+        OrganizerRating = new(userId, EntityType.Organizer);
     }       
 
     private UserInfo() { }
 
-    public void SetRating(UserRating rating)
-    {
-        if (TryGetRating(rating.Category, out var existingRating))
-        {
-            _ratings.Remove(existingRating!);
-            _ratings.Add(rating);
-            return;
-        }
-        _ratings.Add(rating);
-    }
-    
     public void AddGamerFeedback(Feedback feedback)
     {
         if (feedback.Receiver.EntityType != EntityType.Gamer)
-            throw new InvalidDataException($"Invalid Entity Type.Expected '{EntityType.Gamer}', but received '{nameof(feedback.Receiver.EntityType)}'.");
+            throw new InvalidDataException($"Invalid Entity Type. Expected '{EntityType.Gamer}', but received '{nameof(feedback.Receiver.EntityType)}'.");
 
         _gamerFeedbacks.Add(feedback);
     }
@@ -75,22 +64,33 @@ public class UserInfo : AggregateRoot<int>
         _gamerFeedbacks.Remove(feedback);
     }
 
-    /// <summary>
-    /// Add default ratings (0) for each <see cref="Category"/> type.
-    /// </summary>
-    private void InitializeRatings(int userId)
-    {
-        Category[] categories = Utilities.GetCategories();
-        foreach (var category in categories)
-        {
-            SetRating(new UserRating(userId, category));
-        }
-    }
+    //public void SetRating(Rating rating)
+    //{
+    //    if (TryGetRating(rating.Category, out var existingRating))
+    //    {
+    //        _ratings.Remove(existingRating!);
+    //        _ratings.Add(rating);
+    //        return;
+    //    }
+    //    _ratings.Add(rating);
+    //}
 
-    private bool TryGetRating(Category category, out UserRating? rating)
-    {
-        rating = _ratings.FirstOrDefault(r => r.Category == category);
-        return rating is null ? false : true;
-    }
+    /// <summary>
+    /// Add default ratings (0) for each <see cref="EventCategory"/> type.
+    /// </summary>
+    //private void InitializeRatings(int userId)
+    //{
+    //    EventCategory[] categories = Utilities.GetCategories();
+    //    foreach (var category in categories)
+    //    {
+    //        SetRating(new UserRating(userId, category));
+    //    }
+    //}
+
+    //private bool TryGetRating(EventCategory category, out UserRating? rating)
+    //{
+    //    rating = _ratings.FirstOrDefault(r => r.Category == category);
+    //    return rating is null ? false : true;
+    //}
 }
 

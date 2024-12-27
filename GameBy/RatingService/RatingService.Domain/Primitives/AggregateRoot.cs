@@ -1,7 +1,6 @@
 ﻿namespace RatingService.Domain.Primitives;
 
-public abstract class AggregateRoot<TId> : Entity<TId> where TId : notnull
-{
+public abstract class AggregateRoot : Entity<int>
     protected AggregateRoot()
     {
     }

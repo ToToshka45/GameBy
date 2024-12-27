@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using RatingService.Application.Abstractions;
 using RatingService.Application.Configurations.Mappings;
 using RatingService.Application.Models.Dtos.Users;
+using RatingService.Application.Services.Abstractions;
 using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
 

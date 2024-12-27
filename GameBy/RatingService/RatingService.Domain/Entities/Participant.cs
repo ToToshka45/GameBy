@@ -1,5 +1,4 @@
-﻿using RatingService.Domain.Aggregates;
-using RatingService.Domain.Enums;
+﻿using RatingService.Domain.Enums;
 using RatingService.Domain.Primitives;
 
 namespace RatingService.Domain.Entities;

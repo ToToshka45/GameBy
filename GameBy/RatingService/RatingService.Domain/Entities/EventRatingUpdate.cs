@@ -1,13 +1,14 @@
-﻿using RatingService.Domain.Primitives;
+﻿//using RatingService.Domain.Primitives;
 
-namespace RatingService.Domain.Entities;
+//namespace RatingService.Domain.Entities;
 
-public class EventRatingUpdate : RatingUpdate
-{
-    public EventRatingUpdate(int authorId, DateTime creationDate, int eventId) 
-        : base(authorId, creationDate, eventId)
-    {
-    }
+//public class EventRatingUpdate : RatingUpdate
+//{
+//    public EventRatingUpdate(float value, int authorId, int eventId, DateTime creationDate) 
+//        : base(value, authorId, eventId, eventId, creationDate)
+//    {
+//        SubjectId = eventId;
+//    }
 
-    private EventRatingUpdate() { }
-}
+//    private EventRatingUpdate() { }
+//}

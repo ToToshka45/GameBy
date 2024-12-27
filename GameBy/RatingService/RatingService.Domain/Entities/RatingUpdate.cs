@@ -1,22 +1,38 @@
-﻿using RatingService.Domain.Primitives;
+﻿using RatingService.Domain.Enums;
+using RatingService.Domain.Primitives;
 
 namespace RatingService.Domain.Entities;
 
-public abstract class RatingUpdate : Entity<int>
+public class RatingUpdate : Entity<int>
 {
-    public int RatingId { get; private set; }
+    public float Value { get; protected set; }
+    /// <summary>
+    /// A relation to the Rating entity.
+    /// </summary>
+    public int RatingId { get; protected set; }
     public int AuthorId { get; }
+    public int SubjectId { get; protected set; }
     public int EventId { get; }
+    public EntityType EntityType { get; }
     public DateTime CreationDate { get; }
+    public DateTime? UpdateDate { get; protected set; }
 
-    public RatingUpdate(int authorId, DateTime creationDate, int eventId)
+    public RatingUpdate(float value, int authorId, int subjectId, int eventId, EntityType entityType, DateTime creationDate)
     {
+        Value = value;
         AuthorId = authorId;
-        CreationDate = creationDate;
+        SubjectId = subjectId;
         EventId = eventId;
+        EntityType = entityType;
+        CreationDate = creationDate;
     }
 
     protected RatingUpdate() { }
 
     public void SetRatingRelation(int ratingId) => RatingId = ratingId;
+    public void SetNewValue(float updatedValue, DateTime updatedAt)
+    {
+        Value = updatedValue;
+        UpdateDate = updatedAt;
+    }
 }

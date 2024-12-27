@@ -9,10 +9,11 @@ internal class UserRatingConfiguration : IEntityTypeConfiguration<UserRating>
 {
     public void Configure(EntityTypeBuilder<UserRating> builder)
     {
-        builder.ToTable("users_ratings");
+        builder.ToTable("user_ratings");
         builder.HasKey(e => e.Id);
 
         builder.Property(ur => ur.Category).HasColumnName("category").HasConversion<string>();
+        builder.Property(e => e.Value).HasColumnName("value").HasColumnType("decimal(3,2)");
 
         builder.HasOne<UserInfo>().WithMany().HasForeignKey(ur => ur.UserId).OnDelete(DeleteBehavior.Cascade);
     }

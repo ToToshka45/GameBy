@@ -4,6 +4,7 @@ using RatingService.API.Models.Events;
 using RatingService.API.Models;
 using RatingService.Domain.Entities;
 using RatingService.Application.Services.Abstractions;
+using RatingService.API.Models.Ratings;
 
 namespace RatingService.API.Controllers
 {
@@ -69,9 +70,15 @@ namespace RatingService.API.Controllers
         {
             // TODO: create a domain event
             var result = await _service.AddParticipantAsync(eventId, req.ToDto(), token);
-            return Created();
+            return CreatedAtAction(nameof(GetParticipantByEventId), new { Id = result }, req);
         }
 
+        [HttpGet("{eventId:int}/participants/{participantId:int}")]
+        [ProducesResponseType(typeof(ActionResult<Participant?>), 200)]
+        public async Task<ActionResult<Participant?>> GetParticipantByEventId(int eventId, int participantId, CancellationToken token)
+        {
+            return Ok(await _service.GetParticipantByEventIdAsync(eventId, participantId, token));
+        }
 
         [HttpGet("{eventId:int}/participants/get-all")]
         [ProducesResponseType(typeof(IActionResult), 200)]
@@ -80,5 +87,16 @@ namespace RatingService.API.Controllers
             return Ok(await _service.GetParticipantsByEventIdAsync(eventId, token));
         }
 
+        [HttpGet("{eventId:int}/participants/{participantId:int}/set-rating")]
+        [ProducesResponseType(typeof(IActionResult), 200)]
+        [ProducesResponseType(typeof(IActionResult), 400)]
+        public async Task<IActionResult> SetParticipantRating(int eventId, int participantId, 
+            AddParticipantRatingUpdateRequest req, CancellationToken token)
+        {
+            req.EventId = eventId;
+            req.SubjectId = participantId;
+            await _service.AddParticipantRatingUpdate(req.ToDto(), token);
+            return Ok();
+        }
     }
 }

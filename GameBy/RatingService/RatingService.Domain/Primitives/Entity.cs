@@ -2,7 +2,7 @@
 
 public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
 {
-    public TId Id { get; }
+    public TId Id { get; protected set; }
 
     protected Entity()
     {

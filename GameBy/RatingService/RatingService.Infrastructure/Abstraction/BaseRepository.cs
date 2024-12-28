@@ -37,6 +37,7 @@ public class BaseRepository<T>(RatingServiceDbContext storage)
         if (asNoTracking) query = query.AsNoTracking();
         return await query.FirstOrDefaultAsync(token);
     }
+
     public async Task<T?> GetByFilter(Expression<Func<T, bool>> filter, CancellationToken token)
     {
         return await _dbSet.AsNoTracking().FirstOrDefaultAsync(filter, token);

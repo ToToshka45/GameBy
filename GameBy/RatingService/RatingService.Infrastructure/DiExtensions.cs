@@ -6,15 +6,26 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RatingService.Application;
 using RatingService.Common.Models.Settings;
+using RatingService.Domain.Abstraction;
+using RatingService.Domain.Abstractions;
+using RatingService.Infrastructure.Abstractions;
 using RatingService.Infrastructure.DataAccess;
+using RatingService.Infrastructure.Repositories;
 
 namespace RatingService.Infrastructure;
 
 public static class DiExtensions
 {
-    public static void AddProjectConfigurations(this IHostApplicationBuilder builder)
+    public static void AddConfigurations(this IHostApplicationBuilder builder)
     {
         builder.AddApplicationConfiguration();
+    }
+
+    public static void AddRepositories(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+        builder.Services.AddScoped<IEventLifecycleRepository, EventLifecycleRepository>();
+        builder.Services.AddScoped<IRatingsRepository, RatingsRepository>();
     }
 
     public static void AddDbConfiguration(this IHostApplicationBuilder builder, IConfiguration config)

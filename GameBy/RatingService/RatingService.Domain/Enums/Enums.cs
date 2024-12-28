@@ -4,6 +4,7 @@ public enum EntityType
 {
     Organizer,
     Gamer,
+    Participant,
     Event
 }
 

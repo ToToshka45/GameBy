@@ -10,5 +10,8 @@ public static class DiExtensions
     public static void AddApplicationConfiguration(this IHostApplicationBuilder builder)
     {
         builder.Services.AddScoped<IEventLifecycleService, EventLifecycleService>();
+        builder.Services.AddScoped<IUserLifecycleService, UserLifecycleService>();
+        builder.Services.AddScoped<IRatingsProcessingService, RatingsProcessingService>();
+        builder.Services.AddSingleton<InMemoryCachingService>();
     }
 }

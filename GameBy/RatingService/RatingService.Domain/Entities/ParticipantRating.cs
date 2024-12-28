@@ -1,14 +1,13 @@
-﻿namespace RatingService.Domain.Entities;
+﻿//namespace RatingService.Domain.Entities;
 
-public class ParticipantRating : Rating
-{
-    public int ParticipantId { get; }
-    public ParticipantRating(int participantId)
-    {
-        Value = 0;
-        ParticipantId = participantId;
-    }
+//public class ParticipantRating : Rating
+//{
+//    public int ParticipantId { get; }
+//    public ParticipantRating(int participantId)
+//    {
+//        ParticipantId = participantId;
+//    }
 
-    private ParticipantRating() { }
-}
+//    private ParticipantRating() { }
+//}
 

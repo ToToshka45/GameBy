@@ -2,6 +2,7 @@
 using RatingService.Application.Configurations.Mappings;
 using RatingService.Application.Models.Dtos.Events;
 using RatingService.Application.Models.Dtos.Participants;
+using RatingService.Application.Models.Dtos.Ratings;
 using RatingService.Application.Services.Abstractions;
 using RatingService.Domain.Abstraction;
 using RatingService.Domain.Abstractions;
@@ -14,14 +15,16 @@ public class EventLifecycleService : IEventLifecycleService
 {
     //private readonly IRepository<EventInfo> _eventRepo;
     private readonly IEventLifecycleRepository _eventRepo;
+    private readonly IRatingsProcessingService _ratingsProcessingService;
     private readonly IRepository<UserInfo> _userRepo;
     private readonly ILogger<EventLifecycleService> _logger;
 
-    public EventLifecycleService(IEventLifecycleRepository eventRepo, IRepository<UserInfo> userRepo, ILogger<EventLifecycleService> logger)
+    public EventLifecycleService(IEventLifecycleRepository eventRepo, IRepository<UserInfo> userRepo, ILogger<EventLifecycleService> logger, IRatingsProcessingService ratingsProcessingService)
     {
         _eventRepo = eventRepo;
         _logger = logger;
         _userRepo = userRepo;
+        _ratingsProcessingService = ratingsProcessingService;
     }
 
     public async Task<int?> AddNewEventAsync(CreateEventDto newEvent, CancellationToken token)
@@ -89,9 +92,26 @@ public class EventLifecycleService : IEventLifecycleService
     {
         throw new NotImplementedException();
     }
+    public async Task<Participant?> GetParticipantByEventIdAsync(int eventId, int participantId, CancellationToken token)
+    {
+        return await _eventRepo.GetParticipantByEventId(eventId, participantId, token);
+    }
 
     public async Task<IEnumerable<Participant>> GetParticipantsByEventIdAsync(int eventId, CancellationToken token)
     {
         return await _eventRepo.GetParticipantsByEventId(eventId, token);
     }
+
+    public async Task AddParticipantRatingUpdate(AddParticipantRatingUpdateDto dto, CancellationToken token)
+    {
+        var @event = await _eventRepo.GetById(dto.EventId, token);
+        if (@event is null) return;
+        var entity = dto.ToRatingUpdate();
+        await _ratingsProcessingService.Process(dto.ToRatingUpdate(), token);
+    }
+
+    //public async Task EditParticipantRating(int ratingUpdateId, EditParticipantRatingDto dto, CancellationToken token)
+    //{
+
+    //}
 }

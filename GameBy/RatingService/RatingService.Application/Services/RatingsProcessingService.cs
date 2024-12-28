@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using RatingService.Application.Services.Abstractions;
 using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
 using RatingService.Domain.Entities;
 
 namespace RatingService.Application.Services;
 
-internal class RatingsProcessingService
+internal class RatingsProcessingService : IRatingsProcessingService
 {
     private readonly ILogger<RatingsProcessingService> _logger;
     private readonly IRepository<EventInfo> _eventRepo;
@@ -24,8 +25,9 @@ internal class RatingsProcessingService
         _userRepo = userRepo;
     }
 
-    public async Task AddRatingUpdate(RatingUpdate update, CancellationToken token)
+    public async Task Process(RatingUpdate update, CancellationToken token)
     {
-        await _ratingsRepo.AddAndRecalculate(update, token);
+        _logger.LogInformation($"Starting processing the entity of type '{update.EntityType}' with Id '{update.SubjectId}'.");
+        await _ratingsRepo.AddOrUpdate(update, token);
     }
 }

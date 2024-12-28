@@ -42,7 +42,8 @@ public class UserLifecycleService : IUserLifecycleService
 
     public async Task<GetUserRatingsDto?> GetUserRatingsAsync(int id, CancellationToken token)
     {
-        var user = await _userRepo.GetEntityWithIncludesAsync(id, token, [e => e.RatingsByCategory]);
+        var user = await _userRepo.GetEntityWithIncludesAsync(id, token, 
+            [e => e!.GamerRating, e => e!.OrganizerRating]);
         if (user == null) { return null; }
         return user.ToGetUserRatingsDto();
     }

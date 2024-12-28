@@ -6,7 +6,13 @@ namespace RatingService.Domain.Entities;
 
 public class Rating : Entity<int>
 {
+    /// <summary>
+    /// Stores a value from 0 to 5.00.
+    /// </summary>
     public float Value { get; protected set; }
+    /// <summary>
+    /// Can be an Id of any Entity from <see cref="EntityType.EntityType"/>.
+    /// </summary>
     public int SubjectId { get; }
     public EntityType EntityType { get; }
 

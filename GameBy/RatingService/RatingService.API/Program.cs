@@ -1,4 +1,5 @@
-using RatingService.Application.Abstractions;
+using RatingService.Application.Services;
+using RatingService.Application.Services.Abstractions;
 using RatingService.Common.Models.Settings;
 using RatingService.Domain.Abstraction;
 using RatingService.Domain.Abstractions;
@@ -20,11 +21,10 @@ builder.Services.Configure<ConnectionStringsSettings>(builder.Configuration.GetS
 
 // Configure Db depending on the environment
 builder.AddDbConfiguration(builder.Configuration);
-builder.AddProjectConfigurations();
+builder.AddConfigurations();
+builder.AddRepositories();
 
-// Register a base implementation of the Repository
-builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped<IEventLifecycleRepository, EventLifecycleRepository>();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

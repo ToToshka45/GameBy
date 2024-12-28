@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RatingService.Domain.Aggregates;
-using RatingService.Domain.Entities;
 using RatingService.Infrastructure.Consts;
 using System.Reflection;
 using EventInfo = RatingService.Domain.Aggregates.EventInfo;
@@ -11,8 +10,6 @@ public class RatingServiceDbContext : DbContext
 {
     public required DbSet<EventInfo> Events { get; set; }
     public required DbSet<UserInfo> Users { get; set; }
-    public required DbSet<UserRatingUpdate> UsersRatingUpdates { get; set; }
-    public required DbSet<EventRatingUpdate> EventsRatingUpdates { get; set; }
 
     public RatingServiceDbContext(DbContextOptions<RatingServiceDbContext> opts) : base(opts)
     {

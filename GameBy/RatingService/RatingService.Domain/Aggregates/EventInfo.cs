@@ -9,7 +9,7 @@ namespace RatingService.Domain.Aggregates;
 public class EventInfo : AggregateRoot
 {
     public string Title { get; private set; }
-    public int ExternalEventId { get; }
+    //public int ExternalEventId { get; }
     public DateTime CreationDate { get; }
     public EventCategory Category { get; private set; }
     public EventProgressionState State { get; private set; }
@@ -25,14 +25,14 @@ public class EventInfo : AggregateRoot
     private List<Participant> _participants = [];
     public IReadOnlyList<Participant> Participants => _participants;
 
-    public EventInfo(string title, int eventId, DateTime creationDate, EventCategory category, EventProgressionState state)
+    public EventInfo(string title, int externalEventId, DateTime creationDate, EventCategory category, EventProgressionState state)
     {
+        Id = externalEventId;
         Title = title;
-        ExternalEventId = eventId;
         CreationDate = creationDate;
         Category = category;
         State = state;
-        Rating = new Rating(eventId, EntityType.Event);
+        Rating = new Rating(externalEventId, EntityType.Event);
     }
 
     // for EFCore
@@ -65,9 +65,9 @@ public class EventInfo : AggregateRoot
     // TODO: decide, should we allow to change a category of event?
     public void ChangeCategory(EventCategory category) => Category = category;
 
-    public void ValidateParticipant(int participantId)
+    public void ValidateParticipant(int externalParticipantId)
     {
-        if (_participants.Any(p => p.ExternalParticipantId == participantId))
-            throw new ParticipantExistsException(participantId);
+        if (_participants.Any(p => p.Id == externalParticipantId))
+            throw new ParticipantExistsException(externalParticipantId);
     }
 }

@@ -12,7 +12,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<UserInfo>
 
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.ExternalUserId).HasColumnName("external_user_id");
+        //builder.Property(e => e.ExternalUserId).HasColumnName("external_user_id");
         builder.Property(e => e.UserName).HasColumnName("username");
 
         //builder.ComplexProperty(e => e.ExternalUserId);

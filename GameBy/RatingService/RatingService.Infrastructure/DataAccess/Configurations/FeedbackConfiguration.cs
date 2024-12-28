@@ -15,7 +15,6 @@ internal class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
 
         builder.Property(e => e.EventId).HasColumnName("event_id");
         builder.Property(e => e.AuthorId).HasColumnName("author_id");
-        builder.Property(e => e.EventId).HasColumnName("event_id");
         builder.Property(c => c.Content).HasMaxLength(250).HasColumnName("content");
         builder.Property(c => c.CreationDate).HasColumnName("creation_date");
         builder.Property(c => c.UpdateDate).HasColumnName("update_date");

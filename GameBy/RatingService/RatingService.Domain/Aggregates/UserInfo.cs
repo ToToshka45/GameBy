@@ -8,7 +8,7 @@ namespace RatingService.Domain.Aggregates;
 
 public class UserInfo : AggregateRoot
 {
-    public int ExternalUserId { get; }
+    //public int ExternalUserId { get; }
     public string UserName { get; }
     //private List<Rating> _ratings { get; } = [];
     //public IReadOnlyCollection<Rating> RatingsByCategory => _ratings;
@@ -22,12 +22,12 @@ public class UserInfo : AggregateRoot
     private List<Feedback> _organizerFeedbacks = [];
     public IReadOnlyList<Feedback> OrganizerFeedbacks => _organizerFeedbacks;
 
-    public UserInfo(int userId, string username)
+    public UserInfo(int externalUserId, string username)
     {
-        ExternalUserId = userId;
+        Id = externalUserId;
         UserName = username;
-        GamerRating = new(userId, EntityType.Gamer);
-        OrganizerRating = new(userId, EntityType.Organizer);
+        GamerRating = new(externalUserId, EntityType.Gamer);
+        OrganizerRating = new(externalUserId, EntityType.Organizer);
     }       
 
     private UserInfo() { }

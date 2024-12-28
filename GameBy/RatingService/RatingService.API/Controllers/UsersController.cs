@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using RatingService.API.Configurations.Mappings;
-using RatingService.API.Models.Events;
 using RatingService.API.Models.Users;
 using RatingService.Application.Services.Abstractions;
 
@@ -8,11 +7,11 @@ namespace RatingService.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUserLifecycleService _service;
 
-        public UserController(IUserLifecycleService service)
+        public UsersController(IUserLifecycleService service)
         {
             _service = service;
         }
@@ -22,8 +21,8 @@ namespace RatingService.API.Controllers
         [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<IActionResult> AddUser([FromBody] AddUserRequest req, CancellationToken token)
         {
-            var id = await _service.AddNewUserAsync(req.ToDto(), token);
-            return CreatedAtAction(nameof(GetUser), new { id }, req);
+            var result = await _service.AddNewUserAsync(req.ToDto(), token);
+            return CreatedAtAction(nameof(GetUser), new { Id = result }, req);
         }
 
         [HttpGet("get-user/{userId:int}")]
@@ -64,6 +63,5 @@ namespace RatingService.API.Controllers
             // TODO logic to get all the participantions of a particular User
             return Ok();
         }
-
     }
 }

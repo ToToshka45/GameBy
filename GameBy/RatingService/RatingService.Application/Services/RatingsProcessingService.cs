@@ -27,7 +27,7 @@ internal class RatingsProcessingService : IRatingsProcessingService
 
     public async Task Process(RatingUpdate update, CancellationToken token)
     {
-        _logger.LogInformation($"Starting processing the entity of type '{update.EntityType}' with Id '{update.SubjectId}'.");
+        _logger.LogInformation($"Starting processing the RatingUpdate with Id '{update.Id}'.");
         await _ratingsRepo.AddOrUpdate(update, token);
     }
 }

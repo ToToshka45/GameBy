@@ -1,4 +1,4 @@
-﻿using RatingService.Domain.Entities;
+﻿using RatingService.Domain.Entities.Ratings;
 using RatingService.Domain.Enums;
 
 namespace RatingService.Application.Models.Dtos.Events;
@@ -8,4 +8,4 @@ public record GetEventDto(int ExternalEventId,
                           DateTime CreationDate,
                           EventCategory Category,
                           EventProgressionState State,
-                          Rating Rating);
+                          RatingBase Rating);

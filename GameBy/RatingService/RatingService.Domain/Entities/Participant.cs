@@ -1,36 +1,35 @@
-﻿using RatingService.Domain.Enums;
+﻿using RatingService.Domain.Entities.Ratings;
+using RatingService.Domain.Enums;
 using RatingService.Domain.Primitives;
 
 namespace RatingService.Domain.Entities;
 
 public class Participant : Entity<int>
 {
-    public int EventId { get; private set; }
+    public int ExternalEventId { get; private set; }
     /// <summary>
     /// The Id of a Participant by which its Entity is stored in the Event Service.
     /// </summary>
-    //public int ExternalParticipantId { get; }
-    
+    public int ExternalParticipantId { get; }
     /// <summary>
     /// The Id of a User by which its entity is stored in the Event Service.
     /// </summary>
-    public int UserId { get; }
+    public int ExternalUserId { get; }
     public ParticipationState ParticipationState { get; private set; }
-    public Rating Rating { get; }
+    public ParticipantRating Rating { get; }
 
     public Participant(
         int externalParticipantId,
         int externalUserId,
-        //int externalEventId,
+        int externalEventId,
         ParticipationState participationState)
     {
-        Id = externalParticipantId;
-        UserId = externalUserId;
-        //ExternalEventId = externalEventId;
-        //ExternalParticipantId = externalParticipantId;
+        ExternalParticipantId = externalParticipantId;
+        ExternalUserId = externalUserId;
+        ExternalEventId = externalEventId;
         ParticipationState = participationState;
 
-        Rating = new Rating(Id, EntityType.Participant);
+        Rating = new(externalParticipantId);
     }
 
     private Participant() { }
@@ -39,6 +38,4 @@ public class Participant : Entity<int>
     {
         ParticipationState = state;
     }
-
-    public void SetInnerEventRelation(int eventId) => EventId = eventId;
 }

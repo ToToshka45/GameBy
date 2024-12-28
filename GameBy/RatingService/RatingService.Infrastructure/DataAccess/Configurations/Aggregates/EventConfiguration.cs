@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RatingService.Domain.Aggregates;
 
-namespace RatingService.Infrastructure.DataAccess.Configurations;
+namespace RatingService.Infrastructure.DataAccess.Configurations.Aggregates;
 
 internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
 {
@@ -12,7 +13,7 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
 
         builder.HasKey(e => e.Id);
 
-        //builder.Property(e => e.ExternalEventId).HasColumnName("external_event_id");
+        builder.Property(e => e.ExternalEventId).HasColumnName("external_event_id");
         builder.Property(e => e.Category).HasColumnName("category").HasConversion<string>();
         builder.Property(e => e.State).HasColumnName("state").HasConversion<string>();
         builder.Property(e => e.Title).HasColumnName("title");

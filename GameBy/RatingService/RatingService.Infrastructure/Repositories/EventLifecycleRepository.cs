@@ -7,19 +7,36 @@ using RatingService.Infrastructure.DataAccess;
 
 namespace RatingService.Infrastructure.Repositories;
 
-public class EventLifecycleRepository(RatingServiceDbContext storage) 
+public class EventLifecycleRepository(RatingServiceDbContext storage)
     : BaseRepository<EventInfo>(storage), IEventLifecycleRepository
 {
     private readonly DbSet<Participant> _participantStorage = storage.Set<Participant>();
 
+    //public async Task<int?> AddParticipant(Participant participant, CancellationToken cancellationToken)
+    //{
+    //    await _participantStorage.AddAsync(participant, cancellationToken);
+    //    await storage.SaveChangesAsync(cancellationToken);
+    //    var storedParticipant = await _participantStorage.FirstOrDefaultAsync(p => p.Id == participant.Id, cancellationToken);
+    //    return storedParticipant != null ? storedParticipant.Id : null;
+    //}
     public async Task<IEnumerable<Participant>> GetParticipantsByEventId(int eventId, CancellationToken cancellationToken)
     {
-        return await _participantStorage.Where(e => e.EventId == eventId).ToListAsync(cancellationToken);
+        return await _participantStorage.Where(e => e.ExternalEventId == eventId).ToListAsync(cancellationToken);
     }
 
-    public async Task<Participant?> GetParticipantByEventId(int eventId, int externalParticipantId, CancellationToken cancellationToken)
+    public async Task<Participant?> GetParticipantByEventId(int eventId, int participantId, CancellationToken cancellationToken)
     {
-        return await _participantStorage.FirstOrDefaultAsync(p => p.EventId == eventId && p.Id == externalParticipantId, 
+        return await _participantStorage.FirstOrDefaultAsync(
+            p => p.ExternalEventId == eventId 
+                && p.ExternalParticipantId == participantId,
             cancellationToken);
+    }
+
+    public async Task RemoveParticipantByEventId(int eventId, int participantId, CancellationToken cancellationToken)
+    {
+        var entity = await GetParticipantByEventId(eventId, participantId, cancellationToken);
+        if (entity == null) { return; }
+        _participantStorage.Remove(entity);
+        await storage.SaveChangesAsync(cancellationToken);
     }
 }

@@ -69,8 +69,9 @@ namespace RatingService.API.Controllers
         public async Task<IActionResult> AddParticipant(int eventId, AddParticipantRequest req, CancellationToken token)
         {
             // TODO: create a domain event
-            var result = await _service.AddParticipantAsync(eventId, req.ToDto(), token);
-            return CreatedAtAction(nameof(GetParticipantByEventId), new { Id = result }, req);
+            var dto = req.ToDto(eventId);
+            var participantId = await _service.AddParticipantAsync(eventId, dto, token);
+            return CreatedAtAction(nameof(GetParticipantByEventId), new { eventId, participantId }, req);
         }
 
         [HttpGet("{eventId:int}/participants/{participantId:int}")]
@@ -87,7 +88,15 @@ namespace RatingService.API.Controllers
             return Ok(await _service.GetParticipantsByEventIdAsync(eventId, token));
         }
 
-        [HttpGet("{eventId:int}/participants/{participantId:int}/set-rating")]
+        [HttpDelete("{eventId:int}/participants/{participantId:int}/remove")]
+        [ProducesResponseType(typeof(IActionResult), 204)]
+        public async Task<IActionResult> RemoveParticipantByEventId(int eventId, int participantId, CancellationToken token)
+        {
+            await _service.RemoveParticipantByEventIdAsync(eventId, participantId, token);
+            return NoContent();
+        }
+
+        [HttpPost("{eventId:int}/participants/{participantId:int}/set-rating")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<IActionResult> SetParticipantRating(int eventId, int participantId, 

@@ -8,8 +8,8 @@ public sealed class AddParticipantRequest
     public required int ExternalParticipantId { get; set; }
     [JsonPropertyName("userId")]
     public required int ExternalUserId { get; set; }
-    [JsonPropertyName("eventId")]
-    public required int ExternalEventId { get; set; }
+    //[JsonPropertyName("eventId")]
+    //public int ExternalEventId { get; set; }
     [JsonPropertyName("participation_state")]
     public required string State { get; set; }
 }

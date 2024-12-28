@@ -22,15 +22,15 @@ namespace RatingService.API.Controllers
         public async Task<IActionResult> AddUser([FromBody] AddUserRequest req, CancellationToken token)
         {
             var result = await _service.AddNewUserAsync(req.ToDto(), token);
-            return CreatedAtAction(nameof(GetUser), new { Id = result }, req);
+            return CreatedAtAction(nameof(GetUser), new { id = result }, req);
         }
 
-        [HttpGet("get-user/{userId:int}")]
+        [HttpGet("get-user/{id:int}")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
-        public async Task<IActionResult> GetUser(int userId, CancellationToken token)
+        public async Task<IActionResult> GetUser(int id, CancellationToken token)
         {
-            var user = await _service.GetUserById(userId, token);
+            var user = await _service.GetUserById(id, token);
             if (user == null) { return BadRequest(); }
             return Ok(user.ToResponse());
         }

@@ -1,4 +1,5 @@
 ﻿using RatingService.Domain.Entities;
+using RatingService.Domain.Entities.Ratings;
 using RatingService.Domain.Enums;
 using RatingService.Domain.Exceptions;
 using RatingService.Domain.Primitives;
@@ -8,15 +9,16 @@ namespace RatingService.Domain.Aggregates;
 
 public class EventInfo : AggregateRoot
 {
+    public int ExternalEventId { get; }
     public string Title { get; private set; }
-    //public int ExternalEventId { get; }
+    public int OrganizerId { get; }
     public DateTime CreationDate { get; }
     public EventCategory Category { get; private set; }
     public EventProgressionState State { get; private set; }
     /// <summary>
-    /// For recalculating rating`s value a method <see cref="Rating.Recalculate(float)"/> must be called.
+    /// For recalculating rating`s value a method <see cref="RatingBase.Recalculate(float)"/> must be called.
     /// </summary>
-    public Rating Rating { get; }
+    public EventRating Rating { get; }
 
     //Feedbacks
     private List<Feedback> _feedbacks = [];
@@ -25,17 +27,18 @@ public class EventInfo : AggregateRoot
     private List<Participant> _participants = [];
     public IReadOnlyList<Participant> Participants => _participants;
 
-    public EventInfo(string title, int externalEventId, DateTime creationDate, EventCategory category, EventProgressionState state)
+    public EventInfo(int externalEventId, string title, int organizerId, 
+        DateTime creationDate, EventCategory category, EventProgressionState state)
     {
-        Id = externalEventId;
+        OrganizerId = organizerId;
+        ExternalEventId = externalEventId;
         Title = title;
         CreationDate = creationDate;
         Category = category;
         State = state;
-        Rating = new Rating(externalEventId, EntityType.Event);
+        Rating = new(externalEventId);
     }
 
-    // for EFCore
     private EventInfo() { }
 
     public void AddFeedback(Feedback feedbackInfo)

@@ -64,19 +64,26 @@ public class EventLifecycleService : IEventLifecycleService
         return events.ToDtoList();
     }
 
+    public Task FinalizeEventAsync(FinalizeEventDto dto, CancellationToken token)
+    {
+        throw new NotImplementedException();
+    }
+
+    // Participants 
+
     public async Task<int?> AddParticipantAsync(int eventId, AddParticipantDto dto, CancellationToken token)
     {
         try
         {
-            //var storedEvent = await _eventRepo.GetEntityWithIncludesAsync(eventId, token, [e => e.Participants]);
-            var storedEvent = await _eventRepo.GetById(eventId, token, false);
+            var storedEvent = await _eventRepo.GetEntityWithIncludesAsync(eventId, token, [e => e!.Participants]);
+            //var storedEvent = await _eventRepo.GetById(eventId, token, false);
             if (storedEvent is null) return null;
 
             storedEvent.ValidateParticipant(dto.ExternalParticipantId);
             var participant = dto.ToParticipant();
-            participant.SetInnerEventRelation(storedEvent.Id);
             storedEvent.AddParticipant(participant);
             await _eventRepo.SaveChangesAsync(token);
+            //await _eventRepo.AddParticipant(storedEvent, participant, token);
 
             participant = await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token);
             return participant is null ? null : participant.Id;
@@ -88,10 +95,6 @@ public class EventLifecycleService : IEventLifecycleService
         }
     }
 
-    public Task FinalizeEventAsync(FinalizeEventDto dto, CancellationToken token)
-    {
-        throw new NotImplementedException();
-    }
     public async Task<Participant?> GetParticipantByEventIdAsync(int eventId, int participantId, CancellationToken token)
     {
         return await _eventRepo.GetParticipantByEventId(eventId, participantId, token);
@@ -110,8 +113,8 @@ public class EventLifecycleService : IEventLifecycleService
         await _ratingsProcessingService.Process(dto.ToRatingUpdate(), token);
     }
 
-    //public async Task EditParticipantRating(int ratingUpdateId, EditParticipantRatingDto dto, CancellationToken token)
-    //{
-
-    //}
+    public async Task RemoveParticipantByEventIdAsync(int eventId, int participantId, CancellationToken token)
+    {
+        await _eventRepo.RemoveParticipantByEventId(eventId, participantId, token);
+    }
 }

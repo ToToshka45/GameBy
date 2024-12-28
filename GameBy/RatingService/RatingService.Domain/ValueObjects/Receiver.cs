@@ -9,12 +9,12 @@ namespace RatingService.Domain.ValueObjects
     /// </summary>
     public class Receiver : ValueObject
     {
-        public int EntityId { get; }
+        public int SubjectId { get; }
         public EntityType EntityType { get; }
 
         public Receiver(int entityId, EntityType entityType)
         {
-            EntityId = entityId;
+            SubjectId = entityId;
             EntityType = entityType;
         }
 
@@ -22,7 +22,7 @@ namespace RatingService.Domain.ValueObjects
 
         protected override IEnumerable<object> GetAtomicValues()
         {
-            yield return EntityId;
+            yield return SubjectId;
             yield return EntityType.ToString();
         }
 

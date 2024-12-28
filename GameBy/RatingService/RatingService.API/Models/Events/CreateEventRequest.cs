@@ -6,8 +6,10 @@ public sealed class CreateEventRequest
 {
     [JsonPropertyName("title")]
     public required string Title { get; set; }
-    [JsonPropertyName("id")]
+    [JsonPropertyName("event_id")]
     public required int EventId { get; set; }
+    [JsonPropertyName("organizer_id")]
+    public required int OrganizerId { get; set; }
     [JsonPropertyName("created_at")]
     public required DateTime CreationDate { get; set; }
     [JsonPropertyName("category")]

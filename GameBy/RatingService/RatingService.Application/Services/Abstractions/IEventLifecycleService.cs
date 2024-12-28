@@ -12,6 +12,7 @@ public interface IEventLifecycleService
     Task<ICollection<GetEventDto>> GetEventsAsync(CancellationToken token);
     Task<GetEventDto?> GetEventByIdAsync(int id, CancellationToken token);
     Task<int?> AddParticipantAsync(int eventId, AddParticipantDto dto, CancellationToken token);
+    Task RemoveParticipantByEventIdAsync(int eventId, int participantId, CancellationToken token);
     Task<Participant?> GetParticipantByEventIdAsync(int eventId, int participantId, CancellationToken token);
     Task<IEnumerable<Participant>> GetParticipantsByEventIdAsync(int eventId, CancellationToken token);
     Task FinalizeEventAsync(FinalizeEventDto dto, CancellationToken token);

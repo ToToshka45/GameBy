@@ -11,7 +11,7 @@ internal static class MappingExtensions
 {
     // events
     public static EventInfo ToEventInfo(this CreateEventDto dto) =>
-        new(dto.Title, dto.ExternalEventId, dto.CreationDate.ToUniversalTime(), dto.Category, dto.State);
+        new(dto.ExternalEventId, dto.Title, dto.OrganizerId, dto.CreationDate.ToUniversalTime(), dto.Category, dto.State);
     public static GetEventDto ToDto(this EventInfo @event) =>
         new(@event.Id, @event.Title, @event.CreationDate, @event.Category, @event.State, @event.Rating);
     public static ICollection<GetEventDto> ToDtoList(this IEnumerable<EventInfo> events) =>
@@ -29,11 +29,14 @@ internal static class MappingExtensions
 
     // Participants
     public static Participant ToParticipant(this AddParticipantDto dto) =>
-        new(dto.ExternalParticipantId, dto.ExternalUserId, dto.State);
+        new(dto.ExternalParticipantId, dto.ExternalUserId, dto.ExternalEventId, dto.State);
 
     // Ratings
 
-    public static RatingUpdate ToRatingUpdate(this AddParticipantRatingUpdateDto dto) =>
-        new(dto.Value, dto.AuthorId, dto.SubjectId, dto.EventId, dto.EntityType, dto.CreationDate);
+    public static ParticipantRatingUpdate ToRatingUpdate(this AddParticipantRatingUpdateDto dto) =>
+        new(dto.SubjectId, dto.Value, dto.AuthorId, dto.EventId, dto.CreationDate.ToUniversalTime());
+
+    //public static EventRatingUpdate ToRatingUpdate(this AddEventRatingUpdateDto dto) =>
+    //    new(dto.SubjectId, dto.Value, dto.AuthorId, dto.EventId, dto.CreationDate.ToUniversalTime());
 
 }

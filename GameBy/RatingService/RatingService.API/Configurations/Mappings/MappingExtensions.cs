@@ -18,7 +18,7 @@ internal static class MappingExtensions
     // Events
 
     internal static CreateEventDto ToDto(this CreateEventRequest req) => 
-        new(req.Title, req.EventId, req.CreationDate, 
+        new(req.Title, req.EventId, req.OrganizerId, req.CreationDate, 
             req.Category.TryParseOrDefault(EventCategory.Unclarified),
             req.State.TryParseOrDefault(EventProgressionState.Announced));
 
@@ -56,8 +56,8 @@ internal static class MappingExtensions
 
     // Participants
 
-    internal static AddParticipantDto ToDto(this AddParticipantRequest req) =>
-        new(req.ExternalParticipantId, req.ExternalUserId, req.State.TryParseOrDefault(ParticipationState.Unclarified));
+    internal static AddParticipantDto ToDto(this AddParticipantRequest req, int eventId) =>
+        new(req.ExternalParticipantId, req.ExternalUserId, eventId, req.State.TryParseOrDefault(ParticipationState.Unclarified));
     internal static ParticipantStateChangeDto ToDto(this ParticipantStateChangeRequest req) =>
         new(req.ExternalParticipantId, req.State.TryParseOrDefault(ParticipationState.Unclarified));
 

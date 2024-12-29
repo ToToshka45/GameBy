@@ -13,7 +13,9 @@ internal class UserConfiguration : IEntityTypeConfiguration<UserInfo>
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id).ValueGeneratedNever();
 
-        builder.Property(e => e.ExternalUserId).HasColumnName("external_user_id");
+        //builder.Property(e => e.ExternalUserId).HasColumnName("external_user_id");
         builder.Property(e => e.UserName).HasColumnName("username");
+        builder.Navigation(e => e.GamerRating).AutoInclude();
+        builder.Navigation(e => e.OrganizerRating).AutoInclude();
     }
 }

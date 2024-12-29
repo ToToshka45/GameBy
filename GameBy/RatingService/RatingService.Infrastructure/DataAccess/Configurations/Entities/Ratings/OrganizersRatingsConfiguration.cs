@@ -11,7 +11,14 @@ internal class OrganizersRatingsConfiguration : IEntityTypeConfiguration<Organiz
     {
         builder.ToTable("organizers_ratings");
 
-        builder.Property(e => e.ExternalUserId).HasColumnName("external_user_id");
-        builder.HasOne<UserInfo>().WithMany().HasForeignKey(ur => ur.ExternalUserId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
+
+        builder.Property(e => e.Value).HasColumnName("value").HasColumnType("decimal(3,2)");
+        builder.Property(e => e.UserInfoId).HasColumnName("user_info_id");
+        //builder.Property(e => e.ExternalUserId).HasColumnName("external_user_id");
+
+        builder.HasOne<UserInfo>().WithOne(e => e.OrganizerRating).HasForeignKey<OrganizerRating>(ur => ur.UserInfoId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

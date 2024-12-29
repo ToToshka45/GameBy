@@ -19,16 +19,17 @@ public class EventLifecycleRepository(RatingServiceDbContext storage)
     //    var storedParticipant = await _participantStorage.FirstOrDefaultAsync(p => p.Id == participant.Id, cancellationToken);
     //    return storedParticipant != null ? storedParticipant.Id : null;
     //}
+
     public async Task<IEnumerable<Participant>> GetParticipantsByEventId(int eventId, CancellationToken cancellationToken)
     {
-        return await _participantStorage.Where(e => e.ExternalEventId == eventId).ToListAsync(cancellationToken);
+        return await _participantStorage.Where(e => e.EventInfoId == eventId).ToListAsync(cancellationToken);
     }
 
     public async Task<Participant?> GetParticipantByEventId(int eventId, int participantId, CancellationToken cancellationToken)
     {
         return await _participantStorage.FirstOrDefaultAsync(
-            p => p.ExternalEventId == eventId 
-                && p.ExternalParticipantId == participantId,
+            p => p.EventInfoId == eventId 
+                && p.Id == participantId,
             cancellationToken);
     }
 

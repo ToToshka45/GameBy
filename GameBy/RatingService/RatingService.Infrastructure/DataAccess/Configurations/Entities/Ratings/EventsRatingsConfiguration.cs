@@ -11,7 +11,17 @@ internal class EventsRatingsConfiguration : IEntityTypeConfiguration<EventRating
     {
         builder.ToTable("events_ratings");
 
-        builder.Property(e => e.ExternalEventId).HasColumnName("external_event_id");
-        builder.HasOne<EventInfo>().WithOne().HasForeignKey<EventRating>(e => e.ExternalEventId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
+
+        builder.Property(e => e.Value).HasColumnName("value").HasColumnType("decimal(3,2)");
+
+        builder.Property(e => e.OrganizerRatingId).HasColumnName("organizer_rating_id");
+        builder.Property(e => e.EventInfoId).HasColumnName("event_info_id");
+
+        builder.HasOne<OrganizerRating>().WithMany(e => e.EventRatings).HasForeignKey(e => e.OrganizerRatingId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<EventInfo>().WithOne(e => e.Rating).HasForeignKey<EventRating>(e => e.EventInfoId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

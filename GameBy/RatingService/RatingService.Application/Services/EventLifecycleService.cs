@@ -27,13 +27,14 @@ public class EventLifecycleService : IEventLifecycleService
         _ratingsProcessingService = ratingsProcessingService;
     }
 
-    public async Task<int?> AddNewEventAsync(CreateEventDto newEvent, CancellationToken token)
+    public async Task<GetEventInfoDto?> AddNewEventAsync(CreateEventDto newEvent, CancellationToken token)
     {
         try
         {
             var eventInfo = newEvent.ToEventInfo();
             var savedEvent = await _eventRepo.Add(eventInfo, token);
-            return savedEvent.Id;
+            if (savedEvent is null) return null;
+            return savedEvent.ToGetEventInfoDto();
         }
         catch (Exception ex)
         {
@@ -42,14 +43,13 @@ public class EventLifecycleService : IEventLifecycleService
         }
     }
 
-    public async Task<GetEventDto?> GetEventByIdAsync(int id, CancellationToken token)
+    public async Task<GetEventInfoDto?> GetEventByIdAsync(int id, CancellationToken token)
     {
         try
         {
-            //var eventInfo = await _eventRepo.GetById(id, token);
-            var eventInfo = await _eventRepo.GetEntityWithIncludesAsync(id, token, [e => e.Participants]);
+            var eventInfo = await _eventRepo.GetById(id, token);
             if (eventInfo == null) { return null; }
-            return eventInfo.ToDto();
+            return eventInfo.ToGetEventInfoDto();
         }
         catch (Exception ex)
         {
@@ -58,7 +58,7 @@ public class EventLifecycleService : IEventLifecycleService
         }
     }
 
-    public async Task<ICollection<GetEventDto>> GetEventsAsync(CancellationToken token)
+    public async Task<ICollection<GetEventInfoDto>> GetEventsAsync(CancellationToken token)
     {
         var events = await _eventRepo.GetAll(token);
         return events.ToDtoList();
@@ -71,22 +71,22 @@ public class EventLifecycleService : IEventLifecycleService
 
     // Participants 
 
-    public async Task<int?> AddParticipantAsync(int eventId, AddParticipantDto dto, CancellationToken token)
+    public async Task<GetParticipantDto?> AddParticipantAsync(int eventId, AddParticipantDto dto, CancellationToken token)
     {
         try
         {
             var storedEvent = await _eventRepo.GetEntityWithIncludesAsync(eventId, token, [e => e!.Participants]);
-            //var storedEvent = await _eventRepo.GetById(eventId, token, false);
             if (storedEvent is null) return null;
 
             storedEvent.ValidateParticipant(dto.ExternalParticipantId);
             var participant = dto.ToParticipant();
             storedEvent.AddParticipant(participant);
             await _eventRepo.SaveChangesAsync(token);
-            //await _eventRepo.AddParticipant(storedEvent, participant, token);
 
-            participant = await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token);
-            return participant is null ? null : participant.Id;
+            if (await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token) is Participant entity) 
+                return entity.ToDto();
+
+            return null;
         }
         catch (Exception ex)
         {
@@ -95,17 +95,28 @@ public class EventLifecycleService : IEventLifecycleService
         }
     }
 
-    public async Task<Participant?> GetParticipantByEventIdAsync(int eventId, int participantId, CancellationToken token)
+    public async Task<GetParticipantDto?> GetParticipantByEventIdAsync(int eventId, int participantId, CancellationToken token)
     {
-        return await _eventRepo.GetParticipantByEventId(eventId, participantId, token);
+        var participant = await _eventRepo.GetParticipantByEventId(eventId, participantId, token);
+        if (participant is null) return null;
+        return participant.ToDto();
     }
 
-    public async Task<IEnumerable<Participant>> GetParticipantsByEventIdAsync(int eventId, CancellationToken token)
+    public async Task<IEnumerable<GetParticipantDto>> GetParticipantsByEventIdAsync(int eventId, CancellationToken token)
     {
-        return await _eventRepo.GetParticipantsByEventId(eventId, token);
+        var participants = await _eventRepo.GetParticipantsByEventId(eventId, token);
+        return participants.ToDtoList();
     }
 
-    public async Task AddParticipantRatingUpdate(AddParticipantRatingUpdateDto dto, CancellationToken token)
+    public async Task AddParticipantRatingUpdateAsync(AddParticipantRatingUpdateDto dto, CancellationToken token)
+    {
+        var @event = await _eventRepo.GetById(dto.EventId, token);
+        if (@event is null) return;
+        var entity = dto.ToRatingUpdate();
+        await _ratingsProcessingService.Process(dto.ToRatingUpdate(), token);
+    }
+
+    public async Task AddEventRatingUpdateAsync(AddEventRatingUpdateDto dto, CancellationToken token)
     {
         var @event = await _eventRepo.GetById(dto.EventId, token);
         if (@event is null) return;

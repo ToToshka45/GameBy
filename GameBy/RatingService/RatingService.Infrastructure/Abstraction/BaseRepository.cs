@@ -11,10 +11,11 @@ public class BaseRepository<T>(RatingServiceDbContext storage)
 {
     protected readonly DbSet<T> _dbSet = storage.Set<T>();
 
-    public virtual async Task<T> Add(T entity, CancellationToken token)
+    public virtual async Task<T?> Add(T entity, CancellationToken token)
     {
         var result = await _dbSet.AddAsync(entity, token);
         await SaveChangesAsync(token);
+        if (result is null) return null;
         return result.Entity;
     }
 

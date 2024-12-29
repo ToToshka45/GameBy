@@ -12,29 +12,36 @@ internal static class MappingExtensions
     // events
     public static EventInfo ToEventInfo(this CreateEventDto dto) =>
         new(dto.ExternalEventId, dto.Title, dto.OrganizerId, dto.CreationDate.ToUniversalTime(), dto.Category, dto.State);
-    public static GetEventDto ToDto(this EventInfo @event) =>
-        new(@event.Id, @event.Title, @event.CreationDate, @event.Category, @event.State, @event.Rating);
-    public static ICollection<GetEventDto> ToDtoList(this IEnumerable<EventInfo> events) =>
-        events.Select(e => e.ToDto()).ToList();
+    public static GetEventInfoDto ToGetEventInfoDto(this EventInfo @event) =>
+        new(@event.Id, @event.Title, @event.OrganizerId, @event.CreationDate, @event.Category, @event.State, @event.Rating?.Value);
+    public static ICollection<GetEventInfoDto> ToDtoList(this IEnumerable<EventInfo> events) =>
+        events.Select(e => e.ToGetEventInfoDto()).ToList();
 
     // users
     public static UserInfo ToUserInfo(this AddUserDto dto) =>
         new(dto.ExternalUserId, dto.UserName);
-    public static GetUserDto ToDto(this UserInfo dto) =>
-        new(dto.Id, dto.UserName);
+    public static GetUserInfoDto ToGetUserInfoDto(this UserInfo req) =>
+         new(req.Id, req.UserName, req.GamerRating?.Value, req.OrganizerRating?.Value);
     public static GetUserRatingsDto ToGetUserRatingsDto(this UserInfo user) =>
         new(user.Id, user.GamerRating, user.OrganizerRating);
     public static GetUserFeedbacksDto ToGetUserFeedbacksDto(this UserInfo user) =>
         new(user.Id, user.GamerFeedbacks, user.OrganizerFeedbacks);
 
     // Participants
-    public static Participant ToParticipant(this AddParticipantDto dto) =>
+
+    internal static Participant ToParticipant(this AddParticipantDto dto) =>
         new(dto.ExternalParticipantId, dto.ExternalUserId, dto.ExternalEventId, dto.State);
+    internal static GetParticipantDto ToDto(this Participant participant) =>
+        new(participant.Id, participant.UserInfoId, participant.EventInfoId, participant.ParticipationState, participant.Rating?.Value);
+    internal static IEnumerable<GetParticipantDto> ToDtoList(this IEnumerable<Participant> participants) =>
+        participants.Select(e => e.ToDto()).ToList();
 
     // Ratings
 
-    public static ParticipantRatingUpdate ToRatingUpdate(this AddParticipantRatingUpdateDto dto) =>
-        new(dto.SubjectId, dto.Value, dto.AuthorId, dto.EventId, dto.CreationDate.ToUniversalTime());
+    internal static ParticipantRatingUpdate ToRatingUpdate(this AddParticipantRatingUpdateDto dto) =>
+        new(dto.Value, dto.AuthorId, dto.ReceipientId, dto.EventId, dto.CreationDate.ToUniversalTime());
+    internal static EventRatingUpdate ToRatingUpdate(this AddEventRatingUpdateDto dto) =>
+        new(dto.Value, dto.AuthorId, dto.EventId, dto.CreationDate.ToUniversalTime());
 
     //public static EventRatingUpdate ToRatingUpdate(this AddEventRatingUpdateDto dto) =>
     //    new(dto.SubjectId, dto.Value, dto.AuthorId, dto.EventId, dto.CreationDate.ToUniversalTime());

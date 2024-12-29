@@ -2,4 +2,4 @@
 
 namespace RatingService.Application.Models.Dtos.Users;
 
-public record GetUserRatingsDto(int ExternalUserId, RatingBase GamerRating, RatingBase OrganizerRating);
+public record GetUserRatingsDto(int ExternalUserId, GamerRating? GamerRating, OrganizerRating? OrganizerRating);

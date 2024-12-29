@@ -18,14 +18,19 @@ public class UserLifecycleService : IUserLifecycleService
         _userRepo = userRepo;
     }
 
-    public async Task<int?> AddNewUserAsync(AddUserDto newUser, CancellationToken token)
+    public async Task<GetUserInfoDto?> AddNewUserAsync(AddUserDto newUser, CancellationToken token)
     {
         try
         {
             _logger.LogInformation($"Adding a new User with External Id '{newUser.ExternalUserId}'");
             var userInfo = newUser.ToUserInfo();
             var savedUser = await _userRepo.Add(userInfo, token);
-            return savedUser.Id;
+            if (savedUser == null) { return null; }
+            //savedUser.SetInitialRatings();
+            //await _userRepo.SaveChangesAsync(token);
+            if (savedUser == null) { return null; }
+
+            return savedUser.ToGetUserInfoDto();
         }
         catch (Exception ex)
         {
@@ -33,20 +38,20 @@ public class UserLifecycleService : IUserLifecycleService
             throw;
         }
     }
-    public async Task<GetUserDto?> GetUserById(int id, CancellationToken token)
+    public async Task<GetUserInfoDto?> GetUserById(int id, CancellationToken token)
     {
         var user = await _userRepo.GetById(id, token);
         if (user == null) { return null; }
-        return user.ToDto();
+        return user.ToGetUserInfoDto();
     }
 
-    public async Task<GetUserRatingsDto?> GetUserRatingsAsync(int id, CancellationToken token)
-    {
-        var user = await _userRepo.GetEntityWithIncludesAsync(id, token, 
-            [e => e!.GamerRating, e => e!.OrganizerRating]);
-        if (user == null) { return null; }
-        return user.ToGetUserRatingsDto();
-    }
+    //public async Task<GetUserRatingsDto?> GetUserRatingsAsync(int id, CancellationToken token)
+    //{
+    //    var user = await _userRepo.GetEntityWithIncludesAsync(id, token, 
+    //        [e => e!.GamerRating, e => e!.OrganizerRating]);
+    //    if (user == null) { return null; }
+    //    return user.ToGetUserRatingsDto();
+    //}
 
     public async Task<GetUserFeedbacksDto?> GetUserFeedbacksAsync(int id, CancellationToken token)
     {

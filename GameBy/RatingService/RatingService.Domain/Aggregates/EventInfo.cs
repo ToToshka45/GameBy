@@ -9,16 +9,14 @@ namespace RatingService.Domain.Aggregates;
 
 public class EventInfo : AggregateRoot
 {
-    public int ExternalEventId { get; }
+    //public int ExternalEventId { get; }
     public string Title { get; private set; }
     public int OrganizerId { get; }
     public DateTime CreationDate { get; }
     public EventCategory Category { get; private set; }
     public EventProgressionState State { get; private set; }
-    /// <summary>
-    /// For recalculating rating`s value a method <see cref="RatingBase.Recalculate(float)"/> must be called.
-    /// </summary>
-    public EventRating Rating { get; }
+
+    public EventRating? Rating { get; private set; }
 
     //Feedbacks
     private List<Feedback> _feedbacks = [];
@@ -30,16 +28,23 @@ public class EventInfo : AggregateRoot
     public EventInfo(int externalEventId, string title, int organizerId, 
         DateTime creationDate, EventCategory category, EventProgressionState state)
     {
+        Id = externalEventId;
         OrganizerId = organizerId;
-        ExternalEventId = externalEventId;
+        //ExternalEventId = externalEventId;
         Title = title;
         CreationDate = creationDate;
         Category = category;
         State = state;
-        Rating = new(externalEventId);
+
+        SetInitialRatings(externalEventId, organizerId);
     }
 
     private EventInfo() { }
+
+    public void SetInitialRatings(int externalEventId, int organizerId)
+    {
+        if (Rating is null) Rating = new(externalEventId, organizerId);
+    }
 
     public void AddFeedback(Feedback feedbackInfo)
     {

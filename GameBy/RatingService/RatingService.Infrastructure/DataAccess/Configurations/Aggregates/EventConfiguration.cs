@@ -12,18 +12,15 @@ internal class EventConfiguration : IEntityTypeConfiguration<EventInfo>
         builder.ToTable("events_info");
 
         builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
 
-        builder.Property(e => e.ExternalEventId).HasColumnName("external_event_id");
         builder.Property(e => e.Category).HasColumnName("category").HasConversion<string>();
         builder.Property(e => e.State).HasColumnName("state").HasConversion<string>();
+        builder.Property(e => e.OrganizerId).HasColumnName("organizer_id");
         builder.Property(e => e.Title).HasColumnName("title");
         builder.Property(e => e.CreationDate).HasColumnName("creation_date");
 
-        builder.HasOne(e => e.Rating).WithOne().HasForeignKey<EventInfo>(e => e.Id);
         builder.Navigation(e => e.Rating).AutoInclude();
-
-        //builder.HasMany(e => e.Feedbacks).WithOne().HasForeignKey(f => f.Id);
-        //builder.HasMany(e => e.Participants).WithOne().HasForeignKey(e => e.EventId);
         //builder.Navigation(e => e.Participants).AutoInclude();
     }
 }

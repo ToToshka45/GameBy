@@ -2,11 +2,15 @@
 
 public class GamerRating : RatingBase
 {
-    public int ExternalUserId { get; }
+    public int UserInfoId { get; }
+    //public int ExternalUserId { get; }
     public ICollection<ParticipantRating> ParticipantRatings { get; private set; }
-    public GamerRating(int externalUserId)
+
+    public GamerRating(int userInfoId)
     {
-        ExternalUserId = externalUserId;
+        Id = userInfoId;
+        UserInfoId = userInfoId;
+        //ExternalUserId = externalUserId;
         ParticipantRatings = [];
     }
 

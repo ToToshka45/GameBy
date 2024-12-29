@@ -16,36 +16,37 @@ namespace RatingService.API.Controllers
             _service = service;
         }
 
-        [HttpPost("add-user")]
+        [HttpPost("add")]
         [ProducesResponseType(typeof(IActionResult), 201)]
         [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<IActionResult> AddUser([FromBody] AddUserRequest req, CancellationToken token)
         {
             var result = await _service.AddNewUserAsync(req.ToDto(), token);
-            return CreatedAtAction(nameof(GetUser), new { id = result }, req);
+            if (result is null) return BadRequest();
+            return CreatedAtAction(nameof(GetUserInfo), new { id = result.Id }, result);
         }
 
-        [HttpGet("get-user/{id:int}")]
+        [HttpGet("get/{id:int}")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
-        public async Task<IActionResult> GetUser(int id, CancellationToken token)
+        public async Task<IActionResult> GetUserInfo(int id, CancellationToken token)
         {
             var user = await _service.GetUserById(id, token);
             if (user == null) { return BadRequest(); }
             return Ok(user.ToResponse());
         }
 
-        [HttpGet("get-user-ratings/{userId:int}")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
-        [ProducesResponseType(typeof(IActionResult), 400)]
-        public async Task<IActionResult> GetUserRatings(int userId, CancellationToken token)
-        {
-            var userRatings = await _service.GetUserRatingsAsync(userId, token);
-            if (userRatings == null) { return BadRequest(); }
-            return Ok(userRatings.ToResponse());
-        }
+        //[HttpGet("get-ratings/{userId:int}")]
+        //[ProducesResponseType(typeof(IActionResult), 200)]
+        //[ProducesResponseType(typeof(IActionResult), 400)]
+        //public async Task<IActionResult> GetUserRatings(int userId, CancellationToken token)
+        //{
+        //    var userRatings = await _service.GetUserRatingsAsync(userId, token);
+        //    if (userRatings == null) { return BadRequest(); }
+        //    return Ok(userRatings.ToResponse());
+        //}
 
-        [HttpGet("get-user-feedbacks/{id:int}")]
+        [HttpGet("get-feedbacks/{id:int}")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<ActionResult<GetUserRatingsResponse>> GetUserFeedbacks(int id, CancellationToken token)

@@ -19,15 +19,17 @@ namespace RatingService.API.Controllers
             _service = service;
         }
 
-        [HttpPost("create-event")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
-        public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest req, CancellationToken token)
+        [HttpPost("create")]
+        [ProducesResponseType(typeof(IActionResult), 201)]
+        [ProducesResponseType(typeof(IActionResult), 400)]
+        public async Task<IActionResult> CreateEvent(CreateEventRequest req, CancellationToken token)
         {
-            var id = await _service.AddNewEventAsync(req.ToDto(), token);
-            return CreatedAtAction(nameof(GetEventById), new { id }, req);
+            var result = await _service.AddNewEventAsync(req.ToDto(), token);
+            if (result == null) { return BadRequest(); }
+            return CreatedAtAction(nameof(GetEventById), new { id = result.Id }, result);
         }
 
-        [HttpGet("get-events")]
+        [HttpGet("get-all")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         public async Task<ActionResult<GetEventResponse>> GetEvents(CancellationToken token)
         {
@@ -35,7 +37,7 @@ namespace RatingService.API.Controllers
             return Ok(events.ToResponseList());
         }
 
-        [HttpGet("get-event-info/{id:int}")]
+        [HttpGet("get/{id:int}")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<ActionResult<GetEventResponse>> GetEventById(int id, CancellationToken token)
@@ -45,47 +47,60 @@ namespace RatingService.API.Controllers
             return Ok(eventInfo.ToResponse());
         }
 
+        [HttpPost("{eventId:int}/set-rating")]
+        [ProducesResponseType(typeof(IActionResult), 200)]
+        public async Task<IActionResult> SetEventRating(int eventId, AddEventRatingUpdateRequest req, CancellationToken token)
+        {
+            var dto = req.ToDto();
+            dto.EventId = eventId;
+            await _service.AddEventRatingUpdateAsync(dto, token);
+            return Ok();
+        }
 
         /// <summary>
         /// Finalizes an event, setting the correct state and updating the info about registered participants.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        [HttpPost("finalize")]
+        [HttpPost("{eventId:int}/finalize")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(IActionResult), 400)]
-        public async Task<IActionResult> FinalizeEvent(FinalizeEventRequest req, CancellationToken token)
+        public async Task<IActionResult> FinalizeEvent(int eventId, FinalizeEventRequest req, CancellationToken token)
         {
             // TODO: create a domain event
             await _service.FinalizeEventAsync(req.ToDto(), token);
             return Ok();
         }
 
-
         // Participants
 
         [HttpPost("{eventId:int}/participants/add")]
         [ProducesResponseType(typeof(IActionResult), 201)]
+        [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<IActionResult> AddParticipant(int eventId, AddParticipantRequest req, CancellationToken token)
         {
             // TODO: create a domain event
             var dto = req.ToDto(eventId);
-            var participantId = await _service.AddParticipantAsync(eventId, dto, token);
-            return CreatedAtAction(nameof(GetParticipantByEventId), new { eventId, participantId }, req);
+            var result = await _service.AddParticipantAsync(eventId, dto, token);
+            if (result is null) { return BadRequest(); }
+            return CreatedAtAction(nameof(GetParticipantByEventId), new { eventId, participantId = result.Id }, result.ToResponse());
         }
 
         [HttpGet("{eventId:int}/participants/{participantId:int}")]
         [ProducesResponseType(typeof(ActionResult<Participant?>), 200)]
-        public async Task<ActionResult<Participant?>> GetParticipantByEventId(int eventId, int participantId, CancellationToken token)
+        public async Task<ActionResult<GetParticipantResponse?>> GetParticipantByEventId(int eventId, int participantId, CancellationToken token)
         {
-            return Ok(await _service.GetParticipantByEventIdAsync(eventId, participantId, token));
+            var participant = await _service.GetParticipantByEventIdAsync(eventId, participantId, token);
+            if (participant is null) { return BadRequest(); }
+            return Ok(participant.ToResponse());
         }
 
         [HttpGet("{eventId:int}/participants/get-all")]
         [ProducesResponseType(typeof(IActionResult), 200)]
-        public async Task<ActionResult<Participant>> GetParticipantsByEventId(int eventId, CancellationToken token)
+        public async Task<ActionResult<IEnumerable<GetParticipantResponse>>> GetParticipantsByEventId(int eventId, CancellationToken token)
         {
-            return Ok(await _service.GetParticipantsByEventIdAsync(eventId, token));
+            var result = await _service.GetParticipantsByEventIdAsync(eventId, token);
+            return Ok(result.ToResponseList());
         }
 
         [HttpDelete("{eventId:int}/participants/{participantId:int}/remove")]
@@ -96,15 +111,18 @@ namespace RatingService.API.Controllers
             return NoContent();
         }
 
+        // ratings
+
         [HttpPost("{eventId:int}/participants/{participantId:int}/set-rating")]
         [ProducesResponseType(typeof(IActionResult), 200)]
-        [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<IActionResult> SetParticipantRating(int eventId, int participantId, 
             AddParticipantRatingUpdateRequest req, CancellationToken token)
         {
-            req.EventId = eventId;
-            req.SubjectId = participantId;
-            await _service.AddParticipantRatingUpdate(req.ToDto(), token);
+            var dto = req.ToDto();
+            dto.EventId = eventId;
+            dto.ReceipientId = participantId;
+
+            await _service.AddParticipantRatingUpdateAsync(dto, token);
             return Ok();
         }
     }

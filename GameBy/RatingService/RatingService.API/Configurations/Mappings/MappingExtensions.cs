@@ -22,10 +22,10 @@ internal static class MappingExtensions
             req.Category.TryParseOrDefault(EventCategory.Unclarified),
             req.State.TryParseOrDefault(EventProgressionState.Announced));
 
-    internal static GetEventResponse ToResponse(this GetEventDto req) =>
-        new(req.ExternalEventId, req.Title, req.CreationDate, req.Category.ToString(), req.State.ToString(), req.Rating.Value);
+    internal static GetEventResponse ToResponse(this GetEventInfoDto req) =>
+        new(req.Id, req.Title, req.OrganizerId, req.CreationDate, req.Category.ToString(), req.State.ToString(), req.Rating);
 
-    internal static IEnumerable<GetEventResponse> ToResponseList(this IEnumerable<GetEventDto> events)
+    internal static IEnumerable<GetEventResponse> ToResponseList(this IEnumerable<GetEventInfoDto> events)
     {
         var responseList = new List<GetEventResponse>();
         foreach (var e in events)
@@ -51,11 +51,14 @@ internal static class MappingExtensions
 
     internal static AddUserDto ToDto(this AddUserRequest req) =>
         new(req.ExternalUserId, req.UserName);
-    internal static GetUserResponse ToResponse(this GetUserDto dto) => 
-        new(dto.ExternalUserId, dto.UserName);
+    internal static GetUserResponse ToResponse(this GetUserInfoDto dto) => 
+        new(dto.Id, dto.Username, dto.GamerRating, dto.OrganizerRating);
 
     // Participants
-
+    internal static GetParticipantResponse ToResponse(this GetParticipantDto dto) =>
+        new(dto.Id, dto.UserId, dto.EventId, dto.State.ToString(), dto.Rating);
+    internal static IEnumerable<GetParticipantResponse> ToResponseList(this IEnumerable<GetParticipantDto> dto) =>
+        dto.Select(e => e.ToResponse()).ToList();
     internal static AddParticipantDto ToDto(this AddParticipantRequest req, int eventId) =>
         new(req.ExternalParticipantId, req.ExternalUserId, eventId, req.State.TryParseOrDefault(ParticipationState.Unclarified));
     internal static ParticipantStateChangeDto ToDto(this ParticipantStateChangeRequest req) =>
@@ -64,7 +67,9 @@ internal static class MappingExtensions
     // Ratings and Feedbacks
 
     internal static AddParticipantRatingUpdateDto ToDto(this AddParticipantRatingUpdateRequest req) =>
-        new(req.Value, req.EntityType.TryParseOrDefault(EntityType.Participant), req.AuthorId, req.SubjectId, req.EventId, req.CreationDate);
+        new(req.Value, req.AuthorId, req.CreationDate);
+    internal static AddEventRatingUpdateDto ToDto(this AddEventRatingUpdateRequest req) =>
+        new(req.Value, req.AuthorId, req.CreationDate);
     //internal static EditParticipantRatingDto ToDto(this EditParticipantRatingRequest req) => new(req.Value);
     internal static GetUserRatingsResponse ToResponse(this GetUserRatingsDto req) =>
         new(req.ExternalUserId, req.GamerRating, req.OrganizerRating);

@@ -25,27 +25,29 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
     public async Task AddOrUpdate(RatingUpdate update, CancellationToken token)
     {
         using var tran = await storage.Database.BeginTransactionAsync(token);
-        if (update is ParticipantRatingUpdate)
+        if (update is ParticipantRatingUpdate participantRatingUpdate)
         {
-            // add a new rating update
-            var rating = await _participantRatings.Include(e => e.Updates).FirstOrDefaultAsync(e => e.ExternalParticipantId == update.SubjectId);
+            var rating = await _participantRatings.Include(e => e.Updates)
+                .FirstOrDefaultAsync(e => e.Id == participantRatingUpdate.SubjectId);
+
             if (rating == null) { return; }
-            update.SetRatingRelation(rating.Id);
-            rating.AddRatingUpdate(update);
+            participantRatingUpdate.SetRatingRelation(rating.Id);
+            rating.AddRatingUpdate(participantRatingUpdate);
             await storage.SaveChangesAsync();
 
             await Recalculate((ParticipantRatingUpdate)update, token);
         }
-        else if (update is EventRatingUpdate)
+        else if (update is EventRatingUpdate eventRatingUpdate)
         {
-            // add a new rating update
-            var rating = await _eventRatings.Include(e => e.Updates).FirstOrDefaultAsync(e => e.ExternalEventId == update.SubjectId);
+            var rating = await _eventRatings.Include(e => e.Updates)
+                .FirstOrDefaultAsync(e => e.Id == eventRatingUpdate.SubjectId);
+
             if (rating == null) { return; }
-            update.SetRatingRelation(rating.Id);
-            rating.AddRatingUpdate(update);
+            eventRatingUpdate.SetRatingRelation(rating.Id);
+            rating.AddRatingUpdate(eventRatingUpdate);
             await storage.SaveChangesAsync();
 
-            await Recalculate((EventRatingUpdate)update, token);
+            await Recalculate(eventRatingUpdate, token);
         }
 
         await tran.CommitAsync(token);
@@ -59,7 +61,7 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
         // there should be no problems with dividing by 0, since this method is gonna be called when at least 1 Update has already been stored
         float newValue = await _participantRatings
             .Include(e => e.Updates)
-            .Where(e => e.ExternalParticipantId == subjectId)
+            .Where(e => e.Id == subjectId)
             .Select(e => new { Sum = e.Updates.Sum(x => x.Value), Count = e.Updates.Count() })
             .Select(e => e.Sum / e.Count)
             .FirstOrDefaultAsync(token);
@@ -79,27 +81,27 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
         // Stage 2: Recalculate a base rating
 
         // get a participant, that stores a userId value
-        var userId = await _participants
-            .Where(e => e.ExternalParticipantId == subjectId)
-            .Select(e => e.ExternalUserId)
+        var userInfoId = await _participants
+            .Where(e => e.Id == subjectId)
+            .Select(e => e.UserInfoId)
             .FirstOrDefaultAsync(token);
 
         // calculate a new rating value
         var obj = await _usersInfo
             //.Include(e => e.GamerRating)
             //.ThenInclude(e => e.ParticipantRatings)
-            .Where(e => e.ExternalUserId == userId)
+            .Where(e => e.Id == userInfoId)
             .Select(e => new
             {
                 e.GamerRating,
-                Sum = e.GamerRating.ParticipantRatings.Sum(x => x.Value),
+                Sum = e.GamerRating!.ParticipantRatings.Sum(x => x.Value),
                 Count = e.GamerRating.ParticipantRatings.Count()
             })
             .Select(e => new { e.GamerRating, newValue = e.Sum / e.Count })
             .FirstOrDefaultAsync(token);
         ArgumentNullException.ThrowIfNull(obj);
 
-        obj.GamerRating.SetUpdatedValue(obj.newValue);
+        obj.GamerRating!.SetUpdatedValue(obj.newValue);
         await storage.SaveChangesAsync(token);
 
         _cacheService.SetRatingValue(obj.GamerRating.Id, EntityType.Gamer, obj.GamerRating);
@@ -114,13 +116,13 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
         // there should be no problems with dividing by 0, since this method is gonna be called when at least 1 Update has already been stored
         float newValue = await _eventRatings
             .Include(e => e.Updates)
-            .Where(e => e.ExternalEventId == subjectId)
+            .Where(e => e.Id == subjectId)
             .Select(e => new { Sum = e.Updates.Sum(x => x.Value), Count = e.Updates.Count() })
             .Select(e => e.Sum / e.Count)
             .FirstOrDefaultAsync(token);
 
         // try to get a rating from the cache, if it`s empty - get it from db and store in the cache
-        var rating = await GetRating(subjectId, EntityType.Participant, token);
+        var rating = await GetRating(subjectId, EntityType.Event, token);
         ArgumentNullException.ThrowIfNull(rating);
 
         rating.SetUpdatedValue(newValue);
@@ -135,7 +137,7 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
 
         // an organizerId of an event is the ExternalUserId in the UserInfo table
         var organizerId = await _eventsInfo
-            .Where(e => e.ExternalEventId == subjectId)
+            .Where(e => e.Id == subjectId)
             .Select(e => e.OrganizerId)
             .FirstOrDefaultAsync(token);
 
@@ -143,16 +145,18 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
         var obj = await _usersInfo
             //.Include(e => e.OrganizerRating)
             //.ThenInclude(e => e.EventRatings)
-            .Where(e => e.ExternalUserId == organizerId)
+            .Where(e => e.Id == organizerId)
             .Select(e => new
             {
                 e.OrganizerRating,
-                Sum = e.GamerRating.ParticipantRatings.Sum(x => x.Value),
-                Count = e.GamerRating.ParticipantRatings.Count()
+                Sum = e.OrganizerRating!.EventRatings.Sum(x => x.Value),
+                Count = e.OrganizerRating.EventRatings.Count()
             })
             .Select(e => new { e.OrganizerRating, newValue = e.Sum / e.Count })
             .FirstOrDefaultAsync(token);
+
         ArgumentNullException.ThrowIfNull(obj);
+        ArgumentNullException.ThrowIfNull(obj.OrganizerRating);
 
         obj.OrganizerRating.SetUpdatedValue(obj.newValue);
         await storage.SaveChangesAsync(token);

@@ -16,8 +16,10 @@ internal class ParticipantsRatingsUpdateConfiguration : IEntityTypeConfiguration
         builder.Property(e => e.AuthorId).HasColumnName("author_id");
         builder.Property(e => e.CreationDate).HasColumnName("creation_date");
         builder.Property(e => e.UpdateDate).HasColumnName("update_date");
+        builder.Property(e => e.SubjectId).HasColumnName("subject_id");
         builder.Property(e => e.RatingId).HasColumnName("rating_id");
 
-        builder.HasOne<ParticipantRating>().WithMany().HasForeignKey(e => e.RatingId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<ParticipantRating>().WithMany(e => e.Updates).HasForeignKey(e => e.RatingId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

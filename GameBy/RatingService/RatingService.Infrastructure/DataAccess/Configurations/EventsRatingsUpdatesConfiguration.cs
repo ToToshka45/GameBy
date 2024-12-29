@@ -16,8 +16,10 @@ internal class EventsRatingsUpdatesConfiguration : IEntityTypeConfiguration<Even
         builder.Property(e => e.AuthorId).HasColumnName("author_id");
         builder.Property(e => e.CreationDate).HasColumnName("creation_date");
         builder.Property(e => e.UpdateDate).HasColumnName("update_date");
+        builder.Property(e => e.SubjectId).HasColumnName("subject_id");
         builder.Property(e => e.RatingId).HasColumnName("rating_id");
 
-        builder.HasOne<EventRating>().WithMany().HasForeignKey(e => e.RatingId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<EventRating>().WithMany(e => e.Updates).HasForeignKey(e => e.RatingId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

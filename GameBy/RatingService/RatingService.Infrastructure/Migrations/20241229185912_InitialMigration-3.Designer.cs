@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RatingService.Infrastructure.DataAccess;
@@ -11,9 +12,11 @@ using RatingService.Infrastructure.DataAccess;
 namespace RatingService.Infrastructure.Migrations
 {
     [DbContext(typeof(RatingServiceDbContext))]
-    partial class RatingServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241229185912_InitialMigration-3")]
+    partial class InitialMigration3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,8 +95,7 @@ namespace RatingService.Infrastructure.Migrations
                         .HasColumnName("rating_id");
 
                     b.Property<int>("SubjectId")
-                        .HasColumnType("integer")
-                        .HasColumnName("subject_id");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -210,8 +212,7 @@ namespace RatingService.Infrastructure.Migrations
                         .HasColumnName("rating_id");
 
                     b.Property<int>("SubjectId")
-                        .HasColumnType("integer")
-                        .HasColumnName("subject_id");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp with time zone")

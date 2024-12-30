@@ -7,6 +7,7 @@ using RatingService.Domain.Entities;
 using RatingService.Domain.Entities.Ratings;
 using RatingService.Domain.Enums;
 using RatingService.Infrastructure.DataAccess;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RatingService.Infrastructure.Repositories;
 
@@ -59,12 +60,14 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
 
         // Stage 1
         // there should be no problems with dividing by 0, since this method is gonna be called when at least 1 Update has already been stored
-        float newValue = await _participantRatings
+        var data = await _participantRatings
             .Include(e => e.Updates)
             .Where(e => e.Id == subjectId)
             .Select(e => new { Sum = e.Updates.Sum(x => x.Value), Count = e.Updates.Count() })
-            .Select(e => e.Sum / e.Count)
             .FirstOrDefaultAsync(token);
+        ArgumentNullException.ThrowIfNull(data);
+
+        var newValue = (float)Math.Round(data.Sum / data.Count, 2);
 
         // try to get a rating from the cache, if it`s empty - get it from db and store in the cache
         var rating = await GetRating(subjectId, EntityType.Participant, token);
@@ -88,8 +91,8 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
 
         // calculate a new rating value
         var obj = await _usersInfo
-            //.Include(e => e.GamerRating)
-            //.ThenInclude(e => e.ParticipantRatings)
+            .Include(e => e.GamerRating)
+            .ThenInclude(e => e!.ParticipantRatings)
             .Where(e => e.Id == userInfoId)
             .Select(e => new
             {
@@ -97,11 +100,13 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
                 Sum = e.GamerRating!.ParticipantRatings.Sum(x => x.Value),
                 Count = e.GamerRating.ParticipantRatings.Count()
             })
-            .Select(e => new { e.GamerRating, newValue = e.Sum / e.Count })
             .FirstOrDefaultAsync(token);
+
         ArgumentNullException.ThrowIfNull(obj);
 
-        obj.GamerRating!.SetUpdatedValue(obj.newValue);
+        newValue = (float)Math.Round(obj.Sum / obj.Count, 2);
+
+        obj.GamerRating!.SetUpdatedValue(newValue);
         await storage.SaveChangesAsync(token);
 
         _cacheService.SetRatingValue(obj.GamerRating.Id, EntityType.Gamer, obj.GamerRating);
@@ -113,19 +118,30 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
 
         // Stage 1
 
-        // there should be no problems with dividing by 0, since this method is gonna be called when at least 1 Update has already been stored
-        float newValue = await _eventRatings
+        // TODO: understand, why do I get the numeric value overflow error here, an error comes from Npgsql side,
+        // so it`s something related to how a value is being stored on PostgreSQL side...
+
+        //float newValue = (float)await _eventRatings
+        //    .Include(e => e.Updates)
+        //    .Where(e => e.Id == subjectId)
+        //    .Select(e => new { Sum = e.Updates.Sum(x => x.Value), Count = e.Updates.Count() })
+        //    .Select(e => Math.Round(e.Sum / e.Count, 2))
+        //    .FirstOrDefaultAsync(token);
+
+        var data = await _eventRatings
             .Include(e => e.Updates)
             .Where(e => e.Id == subjectId)
-            .Select(e => new { Sum = e.Updates.Sum(x => x.Value), Count = e.Updates.Count() })
-            .Select(e => e.Sum / e.Count)
-            .FirstOrDefaultAsync(token);
+            .Select(e => new { Sum = e.Updates.Sum(x => x.Value), Count = e.Updates.Count() }).FirstOrDefaultAsync();
+        ArgumentNullException.ThrowIfNull(data);
+
+        // since we get an error during this part of calculating, we`ll do in on the application side
+        var newValue = (float)Math.Round(data.Sum / data.Count, 2);
 
         // try to get a rating from the cache, if it`s empty - get it from db and store in the cache
         var rating = await GetRating(subjectId, EntityType.Event, token);
         ArgumentNullException.ThrowIfNull(rating);
 
-        rating.SetUpdatedValue(newValue);
+        rating.SetUpdatedValue((float)newValue);
         //_ratings.Update(rating);
 
         await storage.SaveChangesAsync(token);
@@ -143,22 +159,24 @@ public class RatingsRepository(RatingServiceDbContext storage, InMemoryCachingSe
 
         // calculate a new rating value
         var obj = await _usersInfo
-            //.Include(e => e.OrganizerRating)
-            //.ThenInclude(e => e.EventRatings)
+            .Include(e => e.OrganizerRating)
+            .ThenInclude(e => e.EventRatings)
             .Where(e => e.Id == organizerId)
             .Select(e => new
             {
                 e.OrganizerRating,
                 Sum = e.OrganizerRating!.EventRatings.Sum(x => x.Value),
                 Count = e.OrganizerRating.EventRatings.Count()
-            })
-            .Select(e => new { e.OrganizerRating, newValue = e.Sum / e.Count })
-            .FirstOrDefaultAsync(token);
+            }).FirstOrDefaultAsync(token);
+        ArgumentNullException.ThrowIfNull(obj);
+
+        // the same as the rework above we now make the calculation on the application side
+        newValue = (float)Math.Round(obj.Sum / obj.Count, 2);
 
         ArgumentNullException.ThrowIfNull(obj);
         ArgumentNullException.ThrowIfNull(obj.OrganizerRating);
 
-        obj.OrganizerRating.SetUpdatedValue(obj.newValue);
+        obj.OrganizerRating.SetUpdatedValue(newValue);
         await storage.SaveChangesAsync(token);
 
         _cacheService.SetRatingValue(obj.OrganizerRating.Id, EntityType.Organizer, obj.OrganizerRating);

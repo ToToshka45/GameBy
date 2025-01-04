@@ -1,9 +1,13 @@
 using Application;
+using Application.EventHandlers;
 using DataAccess;
 using DataAccess.Abstractions;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
+using System.Reflection;
 using WebApi.MapperProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,21 +18,43 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//ToDo UserSecrests
+
+//amqps://
+var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+var RedisConnect= Environment.GetEnvironmentVariable("REDIS_CONNECT");
+//var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
+
+
 builder.Services.AddDbContext<DataContext>(x =>
 {
-    x.UseNpgsql("Host=localhost;Port=5432;Database=usersdb;Username=postgres;Password=123w");
+    //x.UseNpgsql("Host=localhost;Port=5432;Database=usersdb;Username=postgres;Password=123w");
+    x.UseNpgsql(PgConnect);
     x.UseLazyLoadingProxies();
     x.LogTo(Console.WriteLine, LogLevel.Information);
-}); ;
+});
+
+
+builder.Services.AddSingleton<RabbitService>();
 builder.Services.AddScoped<RegisterService>();
 builder.Services.AddScoped<AuthenticantionService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+
+
 
 builder.Services.AddAutoMapper(typeof(AppMappingProfiles));
 
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
 
+//"localhost:1919"
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(RedisConnect));
+
+builder.Services.AddScoped<UserTokenService>();
+
+builder.Services.AddTransient<UserAddedEventHandler>();
+
+//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AppDomain.CurrentDomain.Load("Application")));
 
 var app = builder.Build();
 
@@ -67,6 +93,9 @@ using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
     dbInitializer.InitializeDb();
+
+    RabbitService rabbitService = scope.ServiceProvider.GetRequiredService<RabbitService>();
+    await rabbitService.Init(""); 
 }
 
 app.Run();

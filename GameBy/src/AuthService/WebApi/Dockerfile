@@ -12,19 +12,25 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["authTest/authTest.csproj", "authTest/"]
-RUN dotnet restore "./authTest/authTest.csproj"
+COPY ["WebApi/WebApi.csproj", "WebApi/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["DataAccess/DataAccess.csproj", "DataAccess/"]
+COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Constants/Constants.csproj", "Constants/"]
+RUN dotnet restore "./WebApi/WebApi.csproj"
 COPY . .
-WORKDIR "/src/authTest"
-RUN dotnet build "./authTest.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/WebApi"
+RUN dotnet build "./WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./authTest.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "authTest.dll"]
+ENTRYPOINT ["dotnet", "WebApi.dll"]

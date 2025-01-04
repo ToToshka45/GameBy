@@ -1,0 +1,30 @@
+services:
+  #Administration Db
+  users-db:
+    image: "postgres:latest"
+    container_name: 'users-db'
+    restart: always 
+    ports:
+      - 5433:5432
+    environment: 
+      - POSTGRES_PASSWORD=123w
+  #tokens Db
+  refresh-token-db:
+    image: "redis:latest"
+    container_name: 'refresh-token-db'
+    restart: always 
+    ports:
+      - 1920:6379
+  #Web Api
+  auth-service-api:
+    build:
+      context: ./
+      dockerfile: ./WebApi/Dockerfile
+    container_name: 'auth-service-api'
+    environment:
+      - "PG_CONNECT=Host=users-db;Database=usersdb;Username=postgres;Password=123w;"
+      - REDIS_CONNECT=refresh-token-db
+    restart: always
+    depends_on: 
+      - refresh-token-db
+      - users-db

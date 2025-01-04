@@ -77,7 +77,6 @@ namespace WebApi.Controllers
         }
 
         
-        [Authorize]
         [HttpGet("About")]
         public IActionResult About()
         {

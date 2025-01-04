@@ -37,6 +37,13 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
 
+
+        /// <summary>
+        /// Логин по паролю и логину или email
+        /// </summary>
+        /// <returns>
+        /// Unauthorized or LoginResultResponse
+        /// </returns>
         [HttpPost("login")]
         public async Task<ActionResult<LoginResultResponse>> Login(SimpleLoginDto request)
         {

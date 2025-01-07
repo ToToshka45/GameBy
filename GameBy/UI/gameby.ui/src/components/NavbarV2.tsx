@@ -34,6 +34,15 @@ export const NavbarV2 = () => {
           <Button
             size="large"
             color="inherit"
+            startIcon={
+              <i
+                className="fa-solid fa-dice"
+                style={{
+                  color: "yellow",
+                  fontSize: "28px",
+                }}
+              ></i>
+            }
             sx={{
               textTransform: "none",
               fontFamily: "'Roboto', sans-serif",
@@ -41,17 +50,9 @@ export const NavbarV2 = () => {
               display: "flex", // Allows button to size based on content
               // Center vertically if needed
               p: 1, // Padding for aesthetics, adjust as needed
-              minWidth: 0, // Ensures no minimum width is set by MUI
+              // minWidth: 0, // Ensures no minimum width is set by MUI
             }}
           >
-            <i
-              className="fa-solid fa-dice"
-              style={{
-                color: "yellow",
-                fontSize: "36px",
-                marginRight: 6,
-              }}
-            ></i>
             Game<span style={{ fontStyle: "italic" }}>By</span>
           </Button>
         </Box>
@@ -79,7 +80,7 @@ export const NavbarV2 = () => {
             {navMenu.map((item, idx) => (
               <Button
                 key={idx}
-                size="large"
+                size="medium"
                 // sx={{
                 //   display: { xs: "none", sm: "inline", md: "inline" },
                 //   color: "#fff",
@@ -103,6 +104,7 @@ export const NavbarV2 = () => {
                 sx={{
                   display: { xs: "none", sm: "inline", md: "inline" },
                   color: "antiqueWhite",
+                  borderRadius: 2,
                 }}
               >
                 {item}

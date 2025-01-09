@@ -67,8 +67,8 @@ namespace Application
             user.Password = new UserPassword(newUserDto.UserPassword);
 
             //ToDo AddRole
-            var playerRole = await _roleRepository.GetByIdAsync(Guid.Parse("dc900ef4-986a-4a74-bff4-30ac6852b66f"));
-            var orgRole = await _roleRepository.GetByIdAsync(Guid.Parse("0bfced73-03d0-4fba-acf5-cda1334e8e26"));
+            var playerRole = await _roleRepository.GetByIdAsync(1);
+            var orgRole = await _roleRepository.GetByIdAsync(2);
 
             user.Roles = new List<UserRole>() { new UserRole() {
                 Role = playerRole,

@@ -20,11 +20,11 @@ namespace DataAccess.Abstractions
         /// <returns>
         /// Объект типа <typeparamref name="T"/> если он найден; в противном случае <c>null</c>.
         /// </returns>
-        Task<T> GetByIdAsync(Guid id);
+        Task<T> GetByIdAsync(int id);
 
         Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate);
 
-        Task<IEnumerable<T>> GetRangeByIdsAsync(List<Guid> ids);
+        Task<IEnumerable<T>> GetRangeByIdsAsync(List<int> ids);
 
         Task<T> AddAsync(T entity);
 

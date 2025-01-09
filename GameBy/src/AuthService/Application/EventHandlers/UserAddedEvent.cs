@@ -9,9 +9,9 @@ namespace Application.EventHandlers
 {
     public class UserAddedEvent : INotification
     {
-        public Guid UserId { get; }
+        public int UserId { get; }
 
-        public UserAddedEvent(Guid userId)
+        public UserAddedEvent(int userId)
         {
             UserId = userId;
         }

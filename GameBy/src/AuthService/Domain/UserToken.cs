@@ -8,7 +8,7 @@ namespace Domain
 {
     public class UserToken
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public string RefreshToken { get; set; }
         public DateTime ExpirationDate { get; set; }
 

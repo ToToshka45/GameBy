@@ -32,14 +32,14 @@ namespace DataAccess.Repositories
             return await _dataContext.Set<T>().Where(predicate).ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(Guid id)
+        public async Task<T> GetByIdAsync(int id)
         {
             var entity = await _dataContext.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
 
             return entity;
         }
 
-        public async Task<IEnumerable<T>> GetRangeByIdsAsync(List<Guid> ids)
+        public async Task<IEnumerable<T>> GetRangeByIdsAsync(List<int> ids)
         {
             var entities = await _dataContext.Set<T>().Where(x => ids.Contains(x.Id)).ToListAsync();
             return entities;

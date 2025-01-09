@@ -145,7 +145,7 @@ namespace Application
             return res;
         }
 
-        private string GenerateTokens(Guid userId,List<string> userRoleNames,
+        private string GenerateTokens(int userId,List<string> userRoleNames,
             bool IsRefresh=false)
         {
             string res = string.Empty;
@@ -176,6 +176,20 @@ namespace Application
              
             res = new JwtSecurityTokenHandler().WriteToken(token);
             return res;
+        }
+
+        public int? GetTokenInfo(string accessToken)
+        {
+            ClaimsPrincipal principal = null;
+            try
+            {
+                principal = GetPrincipalFromTokens(accessToken);
+            }
+            catch (SecurityTokenException e)
+            {
+                return null;
+            }
+            return Convert.ToInt32(principal.Identity.Name);
         }
 
         private ClaimsPrincipal GetPrincipalFromTokens(string tokenStr)

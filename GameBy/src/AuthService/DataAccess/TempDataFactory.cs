@@ -22,9 +22,9 @@ namespace DataAccess
             _dataContext.Database.EnsureDeleted();
             _dataContext.Database.EnsureCreated();
 
-            var playerRole = new Role() { RoleName = "Player", Id = Guid.Parse("dc900ef4-986a-4a74-bff4-30ac6852b66f") };
+            var playerRole = new Role() { RoleName = "Player", Id = 1 };
             _dataContext.Add(playerRole);
-            var OrganizerRole = new Role() { RoleName = "Organizer", Id = Guid.Parse("0bfced73-03d0-4fba-acf5-cda1334e8e26") };
+            var OrganizerRole = new Role() { RoleName = "Organizer", Id = 2 };
             _dataContext.Add(OrganizerRole);
             _dataContext.SaveChanges();
             var userTest = new User()

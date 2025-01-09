@@ -83,7 +83,28 @@ namespace WebApi.Controllers
             return BadRequest(res.ErrorMessage);
         }
 
-        
+        /// <summary>
+        /// По refreshToken обновить токен
+        /// </summary>
+        /// <returns>
+        /// LoginInfo Response or BadRequest 
+        /// </returns>
+        [HttpPost("TokenInfo")]
+        public async Task<ActionResult<int>> GetTokenInfo(string accessToken)
+        {
+            //ToDo Хранить refresh token
+            LoginResultResponse loginResultResponse = new LoginResultResponse();
+            var res =  _authService.GetTokenInfo(accessToken);
+            if (res!=null)
+            {
+               
+                return res;
+            }
+
+            return BadRequest();
+        }
+
+
         [HttpGet("About")]
         public IActionResult About()
         {

@@ -20,9 +20,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //amqps://
-var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-var RedisConnect= Environment.GetEnvironmentVariable("REDIS_CONNECT");
+//var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+//var RedisConnect= Environment.GetEnvironmentVariable("REDIS_CONNECT");
 //var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
+
+var PgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
+var RedisConnect= "localhost:1920";
 
 
 builder.Services.AddDbContext<DataContext>(x =>

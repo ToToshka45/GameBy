@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, CssBaseline, Typography } from "@mui/material";
+import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 
 const categoriesList = [
@@ -28,7 +28,7 @@ const categoriesList = [
   { name: "Quiz4", pic: "src/assets/categories/quiz.png", isActive: false },
 ];
 
-export const CategoryPlane = () => {
+export const CategoryFilter = () => {
   const [categories, setCategories] = useState(categoriesList);
 
   const setActive = (key: String) => {
@@ -50,39 +50,33 @@ export const CategoryPlane = () => {
         marginTop={10}
         width={"auto"}
       >
-        <CssBaseline>
-          {categories.map((el) => (
-            <Box
-              display={"flex"}
-              flexDirection={"column"}
-              alignItems={"center"}
+        {categories.map((el) => (
+          <Box display={"flex"} flexDirection={"column"} alignItems={"center"}>
+            <Button
+              key={el.name}
+              size="small"
+              sx={{ borderRadius: "50%" }}
+              onClick={() => setActive(el.name)}
             >
-              <Button
-                key={el.name}
-                size="small"
-                sx={{ borderRadius: 12 }}
-                onClick={() => setActive(el.name)}
-              >
-                <Avatar
-                  sx={{
-                    width: { xs: 60, sm: 90 },
-                    height: { xs: 60, sm: 90 },
-                    border: "1px solid gray",
-                    bgcolor: el.isActive ? "orange" : "transparent", // Change the color as needed
-                    "& img": {
-                      height: "60%",
-                      width: "60%",
-                    },
-                  }}
-                  src={el.pic} // Use this to display the image
-                />
-              </Button>
-              <Typography variant="caption" sx={{ marginTop: 1 }}>
-                {el.name || "Unknown"}
-              </Typography>
-            </Box>
-          ))}
-        </CssBaseline>
+              <Avatar
+                sx={{
+                  width: { xs: 60, sm: 90 },
+                  height: { xs: 60, sm: 90 },
+                  border: "1px solid gray",
+                  bgcolor: el.isActive ? "orange" : "transparent", // Change the color as needed
+                  "& img": {
+                    height: "60%",
+                    width: "60%",
+                  },
+                }}
+                src={el.pic} // Use this to display the image
+              />
+            </Button>
+            <Typography variant="caption" sx={{ marginTop: 1 }}>
+              {el.name || "Unknown"}
+            </Typography>
+          </Box>
+        ))}
       </Box>
       {/* <Box display={"flex"}>
         <Button

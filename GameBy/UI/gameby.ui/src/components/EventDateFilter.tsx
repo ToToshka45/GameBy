@@ -12,17 +12,16 @@ export const EventDateFilter = () => {
   };
 
   return (
-    <Box
-      display={"flex"}
-      justifyContent={"center"}
-      // marginLeft={3}
-    >
+    <Box display={"flex"} justifyContent="flex-end">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateTimePicker
           label="EventDate"
           value={eventDate}
           onChange={(date) => setDate(date)}
-          sx={{ maxWidth: { xs: "50%", sm: "30%" }, maxHeight: "80%" }}
+          sx={{
+            maxWidth: { xs: "50%", sm: "30%" },
+            maxHeight: "80%",
+          }}
           // renderLoading={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>

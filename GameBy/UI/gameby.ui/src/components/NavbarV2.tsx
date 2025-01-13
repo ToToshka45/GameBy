@@ -57,50 +57,12 @@ export const NavbarV2 = () => {
           </Button>
         </Box>
 
-        {/* 
-        <TextField
-          variant="outlined"
-          placeholder="Search..."
-          size="small"
-          sx={{
-            bgcolor: "white",
-            borderRadius: 4,
-            width: 400,
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        /> */}
         <Box display={"flex"}>
           <Stack direction="row" gap={1}>
             {navMenu.map((item, idx) => (
               <Button
                 key={idx}
                 size="medium"
-                // sx={{
-                //   display: { xs: "none", sm: "inline", md: "inline" },
-                //   color: "#fff",
-                //   background: "linear-gradient(145deg, #8bc34a, #388e3c)", // Gradient from lighter to deeper color
-                //   borderRadius: "8px", // Rounded corners for better appearance
-                //   border: "1px solid #000000", // Slightly darker border color
-                //   // boxShadow:
-                //   //   "3px 3px 6px rgba(0,0,0,0.2), -3px -3px 6px rgba(255,255,255,0.5)", // Dual direction shadow
-                //   transition: "all 0.2s ease-in-out", // Smooth transition for interactivity
-
-                //   ":hover": {
-                //     background: "linear-gradient(145deg, #FFC107, #FFCA28)", // Slightly change gradient on hover
-                //     boxShadow: "inset 3px 3px 5px rgba(0,0,0,0.2)", // Inner shadow effect on hover
-                //   },
-
-                //   ":active": {
-                //     boxShadow: "inset 2px 2px 3px rgba(0,0,0,0.3)", // More pronounced inner shadow on click
-                //     transform: "translateY(1px)", // Small movement for press effect
-                //   },
-                // }}
                 sx={{
                   display: { xs: "none", sm: "inline", md: "inline" },
                   color: "antiqueWhite",

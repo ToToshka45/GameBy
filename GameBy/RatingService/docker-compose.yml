@@ -1,0 +1,41 @@
+services:
+  # ratings.api:
+  #   container_name: ratings.api
+  #   build: .
+  #   restart: always
+  #   environment:
+  #     - ConnectionStrings:Npgsql=Host=ratings.db;Port=5432;Database=rating_service;Username=admin;Password=admin
+  #   ports:
+  #     - 5100:5001 #http
+  #   depends_on:
+  #     - ratings.db
+  #     - ratings.queue
+
+  ratings.db:
+    container_name: ratings.db
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: rating_service
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - dbstorage:/var/lib/postgresql/data
+
+  ratings.queue:
+    container_name: ratings.queue
+    image: rabbitmq:4.0.2-management
+    hostname: ratings
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: pass
+    ports:
+      - "15673:15672" # Management UI
+      - "5673:5672" # Default RabbitMQ Port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  dbstorage:

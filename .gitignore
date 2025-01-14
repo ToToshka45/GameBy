@@ -396,5 +396,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/GameBy/RatingService/RatingService.API/TODO.txt
+/GameBy/RatingService/RatingService.API/Properties/launchSettings.json
+/GameBy/RatingService/docker-compose.persistence.yml
 /GameBy/RatingService/RatingService.API/Properties/launchSettings.json
 /GameBy/UI/gameby.ui

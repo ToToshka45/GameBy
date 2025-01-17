@@ -1,11 +1,6 @@
-using RatingService.Application.Services;
-using RatingService.Application.Services.Abstractions;
+using RatingService.Application;
 using RatingService.Common.Models.Settings;
-using RatingService.Domain.Abstraction;
-using RatingService.Domain.Abstractions;
 using RatingService.Infrastructure;
-using RatingService.Infrastructure.Abstractions;
-using RatingService.Infrastructure.Repositories;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +13,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddOpenApi();
 builder.Services.Configure<ConnectionStringsSettings>(builder.Configuration.GetSection("ConnectionStrings"));
+builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection(nameof(RabbitMQSettings)));
+builder.Services.Configure<RabbitMQConfigurations>(builder.Configuration.GetSection(nameof(RabbitMQConfigurations)));
 
 // Configure Db depending on the environment
+await builder.MigrateRabbitMQ();
 builder.AddDbConfiguration(builder.Configuration);
 builder.AddConfigurations();
-builder.AddRepositories();
+
+builder.AddTestingServices();
 
 builder.Services.AddMemoryCache();
 

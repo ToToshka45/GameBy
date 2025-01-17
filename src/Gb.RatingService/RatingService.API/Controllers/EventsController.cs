@@ -76,22 +76,23 @@ namespace RatingService.API.Controllers
 
         [HttpPost("{eventId:int}/participants/add")]
         [ProducesResponseType(typeof(IActionResult), 201)]
-        [ProducesResponseType(typeof(IActionResult), 400)]
+        [ProducesResponseType(typeof(IActionResult), 404)]
         public async Task<IActionResult> AddParticipant(int eventId, AddParticipantRequest req, CancellationToken token)
         {
             // TODO: create a domain event
             var dto = req.ToDto(eventId);
             var result = await _service.AddParticipantAsync(eventId, dto, token);
-            if (result is null) { return BadRequest(); }
+            if (result is null) { return NotFound(); }
             return CreatedAtAction(nameof(GetParticipantByEventId), new { eventId, participantId = result.Id }, result.ToResponse());
         }
 
         [HttpGet("{eventId:int}/participants/{participantId:int}")]
-        [ProducesResponseType(typeof(ActionResult<Participant?>), 200)]
+        [ProducesResponseType(typeof(GetParticipantResponse), 200)]
+        [ProducesResponseType(typeof(IActionResult), 404)]
         public async Task<ActionResult<GetParticipantResponse?>> GetParticipantByEventId(int eventId, int participantId, CancellationToken token)
         {
             var participant = await _service.GetParticipantByEventIdAsync(eventId, participantId, token);
-            if (participant is null) { return BadRequest(); }
+            if (participant is null) { return NotFound(); }
             return Ok(participant.ToResponse());
         }
 

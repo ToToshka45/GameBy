@@ -4,7 +4,9 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RabbitMQSettings__Port": "5673",
+        "TestSettings__IsRabbitMQTestRequired": "true"
       },
       "applicationUrl": "https://localhost:56805;http://localhost:56806"
     }

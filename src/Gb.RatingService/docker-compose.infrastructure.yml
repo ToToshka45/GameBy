@@ -9,32 +9,38 @@ services:
     volumes:
       - pg-data:/var/lib/postgresql/data
     ports:
-      - 5434:5432
-    networks:
-      - external-network
+      - 5433:5432
 
-  ratings-db-gui:
-    container_name: pgadmin4
-    image: dpage/pgadmin4:latest
-    restart: always
+  # ratings-db-gui:
+  #   container_name: pgadmin4
+  #   image: dpage/pgadmin4:latest
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #     PGADMIN_LISTEN_PORT: 80
+  #   ports:
+  #     - 8088:80
+  #   volumes:
+  #     - pgadmin:/var/lib/pgadmin
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - external-network
+
+  rabbitmq:
+    image: rabbitmq:4.0.2-management
+    hostname: rabbit
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_LISTEN_PORT: 80
+      RABBITMQ_DEFAULT_USER: ratings
+      RABBITMQ_DEFAULT_PASS: ratings
     ports:
-      - 8088:80
+      - "15673:15672" # Management UI
+      - "5673:5672" # Default RabbitMQ Port
     volumes:
-      - pgadmin:/var/lib/pgadmin
-    depends_on:
-      - postgres
-    networks:
-      - external-network
+      - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
+  rabbitmq_data:
   pg-data:
   pgadmin:
-
-
-networks:
-  external-network:
-    external: true

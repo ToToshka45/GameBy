@@ -1,5 +1,5 @@
 1. Add a GlobalErrorHandling mechanism alongside the Result-pattern to return structured responses
-2. Add the external Caching
+2. Add the external Caching as part of the HybridCache
 3. Add RabbitMQ
 4. Add domain events for some operations, which don`t need to performed during the REST requests processing 
 5. Implement the logic to process an edit for received rating updates (when a Participant/Organizer changes a previously sent rating value)

@@ -4,7 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RatingService.Application;
+using RatingService.Application.Services;
+using RatingService.Common.CommonServices;
 using RatingService.Common.Models.Settings;
 using RatingService.Domain.Abstraction;
 using RatingService.Domain.Abstractions;
@@ -19,13 +22,47 @@ public static class DiExtensions
     public static void AddConfigurations(this IHostApplicationBuilder builder)
     {
         builder.AddApplicationConfiguration();
+        builder.AddRepositories();
+        builder.AddHostedServices();
     }
 
-    public static void AddRepositories(this IHostApplicationBuilder builder)
+    public static void AddTestingServices(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddHostedService<RabbitMQTestBackgroundService>();
+    }
+
+    public static async Task MigrateRabbitMQ(this IHostApplicationBuilder builder)
+    {
+        CancellationTokenSource cts = new();
+
+        using var provider = builder.Services.BuildServiceProvider();
+        var settings = provider.GetRequiredService<IOptions<RabbitMQSettings>>().Value;
+        var configs = provider.GetRequiredService<IOptions<RabbitMQConfigurations>>().Value;
+
+        var factory = ConnectionFactoryProvider.GetConnectionFactory(settings);
+        using var conn = await factory.CreateConnectionAsync(cts.Token);
+        using var channel = await conn.CreateChannelAsync(cancellationToken: cts.Token);
+
+        foreach (var config in configs)
+        {
+            await channel.ExchangeDeclareAsync(config.ExchangeName, config.ExchangeType, false, false, cancellationToken: cts.Token);
+            foreach (var queue in config.Queues)
+            {
+                await channel.QueueDeclareAsync(queue.Name, false, false, false, cancellationToken: cts.Token);
+                await channel.QueueBindAsync(queue.Name, config.ExchangeName, queue.RoutingKey, cancellationToken: cts.Token);
+            }
+        }
+    }
+    private static void AddRepositories(this IHostApplicationBuilder builder)
     {
         builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
         builder.Services.AddScoped<IEventLifecycleRepository, EventLifecycleRepository>();
         builder.Services.AddScoped<IRatingsRepository, RatingsRepository>();
+    }
+
+    private static void AddHostedServices(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddHostedService<MessageConsumerService>();
     }
 
     public static void AddDbConfiguration(this IHostApplicationBuilder builder, IConfiguration config)

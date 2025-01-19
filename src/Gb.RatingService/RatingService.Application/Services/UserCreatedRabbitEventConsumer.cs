@@ -10,9 +10,9 @@ using RatingService.Application.Services.Interfaces;
 using System.Text.Json;
 namespace RatingService.Application.Services;
 
-public sealed class UserCreatedEventConsumer : IBaseEventConsumer
+public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
 {
-    private readonly ILogger<UserCreatedEventConsumer> _logger;
+    private readonly ILogger<UserCreatedRabbitEventConsumer> _logger;
     private readonly RabbitMQSettings _settings;
     private readonly ConnectionFactory _factory;
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -21,7 +21,7 @@ public sealed class UserCreatedEventConsumer : IBaseEventConsumer
     private IChannel? _channel;
     private string? _consumerTag;
 
-    public UserCreatedEventConsumer(IOptions<RabbitMQSettings> options, ILogger<UserCreatedEventConsumer> logger, IServiceScopeFactory serviceScopeFactory)
+    public UserCreatedRabbitEventConsumer(IOptions<RabbitMQSettings> options, ILogger<UserCreatedRabbitEventConsumer> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _settings = options.Value;

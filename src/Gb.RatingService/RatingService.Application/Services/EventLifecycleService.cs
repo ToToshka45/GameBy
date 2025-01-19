@@ -64,9 +64,11 @@ public class EventLifecycleService : IEventLifecycleService
         return events.ToDtoList();
     }
 
-    public Task FinalizeEventAsync(FinalizeEventDto dto, CancellationToken token)
+    public async Task FinalizeEventAsync(FinalizeEventDto dto, CancellationToken token)
     {
-        throw new NotImplementedException();
+        var @event = dto.ToEventInfo();
+        @event.AddParticipants(dto.Participants.ToParticipantsList());
+        await _eventRepo.Add(@event, token);
     }
 
     // Participants 

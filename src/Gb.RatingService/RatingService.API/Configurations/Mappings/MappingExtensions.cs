@@ -44,15 +44,27 @@ internal static class MappingExtensions
         //EventId = eventCreated.ExternalEventId
     };
 
-    internal static FinalizeEventDto ToDto(this FinalizeEventRequest req) =>
-        new(req.ExternalEventId, req.State.TryParseOrDefault(EventProgressionState.Unclarified), req.Participants.Select(p => p.ToDto()).ToList());
+    internal static FinalizeEventDto ToEventInfoDto(this FinalizeEventRequest req, int eventId) =>
+        new()
+        {
+            Title = req.Title,
+            Category = req.Category,
+            CreationDate = req.CreationDate,
+            EventId = eventId,
+            State = req.State,
+            Participants = req.Participants.Select(p => p.ToDto(eventId)).ToList(),
+            OrganizerId = req.OrganizerId,
+            FinishedDate = req.FinishedDate
+        };
 
     // Users
 
     internal static AddUserDto ToDto(this AddUserRequest req) =>
         new(req.ExternalUserId, req.UserName);
-    internal static GetUserResponse ToResponse(this GetUserInfoDto dto) => 
+    internal static GetUserInfoResponse ToResponse(this GetUserInfoDto dto) => 
         new(dto.Id, dto.Username, dto.GamerRating, dto.OrganizerRating);
+    internal static IEnumerable<GetUserInfoResponse> ToResponseList(this IEnumerable<GetUserInfoDto> dtoList) =>
+        dtoList.Select(dto => dto.ToResponse()).ToList();
 
     // Participants
     internal static GetParticipantResponse ToResponse(this GetParticipantDto dto) =>

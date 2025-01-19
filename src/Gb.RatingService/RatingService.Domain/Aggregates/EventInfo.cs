@@ -68,7 +68,9 @@ public class EventInfo : AggregateRoot
         participant.SetState(state);
     }
 
+    // Add Participants
     public void AddParticipant(Participant participant) => _participants.Add(participant);
+    public void AddParticipants(IEnumerable<Participant> participants) => _participants.AddRange(participants);
 
     // TODO: decide, should we allow to change a category of event?
     public void ChangeCategory(EventCategory category) => Category = category;

@@ -31,20 +31,18 @@ namespace RatingService.API.Controllers
         [ProducesResponseType(typeof(IActionResult), 400)]
         public async Task<IActionResult> GetUserInfo(int id, CancellationToken token)
         {
-            var user = await _service.GetUserById(id, token);
+            var user = await _service.GetUserInfoById(id, token);
             if (user == null) { return BadRequest(); }
             return Ok(user.ToResponse());
         }
 
-        //[HttpGet("get-ratings/{userId:int}")]
-        //[ProducesResponseType(typeof(IActionResult), 200)]
-        //[ProducesResponseType(typeof(IActionResult), 400)]
-        //public async Task<IActionResult> GetUserRatings(int userId, CancellationToken token)
-        //{
-        //    var userRatings = await _service.GetUserRatingsAsync(userId, token);
-        //    if (userRatings == null) { return BadRequest(); }
-        //    return Ok(userRatings.ToResponse());
-        //}
+        [HttpGet("get-users-info")]
+        [ProducesResponseType(typeof(IActionResult), 200)]
+        public async Task<ActionResult<List<GetUserInfoResponse>>> GetUserInfo(CancellationToken token)
+        {
+            var userRatings = await _service.GetUsersInfo(token);
+            return Ok(userRatings.ToResponseList());
+        }
 
         [HttpGet("get-feedbacks/{id:int}")]
         [ProducesResponseType(typeof(IActionResult), 200)]
@@ -56,13 +54,13 @@ namespace RatingService.API.Controllers
             return Ok(userInfo.ToResponse());
         }
 
-        [HttpGet("{userId:int}/participations")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
-        [ProducesResponseType(typeof(IActionResult), 400)]
-        public async Task<ActionResult<IEnumerable<UserParticipationResponse>>> GetUserParticipations(int userId, CancellationToken token)
-        {
-            // TODO logic to get all the participantions of a particular User
-            return Ok();
-        }
+        //[HttpGet("{userId:int}/participations")]
+        //[ProducesResponseType(typeof(IActionResult), 204)]
+        //[ProducesResponseType(typeof(IActionResult), 400)]
+        //public async Task<ActionResult<IEnumerable<UserParticipationResponse>>> GetUserParticipations(int userId, CancellationToken token)
+        //{
+        //    // TODO logic to get all the participantions of a particular User
+        //    return NoContent();
+        //}
     }
 }

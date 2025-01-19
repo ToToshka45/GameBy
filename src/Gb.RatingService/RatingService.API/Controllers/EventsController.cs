@@ -63,13 +63,13 @@ namespace RatingService.API.Controllers
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost("{eventId:int}/finalize")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
-        [ProducesResponseType(typeof(IActionResult), 400)]
+        [ProducesResponseType(typeof(IActionResult), 204)]
         public async Task<IActionResult> FinalizeEvent(int eventId, FinalizeEventRequest req, CancellationToken token)
         {
+            var dto = req.ToEventInfoDto(eventId);
             // TODO: create a domain event
-            await _service.FinalizeEventAsync(req.ToDto(), token);
-            return Ok();
+            await _service.FinalizeEventAsync(dto, token); //potentially return 202 Accepted
+            return NoContent();
         }
 
         // Participants
@@ -124,7 +124,7 @@ namespace RatingService.API.Controllers
             dto.ReceipientId = participantId;
 
             await _service.AddParticipantRatingUpdateAsync(dto, token);
-            return Ok();
+            return NoContent();
         }
     }
 }

@@ -38,7 +38,13 @@ public class UserLifecycleService : IUserLifecycleService
             throw;
         }
     }
-    public async Task<GetUserInfoDto?> GetUserById(int id, CancellationToken token)
+    public async Task<IEnumerable<GetUserInfoDto>> GetUsersInfo(CancellationToken token)
+    {
+        var users = await _userRepo.GetAll(token);
+        return users.ToGetUserInfoDtoList();
+    }
+
+    public async Task<GetUserInfoDto?> GetUserInfoById(int id, CancellationToken token)
     {
         var user = await _userRepo.GetById(id, token);
         if (user == null) { return null; }

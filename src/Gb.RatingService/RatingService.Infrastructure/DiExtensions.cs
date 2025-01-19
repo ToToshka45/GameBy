@@ -56,7 +56,7 @@ public static class DiExtensions
 
     private static void AddHostedServices(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddHostedService<UserCreatedEventConsumer>();
+        builder.Services.AddHostedService<UserCreatedRabbitEventConsumer>();
     }
 
     public static void AddDbConfiguration(this IHostApplicationBuilder builder, IConfiguration config)
@@ -81,7 +81,7 @@ public static class DiExtensions
     public static async Task MigrateRabbitTestMessages(this IApplicationBuilder builder, int usersCount)
     {
         using var scope = builder.ApplicationServices.CreateAsyncScope();
-        var testService = scope.ServiceProvider.GetRequiredService<RabbitMQTestSeedService>();
+        await using var testService = scope.ServiceProvider.GetRequiredService<RabbitMQTestSeedService>();
         await testService.ExecuteAsync(usersCount);
     }
 }

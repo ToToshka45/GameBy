@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using RatingService.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace RatingService.API.Models;
 
@@ -11,5 +12,5 @@ public sealed class AddParticipantRequest
     //[JsonPropertyName("eventId")]
     //public int ExternalEventId { get; set; }
     [JsonPropertyName("participation_state")]
-    public required string State { get; set; }
+    public required ParticipationState State { get; set; }
 }

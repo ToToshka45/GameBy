@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using RatingService.Domain.Enums;
+﻿using RatingService.Domain.Enums;
 using System.Text.Json.Serialization;
 
 namespace RatingService.API.Models.Events;

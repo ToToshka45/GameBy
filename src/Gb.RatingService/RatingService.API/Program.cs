@@ -1,9 +1,12 @@
 using RatingService.Application;
+using RatingService.Application.Services;
 using RatingService.Common.Models.Settings;
 using RatingService.Infrastructure;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var isRabbitMqTestRequired = builder.Configuration.GetValue<bool>("TestSettings:IsRabbitMQTestRequired");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -17,11 +20,11 @@ builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection(na
 builder.Services.Configure<RabbitMQConfigurations>(builder.Configuration.GetSection(nameof(RabbitMQConfigurations)));
 
 // Configure Db depending on the environment
-await builder.MigrateRabbitMQ();
+if (isRabbitMqTestRequired)
+    builder.Services.AddScoped<RabbitMQTestSeedService>();
+
 builder.AddDbConfiguration(builder.Configuration);
 builder.AddConfigurations();
-
-builder.AddTestingServices();
 
 builder.Services.AddMemoryCache();
 
@@ -38,6 +41,13 @@ if (app.Environment.IsDevelopment())
 }
 
 await app.Migrate();
+
+if (isRabbitMqTestRequired)
+{
+    // define what number of Users we want to seed to RabbitMQ
+    var usersCount = builder.Configuration.GetValue<int?>("TestSettings:UsersCount") ?? 10;
+    await app.MigrateRabbitTestMessages(usersCount);
+}
 
 app.UseHttpsRedirection();
 

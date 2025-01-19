@@ -6,7 +6,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "RabbitMQSettings__Port": "5673",
-        "TestSettings__IsRabbitMQTestRequired": "true"
+        "TestSettings__IsRabbitMQTestRequired": "false"
       },
       "applicationUrl": "https://localhost:56805;http://localhost:56806"
     }

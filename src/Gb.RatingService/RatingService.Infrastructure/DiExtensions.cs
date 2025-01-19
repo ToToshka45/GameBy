@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RatingService.Application;
 using RatingService.Application.Services;
-using RatingService.Common.CommonServices;
 using RatingService.Common.Models.Settings;
 using RatingService.Domain.Abstraction;
 using RatingService.Domain.Abstractions;
@@ -24,11 +23,6 @@ public static class DiExtensions
         builder.AddApplicationConfiguration();
         builder.AddRepositories();
         builder.AddHostedServices();
-    }
-
-    public static void AddTestingServices(this IHostApplicationBuilder builder)
-    {
-        builder.Services.AddHostedService<RabbitMQTestBackgroundService>();
     }
 
     public static async Task MigrateRabbitMQ(this IHostApplicationBuilder builder)
@@ -62,7 +56,7 @@ public static class DiExtensions
 
     private static void AddHostedServices(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddHostedService<MessageConsumerService>();
+        builder.Services.AddHostedService<UserCreatedEventConsumer>();
     }
 
     public static void AddDbConfiguration(this IHostApplicationBuilder builder, IConfiguration config)
@@ -82,5 +76,12 @@ public static class DiExtensions
         await using var scope = builder.ApplicationServices.CreateAsyncScope();
         using var db = scope.ServiceProvider.GetRequiredService<RatingServiceDbContext>();
         await db.Database.MigrateAsync();
+    }
+
+    public static async Task MigrateRabbitTestMessages(this IApplicationBuilder builder, int usersCount)
+    {
+        using var scope = builder.ApplicationServices.CreateAsyncScope();
+        var testService = scope.ServiceProvider.GetRequiredService<RabbitMQTestSeedService>();
+        await testService.ExecuteAsync(usersCount);
     }
 }

@@ -5,7 +5,7 @@ namespace RatingService.Common.CommonServices;
 
 public sealed class FakeDataProvider
 {
-    public static IEnumerable<UserCreatedTestEvent> ProvideUserCreatedEventTestData([Range(1, 100)] int usersCount = 10)
+    public static IEnumerable<UserCreatedTestEvent> ProvideUserCreatedEventTestData(int usersCount)
     {
         // HashSet to ensure uniqueness
         HashSet<int> uniqueIntegers = [];

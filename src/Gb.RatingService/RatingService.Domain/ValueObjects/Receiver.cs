@@ -1,4 +1,4 @@
-﻿using RatingService.Domain.Enums;
+﻿using RatingService.Common.Enums;
 using RatingService.Domain.Primitives;
 
 namespace RatingService.Domain.ValueObjects

@@ -1,4 +1,4 @@
-﻿namespace RatingService.Domain.Enums;
+﻿namespace RatingService.Common.Enums;
 
 public enum EntityType
 {

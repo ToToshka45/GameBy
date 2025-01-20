@@ -5,9 +5,8 @@ using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
 using RatingService.Domain.Entities;
 using RatingService.Domain.Entities.Ratings;
-using RatingService.Domain.Enums;
+using RatingService.Common.Enums;
 using RatingService.Infrastructure.DataAccess;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RatingService.Infrastructure.Repositories;
 

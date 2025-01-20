@@ -8,5 +8,6 @@ public sealed class RabbitMQSettings
     public string Password { get; set; } = "pass";
     public string VirtualHost { get; set; } = "/";
 
-    public static string UserCreatedQueueName { get; set; } = "gamer_service_user_created";
+    public const string UserCreatedQueueName = "gamer_service_user_created";
+    public const string EventFinishedQueueName = "event_service_event_finished";
 }

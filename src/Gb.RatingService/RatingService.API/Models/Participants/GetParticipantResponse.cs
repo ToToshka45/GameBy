@@ -1,4 +1,4 @@
-﻿using RatingService.Domain.Enums;
+﻿using RatingService.Common.Enums;
 
 namespace RatingService.API.Models;
 

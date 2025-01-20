@@ -4,13 +4,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RatingService.Application.Models.Dtos.Participants;
 using RatingService.Application.Models.Dtos.Users;
 using RatingService.Application.Services.Abstractions;
 using RatingService.Application.Services.Interfaces;
 using System.Text.Json;
 namespace RatingService.Application.Services;
 
-public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
+public sealed class EventFinishedRabbitEventConsumer : IBaseEventConsumer
 {
     private readonly ILogger<UserCreatedRabbitEventConsumer> _logger;
     private readonly RabbitMQSettings _settings;
@@ -21,9 +22,9 @@ public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
     private IChannel? _channel;
     private string? _consumerTag;
 
-    const string CURRENT_QUEUE = RabbitMQSettings.UserCreatedQueueName;
+    const string CURRENT_QUEUE = RabbitMQSettings.EventFinishedQueueName;
 
-    public UserCreatedRabbitEventConsumer(IOptions<RabbitMQSettings> options, ILogger<UserCreatedRabbitEventConsumer> logger, IServiceScopeFactory serviceScopeFactory)
+    public EventFinishedRabbitEventConsumer(IOptions<RabbitMQSettings> options, ILogger<UserCreatedRabbitEventConsumer> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _settings = options.Value;
@@ -57,7 +58,7 @@ public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
         try
         {
             await using var scope = _serviceScopeFactory.CreateAsyncScope();
-            var userLifecycleService = scope.ServiceProvider.GetRequiredService<IUserLifecycleService>();
+            var handler = scope.ServiceProvider.GetRequiredService<IEventLifecycleService>();
             await _channel.QueueDeclareAsync(CURRENT_QUEUE, exclusive: false, autoDelete: false, cancellationToken: token);
             var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -69,9 +70,9 @@ public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
                     // Handle the message
                     _logger.LogInformation($"Received message: {userCreatedEvent}");
 
-                    var addUserDto = JsonSerializer.Deserialize<AddUserDto>(userCreatedEvent);
-                    ArgumentNullException.ThrowIfNull(addUserDto, nameof(addUserDto));
-                    await userLifecycleService.AddNewUserAsync(addUserDto, token);
+                    var dto = JsonSerializer.Deserialize<FinalizeEventDto>(userCreatedEvent);
+                    ArgumentNullException.ThrowIfNull(dto, nameof(dto));
+                    await handler.FinalizeEventAsync(dto, token);
                     await _channel.BasicAckAsync(args.DeliveryTag, false, token);
                 }
                 catch (Exception ex)

@@ -1,7 +1,6 @@
 ﻿using RatingService.Domain.Entities.Ratings;
-using RatingService.Domain.Enums;
+using RatingService.Common.Enums;
 using RatingService.Domain.Primitives;
-using RatingService.Domain.ValueObjects.Identifiers;
 
 namespace RatingService.Domain.Entities;
 

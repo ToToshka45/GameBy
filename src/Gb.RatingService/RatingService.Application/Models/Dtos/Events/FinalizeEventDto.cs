@@ -1,4 +1,4 @@
-﻿using RatingService.Domain.Enums;
+﻿using RatingService.Common.Enums;
 using System.Text.Json.Serialization;
 
 namespace RatingService.Application.Models.Dtos.Participants;

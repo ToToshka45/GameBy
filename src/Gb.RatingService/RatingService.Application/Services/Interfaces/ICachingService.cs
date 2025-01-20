@@ -1,5 +1,5 @@
 ﻿using RatingService.Domain.Entities.Ratings;
-using RatingService.Domain.Enums;
+using RatingService.Common.Enums;
 
 namespace RatingService.Application.Services.Abstractions;
 

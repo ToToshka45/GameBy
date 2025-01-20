@@ -9,7 +9,7 @@ using RatingService.Application.Models.Dtos.Ratings;
 using RatingService.Application.Models.Dtos.Users;
 using RatingService.Common.Models.Extensions;
 using RatingService.Domain.Aggregates;
-using RatingService.Domain.Enums;
+using RatingService.Common.Enums;
 
 namespace RatingService.API.Configurations.Mappings;
 
@@ -72,7 +72,7 @@ internal static class MappingExtensions
     internal static IEnumerable<GetParticipantResponse> ToResponseList(this IEnumerable<GetParticipantDto> dto) =>
         dto.Select(e => e.ToResponse()).ToList();
     internal static AddParticipantDto ToDto(this AddParticipantRequest req, int eventId) =>
-        new(req.ExternalParticipantId, req.ExternalUserId, eventId, req.State.TryParseOrDefault(ParticipationState.Unclarified));
+        new(req.ExternalParticipantId, req.ExternalUserId, eventId, req.State);
     internal static ParticipantStateChangeDto ToDto(this ParticipantStateChangeRequest req) =>
         new(req.ExternalParticipantId, req.State.TryParseOrDefault(ParticipationState.Unclarified));
 

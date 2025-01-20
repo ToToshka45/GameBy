@@ -1,7 +1,7 @@
-﻿using RatingService.Domain.Enums;
+﻿using GameBy.Common.Enums;
 using System.Text.Json.Serialization;
 
-namespace RatingService.API.Models.Events;
+namespace GameBy.Common.Models.Requests;
 
 public sealed class FinalizeEventRequest
 {

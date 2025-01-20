@@ -9,10 +9,7 @@
 		<Authors>GameBy.Studio</Authors>
 		<Description>Common files, classes, implementations and models for the GameBy project.</Description>
 		<PackageProjectUrl>https://github.com/ToToshka45/GameBy</PackageProjectUrl>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <Folder Include="Models\Requests\" />
-	</ItemGroup>
 	
 </Project>

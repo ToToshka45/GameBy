@@ -401,3 +401,4 @@ FodyWeavers.xsd
 /GameBy/RatingService/docker-compose.persistence.yml
 /GameBy/RatingService/RatingService.API/Properties/launchSettings.json
 /GameBy/UI/gameby.ui
+/src/GameBy.Common/GameBy.Common/nuget.config

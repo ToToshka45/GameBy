@@ -1,15 +1,13 @@
 import { Box, CssBaseline } from "@mui/material";
 import { NavbarV2 } from "./components/NavbarV2";
-import { FiltersMenu } from "./components/FiltersMenu";
-import { OccuringEventsPanel } from "./components/OccuringEventsPanel";
+import MainPage from "./components/MainPage.tsx";
 
 function App() {
   return (
     <Box>
       <CssBaseline />
       <NavbarV2 />
-      <FiltersMenu />
-      <OccuringEventsPanel />
+      <MainPage />
     </Box>
   );
 }

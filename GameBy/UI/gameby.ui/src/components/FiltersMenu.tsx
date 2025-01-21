@@ -1,6 +1,6 @@
 import { Box, Container } from "@mui/material";
-import { CategoryFilter } from "./CategoryFilter";
-import { EventDateFilter } from "./EventDateFilter";
+import { CategoryFilter } from "./Filters/CategoryFilter";
+import { EventDateFilter } from "./Filters/EventDateFilter";
 
 export const FiltersMenu = () => {
   return (

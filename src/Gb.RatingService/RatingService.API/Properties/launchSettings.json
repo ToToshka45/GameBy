@@ -5,8 +5,8 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "RabbitMQSettings__Port": "5673",
-        "TestSettings__IsRabbitMQTestRequired": "false"
+        "TestSettings__IsRabbitMQTestRequired": "false",
+        "RabbitMQSettings__Password": "w5zQ9VUibh-KJGXmlsTdz2xxJ5voyrlL"
       },
       "applicationUrl": "https://localhost:56805;http://localhost:56806"
     }

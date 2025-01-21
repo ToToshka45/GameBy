@@ -2,12 +2,13 @@
 
 public sealed class RabbitMQSettings
 {
-    public string HostName { get; set; } = "localhost";
+    public string Host { get; set; } = default!;
     public int Port { get; set; }
-    public string UserName { get; set; } = "user";
-    public string Password { get; set; } = "pass";
-    public string VirtualHost { get; set; } = "/";
+    public string UserName { get; set; } = default!;
+    public string Password { get; set; } = default!;
+    public string VirtualHost { get; set; } = default!;
 
-    public const string UserCreatedQueueName = "gamer_service_user_created";
-    public const string EventFinishedQueueName = "event_service_event_finished";
+    private const string _ratingServidePrefix = "rating_service_";
+    public const string UserCreatedQueueName = $"{_ratingServidePrefix}user_created";
+    public const string EventFinishedQueueName = $"{_ratingServidePrefix}event_finished";
 }

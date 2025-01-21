@@ -19,10 +19,10 @@ builder.Services.Configure<ConnectionStringsSettings>(builder.Configuration.GetS
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection(nameof(RabbitMQSettings)));
 builder.Services.Configure<RabbitMQConfigurations>(builder.Configuration.GetSection(nameof(RabbitMQConfigurations)));
 
-// Configure Db depending on the environment
 if (isRabbitMqTestRequired)
     builder.Services.AddScoped<RabbitMQTestSeedService>();
 
+await builder.MigrateRabbitMQ();
 builder.AddDbConfiguration(builder.Configuration);
 builder.AddConfigurations();
 
@@ -46,7 +46,7 @@ if (isRabbitMqTestRequired)
 {
     // define what number of Users we want to seed to RabbitMQ
     var usersCount = builder.Configuration.GetValue<int?>("TestSettings:UsersCount") ?? 10;
-    await app.MigrateRabbitTestMessages(usersCount);
+    await app.SeedRabbitTestMessages(usersCount);
 }
 
 app.UseHttpsRedirection();

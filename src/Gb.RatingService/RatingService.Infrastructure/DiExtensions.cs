@@ -78,7 +78,7 @@ public static class DiExtensions
         await db.Database.MigrateAsync();
     }
 
-    public static async Task MigrateRabbitTestMessages(this IApplicationBuilder builder, int usersCount)
+    public static async Task SeedRabbitTestMessages(this IApplicationBuilder builder, int usersCount)
     {
         using var scope = builder.ApplicationServices.CreateAsyncScope();
         await using var testService = scope.ServiceProvider.GetRequiredService<RabbitMQTestSeedService>();

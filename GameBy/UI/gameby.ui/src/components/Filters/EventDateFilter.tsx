@@ -1,23 +1,32 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
+import { useContext } from "react";
+import { Dayjs } from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import FiltersProps from "../../interfaces/FiltersProps";
+import FiltersPropsContext from "../../contexts/FiltersPropsContext";
+import { DateRange } from "@mui/x-date-pickers-pro";
 
 export const EventDateFilter = () => {
-  const [eventDate, setEventDate] = useState(dayjs());
+  const filtersProps = useContext<FiltersProps | undefined>(
+    FiltersPropsContext
+  );
 
-  const setDate = (date: Dayjs | null) => {
-    if (date) setEventDate(date);
+  const dateRange = filtersProps!.filteringDates;
+  const setFilteringDates = filtersProps!.setFilteringDates!;
+
+  const handleDates = (dateRange: DateRange<Dayjs>) => {
+    setFilteringDates(dateRange);
   };
 
   return (
     <Box display={"flex"} justifyContent="flex-end" gap={2}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateTimePicker
+        {/* <DateTimePicker
           label="After"
-          value={eventDate}
-          onChange={(date) => setDate(date)}
+          value={afterDate}
+          onChange={(date) => handleAfterDate(date)}
           sx={{
             maxWidth: { xs: "50%", sm: "30%" },
             maxHeight: "80%",
@@ -26,13 +35,18 @@ export const EventDateFilter = () => {
         />
         <DateTimePicker
           label="Before"
-          value={eventDate}
-          onChange={(date) => setDate(date)}
+          value={beforeDate}
+          onChange={(date) => handleBeforeDate(date)}
           sx={{
             maxWidth: { xs: "50%", sm: "30%" },
             maxHeight: "80%",
           }}
           // renderLoading={(params) => <TextField {...params} />}
+        /> */}
+        <DateRangePicker
+          localeText={{ start: "After", end: "Before" }}
+          value={dateRange}
+          onChange={(dates) => handleDates(dates)}
         />
       </LocalizationProvider>
     </Box>

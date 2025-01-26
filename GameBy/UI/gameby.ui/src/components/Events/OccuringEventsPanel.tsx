@@ -4,7 +4,8 @@ import { OccuringEvent } from "../../interfaces/OccuringEvent";
 import { Category } from "../../enums/Category";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
-import CategoryFilterContext from "../../contexts/CategoryFilterContext";
+import FiltersPropsContext from "../../contexts/FiltersPropsContext";
+import FiltersProps from "../../interfaces/FiltersProps";
 
 const DATE_FORMAT = "DD/MM/YYYY";
 
@@ -15,7 +16,7 @@ const events: OccuringEvent[] = [
     name: "Mafia 2025",
     content: "Basic description",
     category: Category.Mafia,
-    date: dayjs().format(DATE_FORMAT),
+    date: dayjs().add(+7, "day").format(DATE_FORMAT),
   },
   {
     id: 2,
@@ -23,7 +24,7 @@ const events: OccuringEvent[] = [
     name: "Event2",
     content: "Basic description",
     category: Category.Strategy,
-    date: dayjs().add(-3, "day").format(DATE_FORMAT),
+    date: dayjs().add(+3, "day").format(DATE_FORMAT),
   },
   {
     id: 3,
@@ -31,7 +32,7 @@ const events: OccuringEvent[] = [
     name: "Event3",
     content: "Basic description",
     category: Category.Sports,
-    date: dayjs().format(DATE_FORMAT),
+    date: dayjs().add(+4, "day").format(DATE_FORMAT),
   },
   {
     id: 4,
@@ -39,7 +40,7 @@ const events: OccuringEvent[] = [
     name: "Event4",
     content: "Basic description",
     category: Category.Strategy,
-    date: dayjs().format(DATE_FORMAT),
+    date: dayjs().add(+11, "day").format(DATE_FORMAT),
   },
   {
     id: 5,
@@ -47,7 +48,7 @@ const events: OccuringEvent[] = [
     name: "Event5",
     content: "Basic description",
     category: Category.Quiz,
-    date: dayjs().format(DATE_FORMAT),
+    date: dayjs().add(+9, "day").format(DATE_FORMAT),
   },
   {
     id: 6,
@@ -55,26 +56,33 @@ const events: OccuringEvent[] = [
     name: "Event6",
     content: "Basic description",
     category: Category.Sports,
-    date: dayjs().format(DATE_FORMAT),
+    date: dayjs().add(+2, "day").format(DATE_FORMAT),
   },
 ];
 
 export const OccuringEventsPanel = () => {
   const [eventsFiltered, setEventsFiltered] = useState<OccuringEvent[]>(events);
-  const filterByCategories = useContext<Category[]>(CategoryFilterContext);
+  const filterProps = useContext<FiltersProps | undefined>(FiltersPropsContext);
+
+  let filteringCategories: Category[] = filterProps!.filteringCategories;
+  const [afterDate, beforeDate] = filterProps!.filteringDates;
 
   useEffect(() => {
-    if (filterByCategories && filterByCategories.length > 0) {
-      const filtered = events.filter((event) =>
-        filterByCategories?.includes(event.category)
-      );
-      setEventsFiltered(filtered);
-    } else {
-      setEventsFiltered(events);
-    }
-  }, [filterByCategories]);
+    let filtered = events.filter((ev) => {
+      const dayjsDate = dayjs(ev.date, DATE_FORMAT);
+      return dayjsDate.isAfter(afterDate) && dayjsDate.isBefore(beforeDate);
+    });
 
-  if (filterByCategories) console.log("From Panel: " + [...filterByCategories]);
+    console.log([...filtered]);
+
+    if (filteringCategories && filteringCategories.length > 0) {
+      filtered = filtered.filter((event) =>
+        filteringCategories?.includes(event.category)
+      );
+    }
+
+    setEventsFiltered(filtered);
+  }, [filteringCategories, afterDate, beforeDate]);
 
   return (
     <Container>

@@ -1,16 +1,37 @@
-import { AppBar, Toolbar, IconButton, Button, Stack, Box } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Button,
+  Stack,
+  Box,
+  Typography,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import CreateEventPage from "../pages/CreateEventPage";
+import { Link as RouterLink } from "react-router";
+import MyEventsPage from "../pages/MyEventsPage";
 
-const navMenu = ["New Event", "My Events"];
+const navMenu = [
+  {
+    name: "Create Event",
+    path: "/create-event",
+    component: CreateEventPage,
+  },
+  {
+    name: "My Events",
+    path: "/my-events",
+    component: MyEventsPage,
+  },
+];
 
-export const NavbarV2 = () => {
+export const Navbar = () => {
   return (
     <AppBar
+      position="sticky"
       sx={{
-        // backgroundColor: "royalBlue",
-        // background: "linear-gradient(to right, #135dcd, #2b89d6)", // Gradient effect
-        background: "linear-gradient(to right, #8b0000, #b22222)", // Gradient effect
+        background: "linear-gradient(to right, #a60e0e, #b22222)", // Gradient effect
       }}
     >
       <Toolbar>
@@ -19,19 +40,15 @@ export const NavbarV2 = () => {
           edge="start"
           color="inherit"
           aria-label="menu"
-          // sx={{
-          //   border: "2px solid lightblue", // Add a solid border
-          //   borderRadius: "50%", // Make sure it's circular if needed
-          //   "&:hover": {
-          //     borderColor: "black", // Ensure the border color stays visible on hover
-          //   },
-          // }}
+          sx={{ marginRight: "10px" }}
         >
           <MenuIcon />
         </IconButton>
 
-        <Box component="div" display="flex" sx={{ flexGrow: 1 }}>
+        <Box component="div" display="flex" flexGrow={1} alignItems="center">
           <Button
+            to="/"
+            component={RouterLink}
             size="large"
             color="inherit"
             startIcon={
@@ -57,10 +74,12 @@ export const NavbarV2 = () => {
           </Button>
         </Box>
 
-        <Box display={"flex"}>
+        <Box display="flex" alignItems="center">
           <Stack direction="row" gap={1}>
             {navMenu.map((item, idx) => (
               <Button
+                to={item.path}
+                component={RouterLink}
                 key={idx}
                 size="medium"
                 sx={{
@@ -69,12 +88,13 @@ export const NavbarV2 = () => {
                   borderRadius: 2,
                 }}
               >
-                {item}
+                {item?.name}
               </Button>
             ))}
           </Stack>
 
-          <IconButton size="large" color="inherit" sx={{ ml: 3 }}>
+          <IconButton size="large" color="inherit" sx={{ ml: 3, gap: 1 }}>
+            <Typography>LogIn</Typography>
             <AccountCircle />
           </IconButton>
         </Box>

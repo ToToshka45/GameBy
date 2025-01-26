@@ -16,7 +16,7 @@ import { Category } from "../../enums/Category";
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   backgroundColor: orange[200],
   "& .MuiCardHeader-title": {
-    fontSize: "1.5rem",
+    fontSize: "1.2rem",
   },
   "& .MuiCardHeader-subheader": {
     fontSize: "1rem",
@@ -40,13 +40,17 @@ export const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
         </Box>
       ) : (
         events.map((event) => (
-          <Grid2 key={event.id} size={{ xs: 2, md: 4 }}>
+          <Grid2 key={event.id} size={{ md: 6 }}>
             <Card>
               <StyledCardHeader
                 title={event.name}
                 subheader={`${event.date} - ${Category[event.category]}`}
               />
-              <CardMedia component="img" image={event.avatar} />
+              <CardMedia
+                component="img"
+                image={event.avatar}
+                src={"src/assets/event-pics/event_default.jpg"}
+              />
               <CardContent />
               <CardActions />
             </Card>

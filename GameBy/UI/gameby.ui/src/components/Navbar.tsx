@@ -10,7 +10,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import CreateEventPage from "../pages/CreateEventPage";
-import { Link as RouterLink } from "react-router";
+import { NavLink } from "react-router";
 import MyEventsPage from "../pages/MyEventsPage";
 
 const navMenu = [
@@ -31,12 +31,13 @@ export const Navbar = () => {
     <AppBar
       position="sticky"
       sx={{
+        height: "50%",
         background: "linear-gradient(to right, #a60e0e, #b22222)", // Gradient effect
       }}
     >
-      <Toolbar>
+      <Toolbar variant="dense">
         <IconButton
-          size="large"
+          size="medium"
           edge="start"
           color="inherit"
           aria-label="menu"
@@ -48,22 +49,21 @@ export const Navbar = () => {
         <Box component="div" display="flex" flexGrow={1} alignItems="center">
           <Button
             to="/"
-            component={RouterLink}
-            size="large"
+            component={NavLink}
             color="inherit"
             startIcon={
               <i
                 className="fa-solid fa-dice"
                 style={{
                   color: "yellow",
-                  fontSize: "28px",
+                  fontSize: "20px",
                 }}
               ></i>
             }
             sx={{
               textTransform: "none",
               fontFamily: "'Roboto', sans-serif",
-              fontSize: "1.5rem",
+              fontSize: "1.2rem",
               display: "flex", // Allows button to size based on content
               // Center vertically if needed
               p: 1, // Padding for aesthetics, adjust as needed
@@ -79,7 +79,7 @@ export const Navbar = () => {
             {navMenu.map((item, idx) => (
               <Button
                 to={item.path}
-                component={RouterLink}
+                component={NavLink}
                 key={idx}
                 size="medium"
                 sx={{
@@ -88,13 +88,13 @@ export const Navbar = () => {
                   borderRadius: 2,
                 }}
               >
-                {item?.name}
+                <Typography variant="body2">{item?.name}</Typography>
               </Button>
             ))}
           </Stack>
 
-          <IconButton size="large" color="inherit" sx={{ ml: 3, gap: 1 }}>
-            <Typography>LogIn</Typography>
+          <IconButton color="inherit" sx={{ ml: 3, gap: 1 }}>
+            <Typography variant="body2">LogIn</Typography>
             <AccountCircle />
           </IconButton>
         </Box>

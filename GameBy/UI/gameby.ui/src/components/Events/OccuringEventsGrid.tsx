@@ -8,9 +8,10 @@ import {
   Typography,
   Box,
   styled,
+  Grid,
 } from "@mui/material";
 import { OccuringEventProps } from "../../interfaces/OccuringEvent";
-import { orange } from "@mui/material/colors";
+import { blue, orange } from "@mui/material/colors";
 import { Category } from "../../enums/Category";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
@@ -26,7 +27,7 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
 
 export const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
   return (
-    <Grid2 container spacing={2}>
+    <Grid container spacing={2}>
       {events.length === 0 ? (
         <Box
           display={"flex"}
@@ -40,7 +41,7 @@ export const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
         </Box>
       ) : (
         events.map((event) => (
-          <Grid2 key={event.id} size={{ md: 6 }}>
+          <Grid item key={event.id} md={6} lg={4}>
             <Card>
               <StyledCardHeader
                 title={event.name}
@@ -51,12 +52,14 @@ export const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
                 image={event.avatar}
                 src={"src/assets/event-pics/event_default.jpg"}
               />
-              <CardContent />
-              <CardActions />
+              <CardContent sx={{ bgcolor: blue[100] }}>
+                <Typography variant="body1">{event.content}</Typography>
+              </CardContent>
+              {/* <CardActions /> */}
             </Card>
-          </Grid2>
+          </Grid>
         ))
       )}
-    </Grid2>
+    </Grid>
   );
 };

@@ -85,13 +85,13 @@ export const OccuringEventsPanel = () => {
   }, [filteringCategories, afterDate, beforeDate]);
 
   return (
-    <Container>
-      <Box marginTop={3} display="flex" flexDirection="column">
-        <Typography variant="h5" color="secondary" gutterBottom>
+    <Box marginTop={3} display="flex" flexDirection="column">
+      <Container>
+        <Typography variant="h4" color="secondary" gutterBottom>
           Upcoming events
         </Typography>
         <OccuringEventsGrid events={eventsFiltered} />
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
 };

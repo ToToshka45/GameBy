@@ -42,7 +42,7 @@ export const CategoryFilter = () => {
   const setFilteringCategories =
     categoryFilterUseState!.setFilteringCategories!;
 
-  const setActive = (key: String) => {
+  const setActive = (key: string) => {
     let filterBy = categories.find((c) => c.name === key);
     if (!filterBy) return;
     filterBy.isActive = !filterBy?.isActive;
@@ -72,9 +72,8 @@ export const CategoryFilter = () => {
     <Box
       display={"flex"}
       flexWrap={"wrap"}
-      justifyContent={"space-evenly"}
-      // marginTop={10}
-      width={"auto"}
+      justifyContent="space-evenly"
+      gap={3}
     >
       {categories.map((el) => (
         <Box display={"flex"} flexDirection={"column"} alignItems={"center"}>
@@ -86,8 +85,8 @@ export const CategoryFilter = () => {
           >
             <Avatar
               sx={{
-                width: { xs: 60, sm: 90 },
-                height: { xs: 60, sm: 90 },
+                width: { xs: 50, sm: 70, md: 80, lg: 90 },
+                height: { xs: 50, sm: 70, md: 80, lg: 90 },
                 border: "1px solid gray",
                 bgcolor: el.isActive ? "orange" : "transparent", // Change the color as needed
                 "& img": {

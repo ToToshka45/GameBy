@@ -8,7 +8,7 @@ import FiltersPropsContext from "../contexts/FiltersPropsContext";
 import FiltersProps from "../interfaces/FiltersProps";
 import { DateRange } from "@mui/x-date-pickers-pro";
 
-export default function MainPage() {
+export default function HomePage() {
   const [filteringCategories, setFilteringCategories] = useState<Category[]>(
     []
   );
@@ -26,8 +26,6 @@ export default function MainPage() {
 
   return (
     <Box
-      // mx="3%"
-      // marginTop={{ xs: "6%", sm: "4%", md: "2.5%" }}
       paddingX={{ xs: "4%", md: "3%" }}
       paddingBottom={{ xs: "2%", md: "1%" }}
     >

@@ -1,10 +1,8 @@
 import {
-  Grid2,
   Card,
   CardHeader,
   CardContent,
   CardMedia,
-  CardActions,
   Typography,
   Box,
   styled,

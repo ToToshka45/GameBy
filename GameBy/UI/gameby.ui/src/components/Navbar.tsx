@@ -6,46 +6,91 @@ import {
   Stack,
   Box,
   Typography,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import CreateEventPage from "../pages/CreateEventPage";
 import { NavLink } from "react-router";
 import MyEventsPage from "../pages/MyEventsPage";
+import { useState } from "react";
 
 const navMenu = [
   {
     name: "Create Event",
     path: "/create-event",
-    component: CreateEventPage,
+    page: CreateEventPage,
   },
   {
     name: "My Events",
     path: "/my-events",
-    component: MyEventsPage,
+    page: MyEventsPage,
   },
 ];
 
 export const Navbar = () => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
   return (
     <AppBar
       position="sticky"
       sx={{
-        height: "50%",
         background: "linear-gradient(to right, #a60e0e, #b22222)", // Gradient effect
       }}
     >
       <Toolbar variant="dense">
-        <IconButton
-          size="medium"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ marginRight: "10px" }}
+        {isSmallScreen && (
+          <Tooltip title="Show pages">
+            <IconButton
+              size="medium"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ marginRight: "10px" }}
+              onClick={(ev) => setAnchorElNav(ev.currentTarget)}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        <Menu
+          sx={{ mt: "45px" }}
+          id="menu-appbar"
+          anchorEl={anchorElNav}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          open={Boolean(anchorElNav)}
+          onClose={handleCloseNavMenu}
         >
-          <MenuIcon />
-        </IconButton>
-
+          {navMenu.map((item) => (
+            <MenuItem key={item.name} onClick={handleCloseNavMenu}>
+              <Button
+                to={item.path}
+                component={NavLink}
+                sx={{ textAlign: "center" }}
+              >
+                {item.name}
+              </Button>
+            </MenuItem>
+          ))}
+        </Menu>
         <Box component="div" display="flex" flexGrow={1} alignItems="center">
           <Button
             to="/"

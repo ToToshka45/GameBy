@@ -9,6 +9,7 @@ import FiltersProps from "../interfaces/FiltersProps";
 import { DateRange } from "@mui/x-date-pickers-pro";
 
 export default function HomePage() {
+  const [filteringTitle, setFilteringTitle] = useState<string>("");
   const [filteringCategories, setFilteringCategories] = useState<Category[]>(
     []
   );
@@ -18,6 +19,8 @@ export default function HomePage() {
   ]);
 
   const contextValue: FiltersProps = {
+    filteringTitle,
+    setFilteringTitle,
     filteringCategories,
     setFilteringCategories,
     filteringDates,

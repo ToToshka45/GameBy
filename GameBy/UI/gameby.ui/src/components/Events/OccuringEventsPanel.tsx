@@ -64,6 +64,7 @@ export const OccuringEventsPanel = () => {
   const [eventsFiltered, setEventsFiltered] = useState<OccuringEvent[]>(events);
   const filterProps = useContext<FiltersProps | undefined>(FiltersPropsContext);
 
+  const filteringTitle = filterProps!.filteringTitle;
   let filteringCategories: Category[] = filterProps!.filteringCategories;
   const [afterDate, beforeDate] = filterProps!.filteringDates;
 
@@ -73,16 +74,20 @@ export const OccuringEventsPanel = () => {
       return dayjsDate.isAfter(afterDate) && dayjsDate.isBefore(beforeDate);
     });
 
-    console.log([...filtered]);
-
     if (filteringCategories && filteringCategories.length > 0) {
       filtered = filtered.filter((event) =>
         filteringCategories?.includes(event.category)
       );
     }
 
+    if (filteringTitle) {
+      filtered = filtered.filter((event) =>
+        event.name.includes(filteringTitle)
+      );
+    }
+
     setEventsFiltered(filtered);
-  }, [filteringCategories, afterDate, beforeDate]);
+  }, [filteringCategories, afterDate, beforeDate, filteringTitle]);
 
   return (
     <Box marginTop={3} display="flex" flexDirection="column">

@@ -70,13 +70,13 @@ export const CategoryFilter = () => {
 
   return (
     <Box
-      display={"flex"}
-      flexWrap={"wrap"}
+      display="flex"
+      flexWrap="wrap"
       justifyContent="space-evenly"
-      gap={3}
+      sx={{ gap: { sm: 2, md: 5 } }}
     >
       {categories.map((el) => (
-        <Box display={"flex"} flexDirection={"column"} alignItems={"center"}>
+        <Box display="flex" flexDirection="column" alignItems="center">
           <Button
             key={el.name}
             size="small"
@@ -85,8 +85,8 @@ export const CategoryFilter = () => {
           >
             <Avatar
               sx={{
-                width: { xs: 50, sm: 70, md: 80, lg: 90 },
-                height: { xs: 50, sm: 70, md: 80, lg: 90 },
+                width: { sm: 50, md: 70, lg: 90 },
+                height: { sm: 50, md: 70, lg: 90 },
                 border: "1px solid gray",
                 bgcolor: el.isActive ? "orange" : "transparent", // Change the color as needed
                 "& img": {
@@ -97,7 +97,10 @@ export const CategoryFilter = () => {
               src={el.img} // Use this to display the image
             />
           </Button>
-          <Typography variant="caption" sx={{ marginTop: 1 }}>
+          <Typography
+            variant="caption"
+            sx={{ marginTop: 1, fontSize: { sm: 12, md: 14 } }}
+          >
             {el.name || "Unknown"}
           </Typography>
         </Box>

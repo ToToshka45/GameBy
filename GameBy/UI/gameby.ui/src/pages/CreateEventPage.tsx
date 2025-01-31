@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   Paper,
   Stack,
   TextField,
@@ -13,52 +12,20 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Dropzone from "react-dropzone";
 import { useCallback } from "react";
-import { green, pink } from "@mui/material/colors";
-import { z } from "zod";
+import { green, orange, pink } from "@mui/material/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
+import EventCreationFields, { eventCreationSchema } from "../interfaces/Event";
 
 // TODO: Add saving of the typed values to the Local Storage
 
 export default function CreateEventPage() {
-  const eventSchema = z
-    .object({
-      title: z
-        .string()
-        .min(1, { message: "The title must contain at least 1 character" }),
-      description: z
-        .string()
-        .min(20, {
-          message: "The description must contain at least 20 characters",
-        })
-        .max(250, {
-          message: "The description must contain maximum 250 characters",
-        }),
-      startDate: z
-        .date()
-        .refine((date) => date > dayjs().endOf("day").toDate(), {
-          message:
-            "The Start date must be at least 1 day after the current date.",
-        }),
-      endDate: z.date(),
-      participants: z.number().min(1).default(0),
-    })
-    .refine((data) => {
-      data.endDate < data.startDate,
-        {
-          message: "The End date can`t be before the Start date.",
-          path: ["endDate"],
-        };
-    });
-
-  type EventCreationFields = z.infer<typeof eventSchema>;
-
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<EventCreationFields>({
-    resolver: zodResolver(eventSchema),
+    resolver: zodResolver(eventCreationSchema),
   });
 
   const onFileAccept = useCallback((acceptedFiles: any) => {
@@ -70,18 +37,23 @@ export default function CreateEventPage() {
   };
 
   return (
-    <Box mx="3%" height="100vh" bgcolor="orange">
-      {" "}
+    <Box
+      mx="3%"
+      position="relative"
+      maxHeight="100%"
+      height="94.5vh"
+      bgcolor={orange[300]}
+    >
+      <Typography variant="h5" pt={2} pl={3} gutterBottom>
+        Create Event
+      </Typography>
       <Paper
         elevation={2}
         sx={{
-          padding: { xs: "4%", md: "2%" },
-          paddingBottom: { xs: "4%", md: "2%" },
+          px: { xs: "4%", md: "2%" },
+          py: { xs: "4%", md: "1%" },
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          Create Event
-        </Typography>
         <form
           onSubmit={handleSubmit(onSubmit)}
           style={{
@@ -164,26 +136,33 @@ export default function CreateEventPage() {
             </Box>
           </Stack>
           <TextField label="Location" name="location" variant="outlined" />
+          {/* TODO: add a real-time map API*/}
           <Dropzone onDrop={onFileAccept} minSize={1024} maxSize={3072000}>
-            {({
-              getRootProps,
-              getInputProps,
-              isDragActive,
-              isDragAccept,
-              isDragReject,
-            }) => (
+            {({ getRootProps, getInputProps, isDragActive }) => (
               <Box
-                border="1px solid black"
-                sx={{ bgcolor: isDragActive ? pink[200] : "white" }}
+                border="1px solid gray"
+                textAlign="center"
+                py={5}
+                sx={{ bgcolor: isDragActive ? pink[100] : "white" }}
               >
                 <div {...getRootProps()}>
                   <input {...getInputProps()} />
                   {isDragActive ? (
-                    <Typography variant="body2">
+                    <Typography
+                      sx={{
+                        fontSize: { xs: 11, sm: 14, lg: 18 },
+                        color: "white",
+                      }}
+                    >
                       Drop down the file to upload it...
                     </Typography>
                   ) : (
-                    <Typography variant="body2">
+                    <Typography
+                      sx={{
+                        fontSize: { xs: 11, md: 14, lg: 18 },
+                        color: "lightcoral",
+                      }}
+                    >
                       Drag 'n' drop some files here, or click to select files
                     </Typography>
                   )}
@@ -191,18 +170,19 @@ export default function CreateEventPage() {
               </Box>
             )}
           </Dropzone>
-
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              bgcolor: green[400],
-              marginTop: 2,
-              width: { sm: "60%", md: "30%" },
-            }}
-          >
-            Create Event
-          </Button>
+          <Box>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                bgcolor: green[400],
+                marginTop: 2,
+                width: { sm: "60%", md: "30%" },
+              }}
+            >
+              Create Event
+            </Button>
+          </Box>
         </form>
       </Paper>
     </Box>

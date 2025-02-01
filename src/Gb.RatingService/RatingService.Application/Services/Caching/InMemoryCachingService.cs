@@ -4,7 +4,7 @@ using RatingService.Application.Services.Abstractions;
 using RatingService.Domain.Entities.Ratings;
 using RatingService.Common.Enums;
 
-namespace RatingService.Application.Services;
+namespace RatingService.Application.Services.Caching;
 
 // TODO: add Redis implementation for external caching
 

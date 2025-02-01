@@ -1,5 +1,5 @@
 using RatingService.Application;
-using RatingService.Application.Services;
+using RatingService.Application.Services.RabbitPublishers.TestingPublisher;
 using RatingService.Common.Models.Settings;
 using RatingService.Infrastructure;
 using Scalar.AspNetCore;

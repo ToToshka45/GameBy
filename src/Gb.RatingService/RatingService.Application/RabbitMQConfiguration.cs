@@ -15,6 +15,9 @@ namespace RatingService.Application
         {
             return GetEnumerator();
         }
+
+        public string? UserCreatedQueueName => ConfigurationDetails.FirstOrDefault()?.Queues.FirstOrDefault(q => q.Name.Contains("user_created"))?.Name;
+        public string? EventFinishedQueueName => ConfigurationDetails.FirstOrDefault()?.Queues.FirstOrDefault(q => q.Name.Contains("event_finished"))?.Name;
     }
 
     public sealed record ConfigurationDetails(string ExchangeName, string ExchangeType, IEnumerable<RabbitQueue> Queues);

@@ -5,7 +5,7 @@ using RatingService.Application.Services.Abstractions;
 using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
 
-namespace RatingService.Application.Services;
+namespace RatingService.Application.Services.LifecycleServices;
 
 public class UserLifecycleService : IUserLifecycleService
 {

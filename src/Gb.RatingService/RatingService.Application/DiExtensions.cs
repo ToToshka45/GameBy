@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using RatingService.Application.Services;
 using RatingService.Application.Services.Abstractions;
+using RatingService.Application.Services.Caching;
+using RatingService.Application.Services.LifecycleServices;
 
 namespace RatingService.Application;
 

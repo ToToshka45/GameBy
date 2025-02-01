@@ -9,7 +9,7 @@ using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
 using RatingService.Domain.Entities;
 
-namespace RatingService.Application.Services;
+namespace RatingService.Application.Services.LifecycleServices;
 
 public class EventLifecycleService : IEventLifecycleService
 {
@@ -85,7 +85,7 @@ public class EventLifecycleService : IEventLifecycleService
             storedEvent.AddParticipant(participant);
             await _eventRepo.SaveChangesAsync(token);
 
-            if (await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token) is Participant entity) 
+            if (await _eventRepo.GetParticipantByEventId(eventId, dto.ExternalParticipantId, token) is Participant entity)
                 return entity.ToDto();
 
             return null;

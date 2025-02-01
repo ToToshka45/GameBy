@@ -8,12 +8,11 @@ using RatingService.Application.Models.Dtos.Users;
 using RatingService.Application.Services.Abstractions;
 using RatingService.Application.Services.Interfaces;
 using System.Text.Json;
-namespace RatingService.Application.Services;
+namespace RatingService.Application.Services.RabbitConsumers;
 
 public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
 {
     private readonly ILogger<UserCreatedRabbitEventConsumer> _logger;
-    private readonly RabbitMQSettings _settings;
     private readonly ConnectionFactory _factory;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
@@ -21,14 +20,15 @@ public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
     private IChannel? _channel;
     private string? _consumerTag;
 
-    const string CURRENT_QUEUE = RabbitMQSettings.UserCreatedQueueName;
+    private readonly string? CURRENT_QUEUE;
 
-    public UserCreatedRabbitEventConsumer(IOptions<RabbitMQSettings> options, ILogger<UserCreatedRabbitEventConsumer> logger, IServiceScopeFactory serviceScopeFactory)
+    public UserCreatedRabbitEventConsumer(IOptions<RabbitMQConfigurations> configs, IOptions<RabbitMQSettings> settings, ILogger<UserCreatedRabbitEventConsumer> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
-        _settings = options.Value;
-        _factory = ConnectionFactoryProvider.GetConnectionFactory(_settings);
+        _factory = ConnectionFactoryProvider.GetConnectionFactory(settings.Value);
         _serviceScopeFactory = serviceScopeFactory;
+        var _configs = configs.Value;
+        CURRENT_QUEUE = _configs.UserCreatedQueueName;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -54,6 +54,7 @@ public sealed class UserCreatedRabbitEventConsumer : IBaseEventConsumer
     public async Task ReadMessages(CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(_channel);
+        ArgumentNullException.ThrowIfNull(CURRENT_QUEUE);
         try
         {
             await using var scope = _serviceScopeFactory.CreateAsyncScope();

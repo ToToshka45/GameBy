@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 
-namespace RatingService.Application.Services;
+namespace RatingService.Application.Services.RabbitPublishers.TestingPublisher;
 
 public class RabbitMQTestSeedService : IAsyncDisposable
 {
@@ -51,7 +51,7 @@ public class RabbitMQTestSeedService : IAsyncDisposable
             }
             string exchangeName = userCreatedConfig.ExchangeName;
             var routingKey = userCreatedConfig.Queues.FirstOrDefault(e => e.Name.Contains("created"))?.RoutingKey;
-            if (String.IsNullOrEmpty(routingKey))
+            if (string.IsNullOrEmpty(routingKey))
             {
                 _logger.LogInformation("A routing key for the queue is not defined.");
                 return;

@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using RatingService.Application.Services;
 using RatingService.Domain.Abstractions;
 using RatingService.Domain.Aggregates;
 using RatingService.Domain.Entities;
 using RatingService.Domain.Entities.Ratings;
 using RatingService.Common.Enums;
 using RatingService.Infrastructure.DataAccess;
+using RatingService.Application.Services.Caching;
 
 namespace RatingService.Infrastructure.Repositories;
 

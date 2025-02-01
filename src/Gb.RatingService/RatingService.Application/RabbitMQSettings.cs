@@ -7,8 +7,4 @@ public sealed class RabbitMQSettings
     public string UserName { get; set; } = default!;
     public string Password { get; set; } = default!;
     public string VirtualHost { get; set; } = default!;
-
-    private const string _ratingServidePrefix = "rating_service_";
-    public const string UserCreatedQueueName = $"{_ratingServidePrefix}user_created";
-    public const string EventFinishedQueueName = $"{_ratingServidePrefix}event_finished";
 }

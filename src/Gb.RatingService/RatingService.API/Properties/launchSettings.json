@@ -6,7 +6,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "TestSettings__IsRabbitMQTestRequired": "false",
-        "RabbitMQSettings__Password": "w5zQ9VUibh-KJGXmlsTdz2xxJ5voyrlL"
+        "RabbitMQSettings__Password": ""
       },
       "applicationUrl": "https://localhost:56805;http://localhost:56806"
     }

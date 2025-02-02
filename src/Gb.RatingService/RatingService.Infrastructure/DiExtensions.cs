@@ -28,24 +28,32 @@ public static class DiExtensions
 
     public static async Task MigrateRabbitMQ(this IHostApplicationBuilder builder)
     {
-        CancellationTokenSource cts = new();
-
-        using var provider = builder.Services.BuildServiceProvider();
-        var settings = provider.GetRequiredService<IOptions<RabbitMQSettings>>().Value;
-        var configs = provider.GetRequiredService<IOptions<RabbitMQConfigurations>>().Value;
-
-        var factory = ConnectionFactoryProvider.GetConnectionFactory(settings);
-        using var conn = await factory.CreateConnectionAsync(cts.Token);
-        using var channel = await conn.CreateChannelAsync(cancellationToken: cts.Token);
-
-        foreach (var config in configs)
+        try
         {
-            await channel.ExchangeDeclareAsync(config.ExchangeName, config.ExchangeType, false, false, cancellationToken: cts.Token);
-            foreach (var queue in config.Queues)
+            CancellationTokenSource cts = new();
+
+            using var provider = builder.Services.BuildServiceProvider();
+            var settings = provider.GetRequiredService<IOptions<RabbitMQSettings>>().Value;
+            var configs = provider.GetRequiredService<IOptions<RabbitMQConfigurations>>().Value;
+
+            var factory = ConnectionFactoryProvider.GetConnectionFactory(settings);
+            using var conn = await factory.CreateConnectionAsync(cts.Token);
+            using var channel = await conn.CreateChannelAsync(cancellationToken: cts.Token);
+
+            foreach (var config in configs)
             {
-                await channel.QueueDeclareAsync(queue.Name, false, false, false, cancellationToken: cts.Token);
-                await channel.QueueBindAsync(queue.Name, config.ExchangeName, queue.RoutingKey, cancellationToken: cts.Token);
+                await channel.ExchangeDeclareAsync(config.ExchangeName, config.ExchangeType, false, false, cancellationToken: cts.Token);
+                foreach (var queue in config.Queues)
+                {
+                    await channel.QueueDeclareAsync(queue.Name, false, false, false, cancellationToken: cts.Token);
+                    await channel.QueueBindAsync(queue.Name, config.ExchangeName, queue.RoutingKey, cancellationToken: cts.Token);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+
+            throw;
         }
     }
     private static void AddRepositories(this IHostApplicationBuilder builder)

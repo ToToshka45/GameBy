@@ -8,7 +8,7 @@ public static class ConnectionFactoryProvider
     {
         return new ConnectionFactory()
         {
-            HostName = settings.Host,
+            HostName = settings.HostName,
             UserName = settings.UserName,
             Port = settings.Port,
             Password = settings.Password,

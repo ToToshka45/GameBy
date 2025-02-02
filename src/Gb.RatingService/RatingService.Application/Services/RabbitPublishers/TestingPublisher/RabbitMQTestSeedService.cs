@@ -33,11 +33,13 @@ public class RabbitMQTestSeedService : IAsyncDisposable
 
     public async Task ExecuteAsync([Range(1, 100)] int usersCount = 10, CancellationToken stoppingToken = default)
     {
+        ArgumentNullException.ThrowIfNull(_configs.UserCreatedQueueName);
+
         try
         {
             _conn = await _factory.CreateConnectionAsync(stoppingToken);
             _channel = await _conn.CreateChannelAsync(cancellationToken: stoppingToken);
-            await _channel.QueueDeclareAsync(RabbitMQSettings.UserCreatedQueueName, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
+            await _channel.QueueDeclareAsync(_configs.UserCreatedQueueName, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
 
             // prepare the seeding data
             var users = FakeDataProvider.ProvideUserCreatedEventTestData(usersCount);

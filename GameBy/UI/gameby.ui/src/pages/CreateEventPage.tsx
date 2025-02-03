@@ -10,41 +10,81 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import Dropzone from "react-dropzone";
-import { useCallback } from "react";
+import { FileWithPath, useDropzone } from "react-dropzone";
+import { useCallback, useState } from "react";
 import { green, orange, pink } from "@mui/material/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
-import EventCreationFields, { eventCreationSchema } from "../interfaces/Event";
-
-// TODO: Add saving of the typed values to the Local Storage
+import EventCreationForm, {
+  eventCreationSchema,
+} from "../interfaces/EventCreationForm";
 
 export default function CreateEventPage() {
+  const [image, setImage] = useState<FileWithPath | undefined>();
+  const [imgPreview, setImgPreview] = useState<string | ArrayBuffer | null>(
+    null
+  );
+
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<EventCreationFields>({
+  } = useForm<EventCreationForm>({
     resolver: zodResolver(eventCreationSchema),
+    defaultValues: {
+      startDate: dayjs().add(1, "day").toDate(),
+      endDate: dayjs().add(1, "day").toDate(),
+      minParticipants: 1,
+      maxParticipants: 1,
+    },
   });
 
-  const onFileAccept = useCallback((acceptedFiles: any) => {
-    console.log(acceptedFiles);
+  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
+    const imageUploaded = acceptedFiles[0];
+    if (imageUploaded === null) {
+      console.log("No image received.");
+      return;
+    }
+
+    setImage(imageUploaded);
+    console.log(URL.createObjectURL(imageUploaded));
+    setImgPreview(URL.createObjectURL(imageUploaded));
+
+    // const fileReader = new FileReader();
+
+    // // here we register an event callback which pops off on the onload
+    // fileReader.onloadend = () => {
+    //   // and it sets the img preview to the URL result, which then can be used in the img tag
+    //   setImgPreview(fileReader.result);
+    // };
+
+    // // here we allow fileReader to read the set image as URL
+    // fileReader.readAsDataURL(imageUploaded);
   }, []);
 
-  const onSubmit: SubmitHandler<EventCreationFields> = (data) => {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+  });
+
+  const onSubmit: SubmitHandler<EventCreationForm> = (data) => {
     console.log(data);
   };
 
   return (
     <Box
       mx="3%"
-      position="relative"
-      maxHeight="100%"
-      height="94.5vh"
       bgcolor={orange[300]}
+      sx={{
+        height: "calc(100vh - 50px)",
+      }}
     >
-      <Typography variant="h5" pt={2} pl={3} gutterBottom>
+      <Typography
+        pt={1.5}
+        variant="body2"
+        pl={3}
+        gutterBottom
+        sx={{ fontSize: { xs: 16, md: 24 } }}
+      >
         Create Event
       </Typography>
       <Paper
@@ -67,6 +107,7 @@ export default function CreateEventPage() {
             label="Title"
             name="title"
             variant="outlined"
+            sx={{ width: { sx: "100%", md: "50%" } }}
           />
           {errors.title && (
             <Typography variant="body2" color="error">
@@ -86,19 +127,67 @@ export default function CreateEventPage() {
               {errors.description?.message}
             </Typography>
           )}
-          <Stack direction="row" gap={3} my={2}>
+
+          <Stack direction="row" gap={1}>
+            <Box sx={{ width: { sx: "100%", md: "40%" } }}>
+              <TextField
+                {...register("location")}
+                label="Location"
+                name="location"
+                variant="outlined"
+                fullWidth
+              />
+              {errors.location && (
+                <Typography variant="body2" color="error">
+                  {errors.location?.message}
+                </Typography>
+              )}
+            </Box>
+
+            <Box width="250px">
+              <TextField
+                {...register("minParticipants")}
+                label="Minimal amount of Participants"
+                name="minParticipants"
+                variant="outlined"
+                fullWidth
+              />
+              {errors.minParticipants && (
+                <Typography variant="body2" color="error">
+                  {errors.minParticipants?.message}
+                </Typography>
+              )}
+            </Box>
+
+            <Box width="250px">
+              <TextField
+                {...register("maxParticipants")}
+                label="Maximum amount of Participants"
+                name="maxParticipants"
+                variant="outlined"
+                fullWidth
+              />
+              {errors.maxParticipants && (
+                <Typography variant="body2" color="error">
+                  {errors.maxParticipants?.message}
+                </Typography>
+              )}
+            </Box>
+          </Stack>
+
+          <Stack direction="row" gap={10} my={2}>
             <Box>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Controller
                   name="startDate"
                   control={control}
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <DateTimePicker
-                      name="startDate"
-                      value={dayjs(field.value)}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(date) => {
+                        field.onChange(date?.toDate());
+                      }}
                       inputRef={field.ref}
-                      defaultValue={dayjs()}
                       label="Start Date"
                     />
                   )}
@@ -116,13 +205,13 @@ export default function CreateEventPage() {
                 <Controller
                   name="endDate"
                   control={control}
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <DateTimePicker
-                      name="endDate"
-                      value={dayjs(field.value)}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(date) => {
+                        field.onChange(date?.toDate());
+                      }}
                       inputRef={field.ref}
-                      defaultValue={dayjs().add(3, "day")}
                       label="End Date"
                     />
                   )}
@@ -135,41 +224,48 @@ export default function CreateEventPage() {
               )}
             </Box>
           </Stack>
-          <TextField label="Location" name="location" variant="outlined" />
+
           {/* TODO: add a real-time map API*/}
-          <Dropzone onDrop={onFileAccept} minSize={1024} maxSize={3072000}>
-            {({ getRootProps, getInputProps, isDragActive }) => (
-              <Box
-                border="1px solid gray"
-                textAlign="center"
-                py={5}
-                sx={{ bgcolor: isDragActive ? pink[100] : "white" }}
-              >
-                <div {...getRootProps()}>
-                  <input {...getInputProps()} />
-                  {isDragActive ? (
-                    <Typography
-                      sx={{
-                        fontSize: { xs: 11, sm: 14, lg: 18 },
-                        color: "white",
-                      }}
-                    >
-                      Drop down the file to upload it...
-                    </Typography>
-                  ) : (
-                    <Typography
-                      sx={{
-                        fontSize: { xs: 11, md: 14, lg: 18 },
-                        color: "lightcoral",
-                      }}
-                    >
-                      Drag 'n' drop some files here, or click to select files
-                    </Typography>
-                  )}
-                </div>
-              </Box>
-            )}
-          </Dropzone>
+
+          <Box
+            border="0.5px solid gray"
+            textAlign="center"
+            alignSelf="center"
+            py={5}
+            sx={{
+              bgcolor: isDragActive ? pink[100] : "white",
+              width: { xs: "100%", md: "50%" },
+            }}
+          >
+            <div {...getRootProps()}>
+              <input
+                {...getInputProps({
+                  accept: "image/*",
+                  type: "file",
+                  name: "image",
+                })}
+              />
+              {isDragActive ? (
+                <Typography
+                  sx={{
+                    fontSize: { xs: 14, md: 16 },
+                    color: "white",
+                  }}
+                >
+                  Drop down the file to upload it...
+                </Typography>
+              ) : (
+                <Typography
+                  sx={{
+                    fontSize: { xs: 14, md: 16 },
+                    color: "lightcoral",
+                  }}
+                >
+                  Drag 'n' drop some files here, or click to select files
+                </Typography>
+              )}
+            </div>
+          </Box>
           <Box>
             <Button
               type="submit"
@@ -184,6 +280,7 @@ export default function CreateEventPage() {
             </Button>
           </Box>
         </form>
+        {image !== null && <img src={imgPreview as string} />}
       </Paper>
     </Box>
   );

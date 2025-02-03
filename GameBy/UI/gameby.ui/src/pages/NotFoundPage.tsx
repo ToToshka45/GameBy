@@ -7,7 +7,7 @@ const NotFoundPage = () => {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      marginTop="8%"
+      justifyItems="center"
     >
       <Box
         component="img"

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Application.EventHandlers
@@ -19,7 +20,7 @@ namespace Application.EventHandlers
 
         public  Task Handle(UserAddedEvent notification, CancellationToken cancellationToken)
         {
-            _rabbitMqService.SendMessage("rating_service_user_registered", notification.UserId.ToString());
+            _rabbitMqService.SendMessage("rating_service_user_added",JsonSerializer.Serialize(notification));
             _rabbitMqService.SendMessage("gamer_service_user_registered", notification.UserId.ToString());
             // Your logic for handling the user added event
             Console.WriteLine($"User added: {notification.UserId}");

@@ -11,9 +11,12 @@ namespace Application.EventHandlers
     {
         public int UserId { get; }
 
-        public UserAddedEvent(int userId)
+        public string UserName { get; }
+
+        public UserAddedEvent(int userId, string userName)
         {
             UserId = userId;
+            UserName = userName;
         }
     }
 }

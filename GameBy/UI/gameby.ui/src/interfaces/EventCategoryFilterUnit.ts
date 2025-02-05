@@ -1,9 +1,9 @@
-import { Category } from "../enums/Category";
+import { EventCategory } from "../enums/EventEnums";
 
 /** Represents a particular Filter for displaying on the Main page of the app. */
 export interface EventCategoryFilterUnit {
     name: string,
     img: string,
-    category: Category,
+    category: EventCategory,
     isActive: boolean,   
 }

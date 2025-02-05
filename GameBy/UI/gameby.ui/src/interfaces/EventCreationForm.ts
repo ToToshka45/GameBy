@@ -50,7 +50,7 @@ export const eventCreationSchema = z
       endDate: dayjs().add(1, "day").toDate(),
       location: "",
       minParticipants: 1,
-      maxParticipants: 0
+      maxParticipants: 1
     }
   }
 

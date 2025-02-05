@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useContext, useState } from "react";
-import { Category } from "../../enums/Category";
+import { EventCategory } from "../../enums/EventEnums";
 import { EventCategoryFilterUnit } from "../../interfaces/EventCategoryFilterUnit";
 import FiltersProps from "../../interfaces/FiltersProps";
 import FiltersPropsContext from "../../contexts/FiltersPropsContext";
@@ -9,25 +9,25 @@ const categoriesList: EventCategoryFilterUnit[] = [
   {
     name: "Strategy",
     img: "src/assets/categories/strategy.png",
-    category: Category.Strategy,
+    category: EventCategory.Strategy,
     isActive: false,
   },
   {
     name: "Quiz",
     img: "src/assets/categories/quiz.png",
-    category: Category.Quiz,
+    category: EventCategory.Quiz,
     isActive: false,
   },
   {
     name: "Sports",
     img: "src/assets/categories/football_ball.png",
-    category: Category.Sports,
+    category: EventCategory.Sports,
     isActive: false,
   },
   {
     name: "Mafia",
     img: "src/assets/categories/mafia_fedora.png",
-    category: Category.Mafia,
+    category: EventCategory.Mafia,
     isActive: false,
   },
 ];

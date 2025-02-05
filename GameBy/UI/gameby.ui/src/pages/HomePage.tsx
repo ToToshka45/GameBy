@@ -2,7 +2,7 @@ import { Box, Paper } from "@mui/material";
 import { FiltersMenu } from "../components/FiltersMenu";
 import { OccuringEventsPanel } from "../components/Events/OccuringEventsPanel";
 import { useState } from "react";
-import { Category } from "../enums/Category";
+import { EventCategory } from "../enums/EventEnums";
 import dayjs, { Dayjs } from "dayjs";
 import FiltersPropsContext from "../contexts/FiltersPropsContext";
 import FiltersProps from "../interfaces/FiltersProps";
@@ -10,9 +10,9 @@ import { DateRange } from "@mui/x-date-pickers-pro";
 
 export default function HomePage() {
   const [filteringTitle, setFilteringTitle] = useState<string>("");
-  const [filteringCategories, setFilteringCategories] = useState<Category[]>(
-    []
-  );
+  const [filteringCategories, setFilteringCategories] = useState<
+    EventCategory[]
+  >([]);
   const [filteringDates, setFilteringDates] = useState<DateRange<Dayjs>>([
     dayjs(),
     dayjs().add(+3, "day"),

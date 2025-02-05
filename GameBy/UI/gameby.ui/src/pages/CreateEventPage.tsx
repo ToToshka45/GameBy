@@ -15,6 +15,7 @@ import { useCallback, useState } from "react";
 import { green, orange, pink } from "@mui/material/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import EventCreationForm, {
+  createDefaultEvent,
   eventCreationSchema,
 } from "../interfaces/EventCreationForm";
 
@@ -31,12 +32,7 @@ export default function CreateEventPage() {
     formState: { errors },
   } = useForm<EventCreationForm>({
     resolver: zodResolver(eventCreationSchema),
-    defaultValues: {
-      startDate: dayjs().add(1, "day").toDate(),
-      endDate: dayjs().add(1, "day").toDate(),
-      minParticipants: 1,
-      maxParticipants: 1,
-    },
+    defaultValues: createDefaultEvent(),
   });
 
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {

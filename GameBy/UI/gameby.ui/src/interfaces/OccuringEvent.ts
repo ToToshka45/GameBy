@@ -1,4 +1,6 @@
-import { Category } from "../enums/Category";
+import { Dayjs } from "dayjs";
+import { EventCategory } from "../enums/EventEnums";
+import EventStateWithColor from "./EventStateWithColor";
 
 export interface OccuringEventProps {
     events: OccuringEvent[]
@@ -7,9 +9,10 @@ export interface OccuringEventProps {
 export interface OccuringEvent {
     id: number,
     avatar: string;
-    name: string;
+    title: string;
     content: string;
-    category: Category;
-    date: string;
+    category: EventCategory;
+    date: Dayjs;
+    stateDetails: EventStateWithColor;
   }
 

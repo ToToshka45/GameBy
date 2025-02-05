@@ -7,23 +7,30 @@ import {
   Box,
   styled,
   Grid,
+  Chip,
 } from "@mui/material";
 import { OccuringEventProps } from "../../interfaces/OccuringEvent";
 import { blue, orange } from "@mui/material/colors";
-import { Category } from "../../enums/Category";
+import { EventCategory } from "../../enums/EventEnums";
+import { DATE_FORMAT } from "../../consts/testOccuringEvents";
+import { handleNavigateEvent } from "../../common/functions";
+import { useNavigate } from "react-router-dom";
 
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
+export const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   backgroundColor: orange[200],
+  height: "25px",
   "& .MuiCardHeader-title": {
-    fontSize: "1.2rem",
+    fontSize: "1.1rem",
   },
   "& .MuiCardHeader-subheader": {
-    fontSize: "1rem",
+    fontSize: "0.8rem",
     color: theme.palette.text.secondary,
   },
 }));
 
-export const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
+const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
+  const navigate = useNavigate();
+
   return (
     <Grid container spacing={2}>
       {events.length === 0 ? (
@@ -40,24 +47,40 @@ export const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
       ) : (
         events.map((event) => (
           <Grid item key={event.id} md={6} lg={4}>
-            <Card>
-              <StyledCardHeader
-                title={event.name}
-                subheader={`${event.date} - ${Category[event.category]}`}
-              />
-              <CardMedia
-                component="img"
-                image={event.avatar}
-                src={"src/assets/event-pics/event_default.jpg"}
-              />
-              <CardContent sx={{ bgcolor: blue[100] }}>
-                <Typography variant="body1">{event.content}</Typography>
-              </CardContent>
-              {/* <CardActions /> */}
-            </Card>
+            <Box
+              sx={{ cursor: "pointer" }}
+              onClick={() => handleNavigateEvent(event, navigate)}
+            >
+              <Card>
+                <StyledCardHeader
+                  title={event.title}
+                  subheader={`${event.date.format(DATE_FORMAT)} - ${
+                    EventCategory[event.category]
+                  }`}
+                  action={
+                    <Chip
+                      size="medium"
+                      label={event.stateDetails.state}
+                      sx={{ bgcolor: event.stateDetails.color }}
+                    />
+                  }
+                />
+                <CardMedia
+                  component="img"
+                  image={event.avatar}
+                  src={"src/assets/event-pics/event_default.jpg"}
+                />
+                <CardContent sx={{ bgcolor: blue[100] }}>
+                  <Typography variant="caption">{event.content}</Typography>
+                </CardContent>
+                {/* <CardActions /> */}
+              </Card>
+            </Box>
           </Grid>
         ))
       )}
     </Grid>
   );
 };
+
+export default OccuringEventsGrid;

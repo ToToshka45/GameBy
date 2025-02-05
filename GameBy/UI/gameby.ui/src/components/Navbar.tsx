@@ -16,7 +16,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import CreateEventPage from "../pages/CreateEventPage";
 import { NavLink } from "react-router";
-import MyEventsPage from "../pages/MyEventsPage";
+import EventPage from "../pages/EventPage";
 import { useState } from "react";
 
 const navMenu = [
@@ -28,7 +28,7 @@ const navMenu = [
   {
     name: "My Events",
     path: "/my-events",
-    page: MyEventsPage,
+    page: EventPage,
   },
 ];
 

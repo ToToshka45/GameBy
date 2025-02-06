@@ -1,0 +1,22 @@
+services:
+  #Events Db
+  events-db:
+    image: "postgres:latest"
+    container_name: 'events-db'
+    restart: always 
+    ports:
+      - 5441:5432
+    environment: 
+      - POSTGRES_PASSWORD=123w
+  #Web Api
+  events-service-api:
+    build:
+      context: ./
+      dockerfile: ./WebApi/Dockerfile
+    container_name: 'web-service-api'
+    environment:
+      - "PG_CONNECT=Host=events-db;Database=eventsdb;Username=postgres;Password=123w;"
+      - REDIS_CONNECT=refresh-token-db
+    restart: always
+    depends_on: 
+      - events-db

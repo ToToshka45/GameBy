@@ -15,7 +15,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import CreateEventPage from "../pages/CreateEventPage";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import EventPage from "../pages/EventPage";
 import { useState } from "react";
 
@@ -36,6 +36,12 @@ export const Navbar = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+
+  const navigate = useNavigate();
+
+  function handleNavigateSignInPage() {
+    navigate("/sign-in");
+  }
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
@@ -138,7 +144,12 @@ export const Navbar = () => {
             ))}
           </Stack>
 
-          <IconButton color="inherit" sx={{ ml: 3, gap: 1 }}>
+          <IconButton
+            onClick={handleNavigateSignInPage}
+            aria-label="sign-in"
+            color="inherit"
+            sx={{ ml: 3, gap: 1 }}
+          >
             <Typography variant="body2">LogIn</Typography>
             <AccountCircle />
           </IconButton>

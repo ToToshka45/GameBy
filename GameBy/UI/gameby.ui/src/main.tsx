@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage";
 import EventPage from "./pages/EventPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import MyEventsPage from "./pages/MyEventsPage";
+import OAuthSignInPage from "./pages/OAuthSignInPage";
 
 const router = createBrowserRouter([
   {
@@ -16,9 +17,12 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       {
+        path: "/sign-in",
+        element: <OAuthSignInPage />,
+      },
+      {
         path: "/",
         element: <HomePage />,
-        errorElement: <NotFoundPage />,
       },
       {
         path: "/create-event",

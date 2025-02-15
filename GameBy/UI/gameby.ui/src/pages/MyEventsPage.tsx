@@ -1,13 +1,12 @@
 import { Box, Card, CardMedia, Grid, Typography } from "@mui/material";
 import { OccuringEvent } from "../interfaces/OccuringEvent";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { events } from "../consts/testOccuringEvents";
 import { lightBlue } from "@mui/material/colors";
 import { StyledCardHeader } from "../components/Events/OccuringEventsGrid";
 import { EventCategory } from "../enums/EventEnums";
 import { handleNavigateEvent } from "../common/functions";
 import { useNavigate } from "react-router-dom";
+import { events } from "../common/consts/testOccuringEvents";
 
 export default function MyEventsPage() {
   const [organizerEvents, setOrganizerEvents] = useState<OccuringEvent[]>([]);

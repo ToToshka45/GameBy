@@ -12,9 +12,9 @@ import {
 import { OccuringEventProps } from "../../interfaces/OccuringEvent";
 import { blue, orange } from "@mui/material/colors";
 import { EventCategory } from "../../enums/EventEnums";
-import { DATE_FORMAT } from "../../consts/testOccuringEvents";
-import { handleNavigateEvent } from "../../common/functions";
 import { useNavigate } from "react-router-dom";
+import { DATE_FORMAT } from "../../common/consts/testOccuringEvents";
+import { handleNavigateEvent } from "../../common/functions";
 
 export const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   backgroundColor: orange[200],

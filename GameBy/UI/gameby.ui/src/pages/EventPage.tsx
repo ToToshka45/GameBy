@@ -1,12 +1,13 @@
 import { Box, Button, CardMedia, Chip, Grid, Typography } from "@mui/material";
-import { loremIpsum } from "../consts/defaults";
 import { useLocation } from "react-router-dom";
 import { OccuringEvent } from "../interfaces/OccuringEvent";
 import { useEffect } from "react";
 import { green } from "@mui/material/colors";
-import { DATE_FORMAT } from "../consts/testOccuringEvents";
+import { DATE_FORMAT } from "../common/consts/testOccuringEvents";
+import { loremIpsum } from "../common/consts/defaults";
 
 export default function EventPage() {
+  // this allows us to get a payload, sent alongside when we were redirected to the EventPage
   const location = useLocation();
   const { eventDetails } =
     (location.state as { eventDetails: OccuringEvent }) || {};

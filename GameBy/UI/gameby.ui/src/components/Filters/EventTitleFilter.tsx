@@ -1,7 +1,7 @@
 import { Box, TextField } from "@mui/material";
 import { useContext } from "react";
 import FiltersPropsContext from "../../contexts/FiltersPropsContext";
-import FiltersProps from "../../interfaces/FiltersProps";
+import FiltersProps from "../../types/FiltersProps";
 
 export default function EventTitleFilter() {
   const filtersProps = useContext<FiltersProps | undefined>(

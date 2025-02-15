@@ -4,7 +4,7 @@ import { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import FiltersProps from "../../interfaces/FiltersProps";
+import FiltersProps from "../../types/FiltersProps";
 import FiltersPropsContext from "../../contexts/FiltersPropsContext";
 import { DateRange } from "@mui/x-date-pickers-pro";
 

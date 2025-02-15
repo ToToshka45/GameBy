@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import EventCreationForm, {
   createDefaultEvent,
   eventCreationSchema,
-} from "../interfaces/EventCreationForm";
+} from "../schemas/EventCreationForm";
 
 export default function CreateEventPage() {
   const [image, setImage] = useState<FileWithPath | undefined>();

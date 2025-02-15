@@ -5,7 +5,7 @@ import { useState } from "react";
 import { EventCategory } from "../enums/EventEnums";
 import dayjs, { Dayjs } from "dayjs";
 import FiltersPropsContext from "../contexts/FiltersPropsContext";
-import FiltersProps from "../interfaces/FiltersProps";
+import FiltersProps from "../types/FiltersProps";
 import { DateRange } from "@mui/x-date-pickers-pro";
 
 export default function HomePage() {

@@ -18,6 +18,8 @@ import CreateEventPage from "../pages/CreateEventPage";
 import { NavLink, useNavigate } from "react-router";
 import EventPage from "../pages/EventPage";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import AuthData from "../types/AuthData";
 
 const navMenu = [
   {
@@ -38,6 +40,7 @@ export const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
+  const { authUser, isLoggedIn } = useAuth() as AuthData;
 
   function handleNavigateSignInPage() {
     navigate("/sign-in");
@@ -150,7 +153,9 @@ export const Navbar = () => {
             color="inherit"
             sx={{ ml: 3, gap: 1 }}
           >
-            <Typography variant="body2">LogIn</Typography>
+            <Typography variant="body1" color="antiqueWhite">
+              {isLoggedIn ? authUser?.username : "Sign Up"}
+            </Typography>
             <AccountCircle />
           </IconButton>
         </Box>

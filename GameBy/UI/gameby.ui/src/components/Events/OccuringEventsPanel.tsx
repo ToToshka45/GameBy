@@ -5,8 +5,8 @@ import { EventCategory } from "../../enums/EventEnums";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import FiltersPropsContext from "../../contexts/FiltersPropsContext";
-import FiltersProps from "../../interfaces/FiltersProps";
-import { DATE_FORMAT, events } from "../../consts/testOccuringEvents";
+import FiltersProps from "../../types/FiltersProps";
+import { DATE_FORMAT, events } from "../../common/consts/testOccuringEvents";
 
 export const OccuringEventsPanel = () => {
   const [eventsFiltered, setEventsFiltered] = useState<OccuringEvent[]>(events);

@@ -13,11 +13,14 @@ namespace WebApi.Controllers
     {
         private readonly RegisterService _registerService;
 
+        private readonly AuthenticantionService _authenticatorService;
+
         private readonly IMapper _mapper;
 
-        public RegisterController(RegisterService registerService, 
+        public RegisterController(RegisterService registerService,AuthenticantionService authenticantionService, 
             IMapper mapper)
         {
+            _authenticatorService = authenticantionService;
 
             _registerService = registerService;
 
@@ -41,9 +44,9 @@ namespace WebApi.Controllers
             if (!res.IsSuccess)
                 return BadRequest(res.ErrorMessage);
 
-            
+            var authres = await _authenticatorService.AuthUserById(res.Id);
 
-            return new NewUserResponse() { UserName = res.UserName, Id = res.Id };
+            return new NewUserResponse() { UserName = res.UserName, Id = res.Id,AccessToken=authres.AccessToken,RefreshToken=authres.RefreshToken };
 
         }
 

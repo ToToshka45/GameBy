@@ -50,6 +50,31 @@ namespace Application
             return res;
         }*/
 
+        public async Task<AuthResultDto> AuthUserById(int UserId
+             )
+        {
+            AuthResultDto result = new AuthResultDto();
+
+            User user = null;
+
+            user=await _userRepository.GetByIdAsync( UserId );
+
+
+            result.AccessToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
+            result.RefreshToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
+            result.IsSuccess = true;
+
+            _userService.AddUserToken(new UserToken()
+            {
+                RefreshToken = result.RefreshToken,
+                ExpirationDate = DateTime.Now.AddDays(7),
+                UserId = user.Id,
+                UserRoles = user.Roles.
+            Select(x => x.Role.RoleName).ToList()
+            });
+            return result;
+        }
+
         public async Task<AuthResultDto> AuthUser(string userPassword, string userLogin,string userEmail
              )
          {

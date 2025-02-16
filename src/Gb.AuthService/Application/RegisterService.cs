@@ -78,6 +78,7 @@ namespace Application
             var newUser = await _userRepository.AddAsync(user);
             if (newUser != null)
             {
+
                 var userAddedEvent = new UserAddedEvent(newUser.Id,newUser.Login.Name);
                 await _mediator.Publish(userAddedEvent);
                 return new NewUserResultDto()

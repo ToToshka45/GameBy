@@ -402,3 +402,4 @@ FodyWeavers.xsd
 /GameBy/RatingService/RatingService.API/Properties/launchSettings.json
 /GameBy/UI/gameby.ui
 /src/GameBy.Common/GameBy.Common/nuget.config
+/src/Gb.AuthService/WebApi/Properties/launchSettings.json

@@ -40,7 +40,7 @@ export const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
-  const { authUser, isLoggedIn } = useAuth() as AuthData;
+  const { usser: authUser, isLoggedIn } = useAuth() as AuthData;
 
   function handleNavigateSignInPage() {
     navigate("/sign-in");

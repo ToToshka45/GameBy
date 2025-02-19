@@ -5,5 +5,5 @@ export const handleNavigateEvent = (
   event: OccuringEvent,
   navigate: NavigateFunction
 ) => {
-  navigate(`/event/${event.id}}`, { state: { eventDetails: event } });
+  navigate(`/event/${event.id}`, { state: { eventDetails: event } });
 };

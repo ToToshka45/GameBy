@@ -11,3 +11,12 @@ export enum EventProgressionState {
     RegistrationClosed,
     Finished,
 }
+
+export enum ParticipationState {
+    PendingAcceptance,
+    Declined,
+    Registered,
+    Cancelled,
+    Participated,
+    Unclarified 
+}

@@ -1,6 +1,6 @@
 import { Box, Paper } from "@mui/material";
 import { FiltersMenu } from "../components/FiltersMenu";
-import { OccuringEventsPanel } from "../components/Events/OccuringEventsPanel";
+import { OccuringEventsPage } from "./OccuringEventsPage";
 import { useState } from "react";
 import { EventCategory } from "../enums/EventEnums";
 import dayjs, { Dayjs } from "dayjs";
@@ -41,7 +41,7 @@ export default function HomePage() {
       >
         <FiltersPropsContext.Provider value={contextValue}>
           <FiltersMenu />
-          <OccuringEventsPanel />
+          <OccuringEventsPage />
         </FiltersPropsContext.Provider>
       </Paper>
     </Box>

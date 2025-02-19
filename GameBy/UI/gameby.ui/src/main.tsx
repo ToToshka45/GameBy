@@ -45,16 +45,8 @@ const router = createBrowserRouter([
         path: "/sign-in",
         element: <SignInFormPage />,
       },
-      // {
-      //   path: "/create-event",
-      //   element: <CreateEventPage />,
-      // },
-      // {
-      //   path: "/my-events",
-      //   element: <MyEventsPage />,
-      // },
       {
-        path: "/event/:id",
+        path: "/event/:eventId",
         element: <EventPage />,
       },
     ],

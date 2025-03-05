@@ -11,12 +11,12 @@ const useRegister = () => {
 
   const register = async (dto: SignUpFormData) => {
     try {
-      const stringify = JSON.stringify(dto);
-      console.log("Sending a register paylod: ", stringify);
-      const res = await axios.post("register/RegisterNew", stringify, {
+      const stringified = JSON.stringify(dto);
+      console.log("Sending a register payload: ", stringified);
+      const res = await axios.post("register/new", stringified, {
         signal: ac.signal,
-        // headers: { "Content-Type": "application/json" },
-        // withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
 
       if (res.data) {

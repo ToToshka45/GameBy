@@ -34,7 +34,7 @@ namespace WebApi.Controllers
         /// Customer if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("RegisterNew")]
+        [HttpPost("new")]
         public async Task<ActionResult<NewUserResponse>> CreateCustomerAsync(RegiserUserRequest request)
         {
             NewUserResultDto res = await _registerService.

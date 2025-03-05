@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 //amqps://
 var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-var RedisConnect= Environment.GetEnvironmentVariable("REDIS_CONNECT");
+var RedisConnect = Environment.GetEnvironmentVariable("REDIS_CONNECT");
 //var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
 
 //var PgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
@@ -46,11 +46,20 @@ builder.Services.AddAutoMapper(typeof(AppMappingProfiles));
 
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
 
+Console.WriteLine(builder.Configuration.GetValue<string[]?>("Origins"));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("base", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyMethod();
+        var prebuilt = policy
+            .AllowAnyMethod()
+            .AllowAnyMethod()
+            .AllowCredentials();
+
+        if (builder.Environment.IsDevelopment()) prebuilt.AllowAnyOrigin();
+        else prebuilt.WithOrigins(builder.Configuration.GetValue<string[]?>("Origins") ?? []);
+
     });
 });
 
@@ -100,7 +109,7 @@ using (var scope = app.Services.CreateScope())
     dbInitializer.InitializeDb();
 
     RabbitService rabbitService = scope.ServiceProvider.GetRequiredService<RabbitService>();
-    await rabbitService.Init(""); 
+    await rabbitService.Init("");
 }
 
 app.Run();

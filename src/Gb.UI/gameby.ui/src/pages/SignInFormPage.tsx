@@ -10,7 +10,7 @@ import SignInFormData, { signInSchema } from "../schemas/SignInForm";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { isEmailSchema } from "../schemas/IsEmailSchema";

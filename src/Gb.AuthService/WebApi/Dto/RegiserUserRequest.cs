@@ -1,5 +1,6 @@
 ﻿using Constants;
 using Domain.ValueObjects;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Dto
@@ -16,16 +17,20 @@ namespace WebApi.Dto
         [MinLength(3,ErrorMessage ="Слишком короткий логин")]
         [MaxLength(30,ErrorMessage ="Слишком длинный логин")]
         [RegularExpression(RegexPatterns.UserLogin, ErrorMessage = "Только англ буквы и цифры")]
-        public string UserName { get; set; }
+        [JsonProperty("username")]
+        public string Username { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [JsonProperty("email")]
+        public string Email { get; set; }
 
         [Required]
         [MinLength(1)]
         [MaxLength(30)]
-        public string UserPassword { get; set; }
+        [JsonProperty("password")]
+        public string Password { get; set; }
 
-        [Required]
-        [EmailAddress]
-        public string UserEmail { get; set; }
 
         public bool Validate()
         {

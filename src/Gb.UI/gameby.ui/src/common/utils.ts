@@ -5,5 +5,5 @@ export function getViteEnv(key: string) {
     if (!envVar) { 
         console.error(`No environment variable with a key ${fullKey} is found`);
     }
-    return fullKey;
+    return envVar;
 }

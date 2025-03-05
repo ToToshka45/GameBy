@@ -34,7 +34,7 @@ const SignUpFormPage = () => {
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
-      userName: "",
+      username: "",
       password: "",
       confirmPassword: "",
     },
@@ -89,7 +89,7 @@ const SignUpFormPage = () => {
           />
 
           <Controller
-            name="userName"
+            name="username"
             control={control}
             render={({ field }) => (
               <TextField
@@ -97,8 +97,8 @@ const SignUpFormPage = () => {
                 label="Username"
                 margin="normal"
                 fullWidth
-                error={!!errors.userName}
-                helperText={errors.userName ? errors.userName.message : ""}
+                error={!!errors.username}
+                helperText={errors.username ? errors.username.message : ""}
               />
             )}
           />

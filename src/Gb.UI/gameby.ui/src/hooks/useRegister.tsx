@@ -1,23 +1,30 @@
-import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import AuthData from "../types/AuthData";
 import SignUpFormData from "../schemas/SignUpForm";
+import { jwtDecode } from "jwt-decode";
+import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
+import axios from "../services/axios";
 
 const useRegister = () => {
-  const { setUserAuth, isLoggedIn } = useAuth() as AuthData;
+  const { userAuth, setUserAuth } = useAuth() as AuthData;
   const ac = new AbortController();
 
   const register = async (dto: SignUpFormData) => {
     try {
-      const res = await axios.post("/register", JSON.stringify(dto), {
+      const stringify = JSON.stringify(dto);
+      console.log("Sending a register paylod: ", stringify);
+      const res = await axios.post("register/RegisterNew", stringify, {
         signal: ac.signal,
-        headers: { "Content-Type": "Application/json" },
-        withCredentials: true,
+        // headers: { "Content-Type": "application/json" },
+        // withCredentials: true,
       });
 
       if (res.data) {
         const { id, userName, email, password, accessToken, refreshToken } =
           res.data;
+        const decoded = jwtDecode<ExtendedJwtPayload>(accessToken);
+        const roles = decoded?.roles;
+
         setUserAuth!({
           id,
           userName,
@@ -25,11 +32,12 @@ const useRegister = () => {
           password,
           accessToken,
           refreshToken,
+          roles,
         });
       }
-
-      console.log(isLoggedIn ? "User is logged in" : "User is not logged in");
+      console.log("User data: ", userAuth);
     } catch (err) {
+      console.error("Error has occured while a user register: ", err);
       // if (!err?.response)
       //   console.error("Unknown error. Please, try again later.");
       // if (err.response.status == 409)

@@ -4,6 +4,7 @@ import {
   CardMedia,
   Chip,
   Grid,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -18,8 +19,10 @@ import { loremIpsum } from "../common/consts/fakeData/defaults";
 import { useAuth } from "../contexts/AuthContext";
 import AuthData from "../types/AuthData";
 import useFetchEvent from "../hooks/useFetchEvent";
-import EventParticipant from "../interfaces/EventParticipant";
 import { ParticipationState } from "../common/enums/EventEnums";
+import EventParticipant from "../interfaces/EventParticipant";
+import { ThumbUp, ThumbDown } from "@mui/icons-material";
+import { green, red } from "@mui/material/colors";
 
 export default function EventDetailsPage() {
   // this allows us to get a payload, sent alongside when we were redirected to the EventPage
@@ -31,26 +34,41 @@ export default function EventDetailsPage() {
   const [occuringEvent, setOccuringEvent] = useState<
     OccuringEvent | undefined
   >();
-  const fetchEvent = useFetchEvent();
   const [pendingParticipants, setPendingParticipants] = useState<
     EventParticipant[]
   >([]);
+  const fetchEvent = useFetchEvent();
 
   useEffect(() => {
-    // TODO: how to process such case, when there is not eventId somehow?
-    if (!eventId) return;
+    const fetch = async () => {
+      try {
+        if (!eventId) throw new Error("Event is not found");
 
-    const event = fetchEvent(Number.parseInt(eventId));
-    setOccuringEvent(event);
+        const event = fetchEvent(Number.parseInt(eventId));
+        setOccuringEvent(event);
+      } catch (err) {
+        console.error(
+          "Error has occured while fetching the event details: ",
+          err
+        );
+      }
+    };
 
+    fetch();
+
+    console.log("Pending participants: ", pendingParticipants);
+    console.log("Event: ", occuringEvent);
+  }, []);
+
+  useEffect(() => {
+    if (!occuringEvent) return;
     const pending =
       occuringEvent?.participants.filter(
-        (p) => p.participationState === ParticipationState.PendingAcceptance
+        (p: EventParticipant) =>
+          p.participationState === ParticipationState.PendingAcceptance
       ) || [];
     setPendingParticipants(pending);
-
-    // retrieve data about the event
-  }, []);
+  }, [occuringEvent]);
 
   const handleEventApply = () => {
     console.log(
@@ -142,22 +160,31 @@ export default function EventDetailsPage() {
           <Box ml={1}>
             <Paper elevation={2}>
               <Typography variant="body2" textAlign="center" mt={2} ml={1}>
-                <b>Pending participant requests</b>
+                <b>Pending participants requests</b>
               </Typography>
             </Paper>
             <Paper elevation={1} sx={{ height: "40vh" }}>
-              {occuringEvent?.participants?.length === 0 ? (
-                <Typography variant="body2">No participants yet</Typography>
-              ) : (
-                <List>
-                  {occuringEvent?.participants!.map((participant, index) => (
-                    <ListItem key={index}>
-                      <ListItemIcon></ListItemIcon>
-                      {participant.userName}
-                    </ListItem>
-                  ))}
-                </List>
-              )}
+              <Box>
+                {!pendingParticipants || pendingParticipants.length === 0 ? (
+                  <Typography variant="body2">No requests</Typography>
+                ) : (
+                  <List>
+                    {pendingParticipants.map((participant, idx) => (
+                      <ListItem key={idx}>
+                        <IconButton sx={{ color: green[500] }}>
+                          <ThumbUp />
+                        </IconButton>
+                        <IconButton sx={{ color: red[500] }}>
+                          <ThumbDown />
+                        </IconButton>
+                        <Typography variant="body2" ml={1}>
+                          {participant.userName}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </Box>
             </Paper>
           </Box>
         )}
@@ -177,7 +204,9 @@ export default function EventDetailsPage() {
                 {occuringEvent?.participants!.map((participant, index) => (
                   <ListItem key={index}>
                     <ListItemIcon></ListItemIcon>
-                    {participant.userName}
+                    <Typography variant="body2">
+                      {participant.userName}
+                    </Typography>
                   </ListItem>
                 ))}
               </List>

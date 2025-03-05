@@ -42,11 +42,17 @@ builder.Services.AddScoped<RegisterService>();
 builder.Services.AddScoped<AuthenticantionService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
-
-
 builder.Services.AddAutoMapper(typeof(AppMappingProfiles));
 
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("base", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyMethod();
+    });
+});
 
 //"localhost:1919"
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(RedisConnect));
@@ -70,13 +76,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-
-
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseRouting();
+
+app.UseCors("base");
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 /* for Cookie variant
@@ -85,11 +92,6 @@ app.UseCors(builder => builder
     .WithOrigins("http://localhost:5173", "https://localhost:5173")
     .AllowAnyMethod()
     .AllowAnyHeader());*/
-
-app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
 
 // Initialize the database (if needed)
 using (var scope = app.Services.CreateScope())

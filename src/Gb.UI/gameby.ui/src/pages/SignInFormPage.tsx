@@ -66,10 +66,6 @@ const SignInFormPage = () => {
     navigate(from, { replace: true });
   };
 
-  useEffect(() => {
-    console.error(errors);
-  }, [errors]);
-
   const handlePassHidden = () => {
     setPassHidden(!passHidden);
   };

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const signUpSchema = z
   .object({
     email: z.string().email({ message: "Invalid email address" }),
-    userName: z
+    username: z
       .string()
       .min(1, { message: "Username must be at least 1 character long" })
       .regex(/^[a-zA-Z0-9]*$/, {

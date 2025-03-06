@@ -1,46 +1,34 @@
-import { users } from "../common/consts/fakeData/fakeUsers";
+import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
 import LoginRequest from "../interfaces/LoginRequest";
 import axios from "../services/axios";
 import AuthData from "../types/AuthData";
 import { jwtDecode } from "jwt-decode";
+import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
 
 const useLogin = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;
 
+  useEffect(() => {
+    console.log("User data is acquired: ", userAuth);
+  }, [userAuth]);
+
   const login = async (data: LoginRequest) => {
-    try {
-      // const res = await axios.post("/login", data);
-      // test admin
-      console.log("Users: ", users);
-      const res = users.find(
-        (u) =>
-          (u.userName !== null
-            ? u.userName === data.username
-            : u.email === data.email) && u.password === data.password
-      );
-      console.log("Found a user: ", res);
-      const accessToken = res?.accessToken;
+    const res = await axios.post("auth/login", data);
+    console.log("Login response: ", res.data);
+    if (res) {
+      const { id, username, email, accessToken, refreshToken } = res.data;
+      const decoded = jwtDecode<ExtendedJwtPayload>(accessToken);
+      const roles = decoded?.roles;
 
-      // if (accessToken) {
-      //   const decoded = jwtDecode<ExtendedJwtPayload>(accessToken);
-      //   const roles = decoded.roles;
-      //   console.log("Acquired decoded: ", decoded);
-      //   setUserAuth!({ ...prev!, roles: roles });
-      // } else {
-      //   throw new Error("User not found");
-      // }
-
-      const decoded = jwtDecode<ExtendedJwtPayload>(accessToken!);
-      console.log("Acquired decoded: ", decoded);
-      const roles = decoded.roles;
-      console.log("Exctracted roles: ", roles);
-      setUserAuth!({ ...res!, roles: roles });
-
-      console.log("User is now ", userAuth);
-    } catch (err) {
-      console.error("Error has occured while signing in: ", err);
+      setUserAuth!({
+        id,
+        username,
+        email,
+        accessToken,
+        refreshToken,
+        roles,
+      });
     }
   };
 

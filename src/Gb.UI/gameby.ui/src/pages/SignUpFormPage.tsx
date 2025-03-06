@@ -44,10 +44,8 @@ const SignUpFormPage = () => {
     data: SignUpFormData
   ) => {
     // handle data (send to the server)
-    console.log("Sign-Up data submitted: ", data);
-    await register(data);
-
-    navigate(from, { replace: true });
+    const userAuth = await register(data);
+    if (userAuth !== null) navigate(from, { replace: true });
   };
 
   const handlePassHidden = () => {

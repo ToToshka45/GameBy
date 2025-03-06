@@ -37,7 +37,7 @@ namespace Application
 
         public async Task<bool> CheckEmailExists(string email)
         {
-            var ExistingUser =await _userRepository.Search(x => x.Email.Email == email);
+            var ExistingUser =await _userRepository.Search(x => x.Email.Value == email);
 
 
             if (ExistingUser.Count() == 0)
@@ -50,21 +50,21 @@ namespace Application
         {
             //ToDo Send RabbitMq message
 
-            if (!await CheckLoginExists(newUserDto.UserName))
+            if (!await CheckLoginExists(newUserDto.Username))
             {
                 return new NewUserResultDto() { IsSuccess = false, ErrorMessage = "Логин занят" };
             }
 
-            if (!await CheckEmailExists(newUserDto.UserEmail))
+            if (!await CheckEmailExists(newUserDto.Email))
             {
                 return new NewUserResultDto() { IsSuccess = false, ErrorMessage = "Такой email уже есть" };
             }
 
             var user = new User();
 
-            user.Email = new UserEmail(newUserDto.UserEmail);
-            user.Login = new UserName(newUserDto.UserName);
-            user.Password = new UserPassword(newUserDto.UserPassword);
+            user.Email = new UserEmail(newUserDto.Email);
+            user.Login = new UserName(newUserDto.Username);
+            user.Password = new UserPassword(newUserDto.Password);
 
             //ToDo AddRole
             var playerRole = await _roleRepository.GetByIdAsync(1);
@@ -89,7 +89,7 @@ namespace Application
                 };
             }
 
-            return new NewUserResultDto() { IsSuccess = false,ErrorMessage="Unknown" };
+            return new NewUserResultDto() { IsSuccess = false, ErrorMessage="Unknown" };
         }
 
         //ToDoUpdateRoleMethod

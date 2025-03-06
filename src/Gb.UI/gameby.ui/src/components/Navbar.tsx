@@ -38,16 +38,26 @@ export const Navbar = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElProfile, setAnchorElProfile] = useState<null | HTMLElement>(
+    null
+  );
 
   const navigate = useNavigate();
-  const { userAuth } = useAuth() as AuthData;
-
-  function handleNavigateSignInPage() {
-    navigate("/sign-in");
-  }
+  const { userAuth, setUserAuth } = useAuth() as AuthData;
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleMenu = (event: HTMLElement) => {
+    setAnchorElProfile(event);
+  };
+
+  const handleClose = () => {
+    setAnchorElProfile(null);
+  };
+  const handleLogout = () => {
+    setUserAuth!(undefined);
   };
 
   return (
@@ -148,16 +158,44 @@ export const Navbar = () => {
           </Stack>
 
           <IconButton
-            onClick={handleNavigateSignInPage}
+            onClick={(e) => handleMenu(e.currentTarget)}
             aria-label="sign-in"
             color="inherit"
             sx={{ ml: 3, gap: 1 }}
           >
             <Typography variant="body1" color="antiqueWhite">
-              {userAuth ? userAuth.userName : "SignIn"}
+              {userAuth ? userAuth.username : "SignIn"}
             </Typography>
             <AccountCircle />
           </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorElProfile}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={Boolean(anchorElProfile)}
+            onClose={handleClose}
+          >
+            {!userAuth ? (
+              <>
+                <MenuItem onClick={() => navigate("/sign-in")}>
+                  Sign In
+                </MenuItem>
+                <MenuItem onClick={() => navigate("/sign-up")}>
+                  Sign Up
+                </MenuItem>
+              </>
+            ) : (
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            )}
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>

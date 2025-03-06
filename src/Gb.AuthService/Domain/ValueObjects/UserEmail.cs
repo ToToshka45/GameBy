@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.ValueObjects
+﻿namespace Domain.ValueObjects
 {
     public class UserEmail
     {
-        public UserEmail(string email) { 
-            Email = email;
+        public string Value { get; private set; }
+
+        public UserEmail(string value) { 
+            Value = value;
             //throw new ValidationException("test");
         }
-        public string Email { get; set; }
     }
 }

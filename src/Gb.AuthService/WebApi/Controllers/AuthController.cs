@@ -1,19 +1,7 @@
 ﻿using Application;
-using Application.Dto;
 using WebApi.Dto;
 using AutoMapper;
-using DataAccess.Abstractions;
-using Domain;
-using Domain.ValueObjects;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
-using System.Security.Claims;
-using System.Text;
 
 namespace WebApi.Controllers
 {
@@ -45,21 +33,22 @@ namespace WebApi.Controllers
         /// Unauthorized or LoginResultResponse
         /// </returns>
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResultResponse>> Login(SimpleLoginDto request)
+        public async Task<ActionResult<LoginResponse>> Login(SimpleLoginDto request)
         {
             var res = await _authService.AuthUser(request.Password, request.Username, request.Email);
 
             if (!res.IsSuccess)
                 return Unauthorized(res.ErrorMessage);
 
-            return new LoginResultResponse()
+            return new LoginResponse()
             {
+                Id = res.Id,
+                Username = res.Username,
+                Email = res.Email,
                 AccessToken = res.AccessToken,
                 RefreshToken = res.RefreshToken
             };
         }
-
-
 
         /// <summary>
         /// По refreshToken обновить токен
@@ -67,20 +56,19 @@ namespace WebApi.Controllers
         /// <returns>
         /// Token Response or BadRequest 
         /// </returns>
-        [HttpPost("RefreshTokens")]
-        public async Task<ActionResult<LoginResultResponse>> RefreshTokens(string refreshToken)
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<LoginResponse>> RefreshTokens(string refreshToken)
         {
             //ToDo Хранить refresh token
-            LoginResultResponse loginResultResponse = new LoginResultResponse();
+            LoginResponse loginResultResponse = new();
             var res = await _authService.RefreshToken(refreshToken);
-            if (res.IsSuccess)
-            {
-                loginResultResponse.AccessToken = res.AccessToken;
-                loginResultResponse.RefreshToken = res.RefreshToken;
-                return loginResultResponse;
-            }
 
-            return BadRequest(res.ErrorMessage);
+            if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
+
+            loginResultResponse.AccessToken = res.AccessToken;
+            loginResultResponse.RefreshToken = res.RefreshToken;
+
+            return Ok(loginResultResponse);
         }
 
         /// <summary>
@@ -93,24 +81,22 @@ namespace WebApi.Controllers
         public async Task<ActionResult<int>> GetTokenInfo(string accessToken)
         {
             //ToDo Хранить refresh token
-            LoginResultResponse loginResultResponse = new LoginResultResponse();
-            var res =  _authService.GetTokenInfo(accessToken);
-            if (res!=null)
+            LoginResponse loginResultResponse = new LoginResponse();
+            var res = _authService.GetTokenInfo(accessToken);
+            if (res != null)
             {
-               
+
                 return res;
             }
 
             return BadRequest();
         }
 
-
         [HttpGet("About")]
         public IActionResult About()
         {
             return Ok();
         }
-
 
         [HttpPost("logout")]
         public IActionResult Logout()

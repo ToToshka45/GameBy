@@ -54,16 +54,15 @@ const SignInFormPage = () => {
 
     try {
       await login(loginRequest);
+      navigate(from, { replace: true });
     } catch (err) {
-      console.error("Error occured: ", err);
+      console.error("Error occured while trying to login: ", err);
       if (err instanceof z.ZodError) {
         setError("root", {
           message: err.message,
         });
       }
     }
-
-    navigate(from, { replace: true });
   };
 
   const handlePassHidden = () => {

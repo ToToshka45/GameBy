@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 //amqps://
 var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-var RedisConnect = Environment.GetEnvironmentVariable("REDIS_CONNECT");
+var RedisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
 //var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
 
 //var PgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
@@ -46,20 +46,19 @@ builder.Services.AddAutoMapper(typeof(AppMappingProfiles));
 
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
 
-Console.WriteLine(builder.Configuration.GetValue<string[]?>("Origins"));
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("base", policy =>
+    options.AddDefaultPolicy(policy =>
     {
-        var prebuilt = policy
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            //.AllowCredentials()
+            ;
 
-        if (builder.Environment.IsDevelopment()) prebuilt.AllowAnyOrigin();
-        else prebuilt.WithOrigins(builder.Configuration.GetValue<string[]?>("Origins") ?? []);
-
+        //if (builder.Environment.IsDevelopment()) prebuilt.AllowAnyOrigin();
+        //else prebuilt.WithOrigins(builder.Configuration.GetValue<string[]?>("Origins") ?? []);
     });
 });
 
@@ -89,7 +88,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors("base");
+app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();

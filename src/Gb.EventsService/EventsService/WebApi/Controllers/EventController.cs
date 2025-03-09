@@ -29,7 +29,7 @@ namespace WebApi.Controllers
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
         [HttpPost("сreate-event")]
-        public async Task<ActionResult<NewEventResponse>> CreateCustomerAsync(NewEventRequest request)
+        public async Task<ActionResult<int>> CreateCustomerAsync(NewEventRequest request)
         {
 
             EventDto res = await _eventService.
@@ -38,7 +38,7 @@ namespace WebApi.Controllers
             if (!res.IsSuccess)
                 return BadRequest(res.ErrMessage);
 
-            return _mapper.Map<NewEventResponse>(res);
+            return res.Id;
 
         }
 

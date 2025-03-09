@@ -14,6 +14,8 @@ namespace Application.Dto
 
         public int OrganizerId { get; set; }
 
+        public string OrganizerName {get;set;}
+
         public string Title { get; set; }
 
         public string Description { get; set; }
@@ -24,9 +26,9 @@ namespace Application.Dto
 
         public EventStatus EventStatus { get; set; }
 
-        public string PlayerPlaces { get; set; }
-
         public bool IsUserParticipated {  get; set; }
+
+        public ParticipationState? UserParticipationState {get;set;}
 
         public bool IsUserOrganizer { get; set; }
     }

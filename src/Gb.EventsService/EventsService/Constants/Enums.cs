@@ -14,6 +14,7 @@
         EventFinished,
         EventCancelled,
         PlayerParticipate,
+        PlayerAccepted,
         PlayerNotParticipated,
         AdminAdded,
         AdminRemoved,

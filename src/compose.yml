@@ -25,6 +25,9 @@ services:
       - "PG_CONNECT=Host=users-db;Database=usersdb;Username=postgres;Password=123w;"
       - REDIS_CONNECT=refresh-token-db
     restart: always
+    ports:
+      - 5003:8080
+      - 5004:8081
     depends_on: 
       - refresh-token-db
       - users-db

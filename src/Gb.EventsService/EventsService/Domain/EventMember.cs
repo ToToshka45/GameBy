@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using Common;
+using Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,10 @@ namespace Domain
         public int EventId { get; set; }
 
         public int UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public  ParticipationState  ParticipationState {get;set;} 
 
         //role
         //public 

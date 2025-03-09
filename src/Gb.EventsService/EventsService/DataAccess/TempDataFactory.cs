@@ -37,18 +37,23 @@ namespace DataAccess
                 IsClosedParticipation=false,
                 MaxDuration=5,
                 OrganizerId=1,
+                OrganizerName="Organizer1",
                 EventMembers=new System.Collections.ObjectModel.Collection<EventMember>()
                 {
                     new EventMember()
                     {
                         UserId = 2,
                         Role = Constants.EventUserRole.Player,
+                        UserName="Player1",
+                        ParticipationState=Common.ParticipationState.Registered,
                         EventId = 1
                     },
                     new EventMember()
                     {
                         UserId = 3,
                         Role = Constants.EventUserRole.Player,
+                        UserName="Player2",
+                        ParticipationState=Common.ParticipationState.PendingAcceptance,
                         EventId = 1
                     },
                 }
@@ -72,18 +77,23 @@ namespace DataAccess
                 IsClosedParticipation = false,
                 MaxDuration = 4,
                 OrganizerId = 4,
+                OrganizerName="Organizer2",
                 EventMembers = new System.Collections.ObjectModel.Collection<EventMember>()
                 {
                     new EventMember()
                     {
                         UserId = 5,
                         Role = Constants.EventUserRole.Player,
+                        UserName="Player3",
+                        ParticipationState=Common.ParticipationState.Declined,
                         EventId = 2
                     },
                     new EventMember()
                     {
                         UserId = 6,
                         Role = Constants.EventUserRole.Player,
+                        UserName="Player4",
+                        ParticipationState=Common.ParticipationState.PendingAcceptance,
                         EventId = 2
                     }
                 }

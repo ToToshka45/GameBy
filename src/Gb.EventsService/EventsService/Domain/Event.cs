@@ -14,6 +14,8 @@ namespace Domain
         
         public int OrganizerId { get; set; }
 
+        public string OrganizerName { get; set; }
+
         public string Title { get; set; }
 
         public string Description { get; set; }

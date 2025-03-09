@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.35.0 (HEAD)
+  labels:
+    io.kompose.service: events-service-api
+  name: events-service-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: events-service-api
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.35.0 (HEAD)
+      labels:
+        io.kompose.service: events-service-api
+    spec:
+      containers:
+        - env:
+            - name: PG_CONNECT
+              value: Host=events-db;Database=eventsdb;Username=postgres;Password=123w;Port=5441;
+            - name: REDIS_CONNECT
+              value: refresh-token-db
+          image: my-webapi
+          imagePullPolicy: Never
+          name: web-service-api
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8081
+              protocol: TCP
+      restartPolicy: Always

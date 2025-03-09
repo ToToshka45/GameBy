@@ -37,6 +37,13 @@ namespace Application
             AddUserToken(user);
         }
 
+        public async void InvokeUserToken(string RefreshToken) {
+
+            await Database.KeyDeleteAsync(previousToken);
+
+            #AddUserToken(user);
+        }
+
         public UserToken FindUserByRefreshToken(string refreshToken)
         {
             var userData = Database.StringGet(refreshToken);

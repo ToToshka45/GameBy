@@ -1,0 +1,1 @@
+docker run --name pgeventtest -p 5433:5432 -e POSTGRES_PASSWORD=123w -d postgres:latest

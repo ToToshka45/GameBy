@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.35.0 (HEAD)
+  labels:
+    io.kompose.service: events-service-api
+  name: events-service-api
+spec:
+  ports:
+    - name: "5001"
+      port: 5001
+      targetPort: 8080
+    - name: "5002"
+      port: 5002
+      targetPort: 8081
+  selector:
+    io.kompose.service: events-service-api

@@ -46,7 +46,7 @@ namespace Application
             return eventDto;
         }
 
-        public async Task<EventDto> GetEvent(int EventId)
+        public async Task<EventDto> GetEvent(int EventId,int UserId)
         {
 
             var Event = await _eventRepository.GetByIdAsync(EventId);
@@ -54,8 +54,22 @@ namespace Application
             {
                 return null;
             }
+            EventDto res=_mapper.Map<EventDto>(Event);
+            if(Event.EventMembers.Any(x=>x.UserId==UserId))
+            {
+                
+                res.UserParticipationState=Event.EventMembers.First(x=>x.UserId==UserId).ParticipationState;
+            }
+            else if(Event.OrganizerId==UserId)
+            {
+                res.IsUserOrganizer=true;
+            }
 
-            return _mapper.Map<EventDto>(Event);
+            res.PendingAcceptanceMemebers=Event.EventMembers.Where(x=>x.ParticipationState==ParticipationState.PendingAcceptance).ToList();
+            res.AcceptedMemebers=Event.EventMembers.Where(x=>x.ParticipationState==ParticipationState.Registered).ToList();
+
+
+            return res;
         }
 
         public async Task<List<ShortEventDto>> GetEvents(EventsFilterDto eventsFilterDto)
@@ -77,9 +91,12 @@ namespace Application
             foreach (var Event in Events)
             {
                 var ShortEvent = _mapper.Map<ShortEventDto>(Event);
-                ShortEvent.PlayerPlaces = $"{Event.EventMembers.Count} из {Event.ParticipantLimit}";
+                
                 if (Event.EventMembers.Any(x => x.UserId == eventsFilterDto.UserId))
-                { ShortEvent.IsUserParticipated = true; }
+                { 
+                    ShortEvent.IsUserParticipated=true;
+                    ShortEvent.UserParticipationState=Event.EventMembers.First(x=>x.UserId==eventsFilterDto.UserId).ParticipationState;
+                }
                 if (Event.OrganizerId == eventsFilterDto.UserId)
                     ShortEvent.IsUserOrganizer = true;
                 res.Add(ShortEvent);
@@ -101,9 +118,12 @@ namespace Application
             foreach (var Event in Events)
             {
                 var ShortEvent = _mapper.Map<ShortEventDto>(Event);
-                ShortEvent.PlayerPlaces = $"{Event.EventMembers.Count} из {Event.ParticipantLimit}";
+                
                 if (Event.EventMembers.Any(x => x.UserId == UserId))
-                { ShortEvent.IsUserParticipated = true; }
+                { 
+                    ShortEvent.IsUserParticipated=true;
+                    ShortEvent.UserParticipationState=Event.EventMembers.First(x=>x.UserId==UserId).ParticipationState;
+                }
                 if(Event.OrganizerId==UserId)
                     ShortEvent.IsUserOrganizer=true;
                 res.Add(ShortEvent);
@@ -139,6 +159,7 @@ namespace Application
 
             var player = _mapper.Map<EventMember>(addDto);
             player.Role=Constants.EventUserRole.Player;
+            player.ParticipationState=ParticipationState.PendingAcceptance;
             var EventToAdd = await _eventRepository.GetByIdAsync(addDto.EventId);
             player.EventId = EventToAdd.Id;
             EventToAdd.EventMembers.Add(player);
@@ -148,7 +169,7 @@ namespace Application
                 ParticipantId = player.UserId,
                 EventId= addDto.EventId,
                 EventType= Constants.EventType.PlayerAdded,
-                PublicText="Игрок принял участие"
+                PublicText="Игрок отправил запрос на участие"
 
             };
             EventToAdd.EventActions.Add(eventActionPlayerAdded);
@@ -175,6 +196,10 @@ namespace Application
                 return false;
             }
 
+            if(EventToDelete.EventStatus==EventStatus.Finished||EventToDelete.EventStatus==EventStatus.Canceled)
+                return false;
+
+
             var PlayerToRemove = EventToDelete.EventMembers.FirstOrDefault(x => x.UserId == playerRemove.UserId);
             if (PlayerToRemove is null)
                 return false;
@@ -191,6 +216,44 @@ namespace Application
 
             };
             EventToDelete.EventActions.Add(eventActionPlayerRemoved);
+
+
+            await _eventRepository.UpdateAsync(EventToDelete);
+
+            return true;
+        }
+
+        public async Task<bool> AcceptPlayer(PlayerAddDto playerRemove)
+        {
+
+            var EventToDelete = await _eventRepository.GetByIdAsync(playerRemove.EventId);
+
+            if (EventToDelete is null)
+            {
+                return false;
+            }
+
+            if(EventToDelete.EventStatus==EventStatus.Finished)
+            {
+                return false;
+            }
+
+            var PlayerToRemove = EventToDelete.EventMembers.FirstOrDefault(x => x.UserId == playerRemove.UserId);
+            if (PlayerToRemove is null)
+                return false;
+
+            
+            PlayerToRemove.ParticipationState = ParticipationState.Registered;
+
+            EventAction eventActionPlayerAbsent = new EventAction()
+            {
+                ParticipantId = playerRemove.UserId,
+                EventId = playerRemove.EventId,
+                EventType = Constants.EventType.PlayerAccepted,
+                PublicText = "Игрок был принят"
+
+            };
+            EventToDelete.EventActions.Add(eventActionPlayerAbsent);
 
 
             await _eventRepository.UpdateAsync(EventToDelete);
@@ -270,7 +333,7 @@ namespace Application
             };
             eventToFinsish.EventActions.Add(eventAction);
 
-            foreach(EventMember member in eventToFinsish.EventMembers)
+            foreach(EventMember member in eventToFinsish.EventMembers.Where(x=>x.ParticipationState==ParticipationState.Registered))
             {
                 EventAction eventmemberAction = new EventAction()
                 {
@@ -296,7 +359,7 @@ namespace Application
             
 
             List<AddParticipantRequest> participantRequests = new List<AddParticipantRequest>();
-            foreach (var eventMember in eventToFinsish.EventMembers)
+            foreach (var eventMember in eventToFinsish.EventMembers.Where(x=>x.ParticipationState==ParticipationState.Registered))
             {
                 AddParticipantRequest participantRequest = new AddParticipantRequest();
                 participantRequest.ExternalParticipantId = eventMember.Id;

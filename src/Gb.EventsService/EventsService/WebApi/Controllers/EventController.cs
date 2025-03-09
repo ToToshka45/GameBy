@@ -8,6 +8,8 @@ using WebApi.Dto;
 
 namespace WebApi.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class EventController : Controller
     {
         private readonly EventService _eventService;
@@ -26,7 +28,7 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("CreateEvent")]
+        [HttpPost("сreate-event")]
         public async Task<ActionResult<NewEventResponse>> CreateCustomerAsync(NewEventRequest request)
         {
 
@@ -47,9 +49,11 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("AddPlayer")]
-        public async Task<ActionResult<PlayerAddedResponse>> AddPlayerAsync(PlayerAddRequest request)
+        [HttpPost("{eventId}/participants/add-player")]
+        public async Task<ActionResult<PlayerAddedResponse>> AddPlayerAsync(int eventId,[FromBody]PlayerAddRequest request)
         {
+            request.EventId=eventId;
+
             PlayerAddDto res = await _eventService.
                 AddPlayer(_mapper.Map<PlayerAddDto>(request));
 
@@ -60,6 +64,27 @@ namespace WebApi.Controllers
 
         }
 
+        // <summary>
+        /// Принять участника
+        /// </summary>
+        /// <returns>
+        /// Event if success or BadRequest 
+        /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
+        /// </returns>
+        [HttpPost("{eventId}/participants/accept-player")]
+        public async Task<ActionResult<bool>> AcceptPlayerAsync(int eventId,[FromBody]PlayerAddRequest request)
+        {
+            request.EventId=eventId;
+            bool res = await _eventService.
+                AcceptPlayer(_mapper.Map<PlayerAddDto>(request));
+
+            if (!res)
+                return BadRequest("Не удалось принять игрока");
+
+            return true;
+
+        }
+
         /// <summary>
         /// Удалить участника
         /// </summary>
@@ -67,11 +92,11 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("RemovePlayer")]
-        public async Task<ActionResult<bool>> RemovePlayerAsync(PlayerAddRequest request)
+        [HttpPost("{eventId}/participants/remove-player")]
+        public async Task<ActionResult<bool>> RemovePlayerAsync(int eventId,[FromBody]PlayerAddRequest request)
         {
             bool res = await _eventService.
-                PlayerRemove(new PlayerRemoveDto() { UserId=request.UserId,EventId=request.EventId});
+                PlayerRemove(new PlayerRemoveDto() { UserId=request.UserId,EventId=eventId});
 
             if (!res)
                 return BadRequest();
@@ -87,11 +112,11 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("SetPlayerAbsent")]
-        public async Task<ActionResult<bool>> SetPlayerAbsent(PlayerAddRequest request)
+        [HttpPost("{eventId}/participants/set-player-absent")]
+        public async Task<ActionResult<bool>> SetPlayerAbsent(int eventId,[FromBody]PlayerAddRequest request)
         {
             bool res = await _eventService.
-                SetPlayerIsAbsent(new PlayerRemoveDto() { UserId = request.UserId, EventId = request.EventId });
+                SetPlayerIsAbsent(new PlayerRemoveDto() { UserId = request.UserId, EventId = eventId });
 
             if (!res)
                 return BadRequest();
@@ -107,10 +132,10 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("CancelEvent")]
-        public async Task<ActionResult<bool>> RemoveEventAsync(int EventId)
+        [HttpGet("{eventId}/cancel-event")]
+        public async Task<ActionResult<bool>> RemoveEventAsync(int eventId)
         {
-            bool res = await _eventService.EventRemove(EventId);
+            bool res = await _eventService.EventRemove(eventId);
 
             if (!res)
                 return BadRequest();
@@ -126,10 +151,10 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpGet("FinishEvent")]
-        public async Task<ActionResult<bool>> FinishEventAsync(int EventId)
+        [HttpGet("{eventId}/finish-event")]
+        public async Task<ActionResult<bool>> FinishEventAsync(int eventId)
         {
-            var res = await _eventService.EventFinish(EventId);
+            var res = await _eventService.EventFinish(eventId);
 
             if (res is null)
                 return BadRequest();
@@ -145,7 +170,7 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("UpdateEvent")]
+        [HttpPost("update-event")]
         public async Task<ActionResult<NewEventResponse>> UpdateEventAsync(UpdateEventRequest updateEvent)
         {
 
@@ -166,10 +191,10 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpGet("GetEvent")]
-        public async Task<ActionResult<EventDto>> GetEventAsync(int EventId)
+        [HttpGet("get-event")]
+        public async Task<ActionResult<EventDto>> GetEventAsync(int EventId,int UserId)
         {
-            var res = await _eventService.GetEvent(EventId);
+            var res = await _eventService.GetEvent(EventId,UserId);
 
             if (res is null)
                 return BadRequest();
@@ -186,7 +211,7 @@ namespace WebApi.Controllers
         /// Events if success or BadRequest 
         /// 
         /// </returns>
-        [HttpPost("SearchEvents")]
+        [HttpPost("search-events")]
         public async Task<ActionResult<List<ShortEventDto>>> SearchEventsAsync(EventsFilter searchEventRequest)
         {
 
@@ -207,7 +232,7 @@ namespace WebApi.Controllers
         /// Events if success or BadRequest 
         /// 
         /// </returns>
-        [HttpGet("GetAllEvents")]
+        [HttpGet("get-all-events")]
         public async Task<ActionResult<List<ShortEventDto>>> GetAllEventsAsync(int UserId)
         {
 

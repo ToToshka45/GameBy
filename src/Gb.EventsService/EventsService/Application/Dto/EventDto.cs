@@ -15,6 +15,8 @@ namespace Application.Dto
 
         public int OrganizerId { get; set; }
 
+        public string OrganizerName {get;set;}
+
         public string Title { get; set; }
 
         public string Description { get; set; }
@@ -41,6 +43,14 @@ namespace Application.Dto
         public List<EventAction> EventActions { get; set; }
 
         public List<EventMember> EventMembers { get; set; }
+
+        public List<EventMember> AcceptedMemebers {get;set;} 
+
+        public List<EventMember> PendingAcceptanceMemebers {get;set;} 
+
+        public ParticipationState? UserParticipationState {get;set;}
+
+        public bool IsUserOrganizer {get;set;}
 
         public bool IsSuccess { get; set; }
 

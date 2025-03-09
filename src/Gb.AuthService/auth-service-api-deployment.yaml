@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.35.0 (HEAD)
+  labels:
+    io.kompose.service: auth-service-api
+  name: auth-service-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: auth-service-api
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.35.0 (HEAD)
+      labels:
+        io.kompose.service: auth-service-api
+    spec:
+      containers:
+        - env:
+            - name: PG_CONNECT
+              value: Host=users-db;Database=usersdb;Username=postgres;Password=123w;Port=5433;
+            - name: REDIS_CONNECT
+              value: refresh-token-db:1920
+          image: authwebapi
+          imagePullPolicy: Never
+          name: auth-service-api
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8081
+              protocol: TCP
+      restartPolicy: Always

@@ -22,8 +22,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>(x =>
 {
-    //x.UseNpgsql("Host=localhost;Port=5432;Database=usersdb;Username=postgres;Password=123w");
-    x.UseNpgsql(PgConnect);
+    x.UseNpgsql("Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w");
+    //x.UseNpgsql(PgConnect);
     x.UseLazyLoadingProxies();
     x.LogTo(Console.WriteLine, LogLevel.Information);
 });

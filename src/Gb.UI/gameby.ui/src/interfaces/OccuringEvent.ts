@@ -9,12 +9,15 @@ export interface OccuringEventProps {
 
 export interface OccuringEvent {
     id: number,
-    avatar: string;
+    organizerId: number;
+    eventAvatarUrl: string;
     title: string;
-    content: string;
-    category: EventCategory;
-    date: Dayjs;
+    description: string;
+    eventCategory: EventCategory;
+    eventDate: Dayjs;
+    location: string;
     stateDetails: EventStateWithColor;
+    maxParticipants: number;
+    minParticipants: number;
     participants: EventParticipant[];
   }
-

@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { z } from "zod";
+import { EventCategory } from "../common/enums/EventEnums";
 
 export const eventCreationSchema = z
     .object({
@@ -14,6 +15,7 @@ export const eventCreationSchema = z
         .max(250, {
           message: "The description must contain maximum 250 characters",
         }),
+      eventCategory: z.string(),
       startDate: z.date()
         .refine((date) => date > dayjs().endOf("day").toDate(), {
           message:
@@ -38,16 +40,17 @@ export const eventCreationSchema = z
         path: ["endDate"],
       });
 
-  type EventCreationForm = z.infer<typeof eventCreationSchema>;
+  type CreateEventData = z.infer<typeof eventCreationSchema>;
 
-  export default EventCreationForm;
+  export default CreateEventData;
 
-  export function createDefaultEvent() : EventCreationForm {
+  export function createDefaultEvent() : CreateEventData {
     return {
       title: "",
       description: "",
       startDate: dayjs().add(1, "day").toDate(),
       endDate: dayjs().add(1, "day").toDate(),
+      eventCategory: EventCategory.Undefined.toString(),
       location: "",
       minParticipants: 1,
       maxParticipants: 1

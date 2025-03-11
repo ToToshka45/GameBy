@@ -1,6 +1,5 @@
 ﻿using Application.Dto;
 using AutoMapper;
-using Domain;
 using WebApi.Dto;
 
 namespace WebApi.MappingProfiles
@@ -9,13 +8,13 @@ namespace WebApi.MappingProfiles
     {
         public WebApiMappingProfiles()
         {
-            CreateMap<NewEventRequest, EventDto>();
-            CreateMap<EventDto, NewEventResponse>();
-            CreateMap<PlayerAddRequest, PlayerAddDto>();
-            CreateMap<PlayerAddDto, PlayerAddedResponse>();
-            CreateMap<EventDto, UpdateEventRequest> ();
-            CreateMap<NewEventResponse, EventDto>();
-            CreateMap<EventsFilter,EventsFilterDto>();
+            CreateMap<CreateEventRequest, CreateEventDto>();
+            CreateMap<CreateEventDto, CreateEventResponse>();
+            CreateMap<AddParticipantRequest, ParticipantAddDto>();
+            CreateMap<ParticipantAddDto, AddParticipantResponse>();
+            CreateMap<CreateEventDto, UpdateEventRequest> ();
+            CreateMap<CreateEventResponse, CreateEventDto>();
+            CreateMap<EventsFilters, EventsFiltersDto>();
         }
     }
 }

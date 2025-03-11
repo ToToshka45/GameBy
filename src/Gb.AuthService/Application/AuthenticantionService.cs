@@ -2,9 +2,11 @@
 using DataAccess.Abstractions;
 using Domain;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Application
@@ -13,22 +15,17 @@ namespace Application
     public class AuthenticantionService
     {
         private readonly IRepository<User> _userRepository;
-        private readonly IRepository<Role> _roleRepository;
-
-        private readonly string _issuer = "GamesByAuth";
-        private readonly string _audience = "GamesByMictoservices";
-
+        //private readonly IRepository<Role> _roleRepository;
         private readonly UserTokenService _userService;
 
-        private readonly IConfiguration _configuration;
+        private readonly JwtSettings _jwtSettings;
 
         public AuthenticantionService(IRepository<User> userRepository, IRepository<Role> roleRepository,
-            UserTokenService userService, IConfiguration configuration)
+            UserTokenService userService, IOptions<JwtSettings> options)
         {
             _userRepository = userRepository;
-
             _userService = userService;
-            _configuration = configuration;
+            _jwtSettings = options.Value;
         }
 
         /*
@@ -169,26 +166,30 @@ namespace Application
             userToken.RefreshToken = res.RefreshToken;
             await _userService.UpdateUserToken(userToken, previousToken);
 
-
             return res;
         }
 
-        private string GenerateTokens(int userId, List<string> userRoleNames, bool IsRefresh = false)
+        private string GenerateTokens(int userId, List<string> userRoleNames, bool isRefresh = false)
         {
             string res = string.Empty;
 
-            List<Claim> claims = new();
-            foreach (string RoleName in userRoleNames)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, RoleName));
-            }
-            claims.Add(new Claim(ClaimTypes.Name, userId.ToString()));
+            List<Claim> claims = 
+                [
+                   new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                   new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
+                ];
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]!));
+            foreach (string roleName in userRoleNames)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, roleName));
+            }
+            //claims.Add(new Claim(ClaimTypes.Name, userId.ToString()));
+
+            var key = new SymmetricSecurityKey(GetSecretKey());
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             DateTime expiresAt = DateTime.UtcNow;
-            if (IsRefresh)
+            if (isRefresh)
             {
                 expiresAt = expiresAt.AddMinutes(10);
             }
@@ -197,11 +198,11 @@ namespace Application
                 expiresAt = expiresAt.AddSeconds(30);
             }
 
-            var token = new JwtSecurityToken(issuer: _issuer,
-                audience: _audience,
-                claims,
-                expires: expiresAt,
-                signingCredentials: creds);
+            var token = new JwtSecurityToken(issuer: _jwtSettings.Issuer,
+                                             audience: _jwtSettings.Audience,
+                                             claims,
+                                             expires: expiresAt,
+                                             signingCredentials: creds);
 
             res = new JwtSecurityTokenHandler().WriteToken(token);
             return res;
@@ -228,7 +229,7 @@ namespace Application
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]!)),
+                IssuerSigningKey = new SymmetricSecurityKey(GetSecretKey()),
                 ValidateLifetime = true
             };
 
@@ -238,6 +239,14 @@ namespace Application
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
+        }
+
+        private byte[] GetSecretKey()
+        {
+            if (_jwtSettings.SecretKey is not null)
+                return Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+            else
+                return RandomNumberGenerator.GetBytes(32);
         }
     }
 }

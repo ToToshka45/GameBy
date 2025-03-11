@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import AuthData from "../types/AuthData";
+import AuthData from "../interfaces/AuthData";
 import UserAuth from "../interfaces/UserAuth";
 
 const AuthContext = createContext<AuthData | undefined>(undefined);

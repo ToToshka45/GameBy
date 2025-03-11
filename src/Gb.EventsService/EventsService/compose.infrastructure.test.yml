@@ -1,0 +1,17 @@
+services:
+  #Events Db
+  events-db:
+    image: "postgres:latest"
+    container_name: events-db
+    restart: always
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_PASSWORD=123w
+  #tokens Db
+  cache:
+    image: "redis:latest"
+    container_name: 'cache'
+    restart: always
+    ports:
+      - 1919:6379

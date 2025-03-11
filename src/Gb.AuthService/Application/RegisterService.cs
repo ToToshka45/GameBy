@@ -28,7 +28,6 @@ namespace Application
         {
             var ExistingUser =await _userRepository.Search(x => x.Login.Name == login);
 
-
             if (ExistingUser.Count()==0)
                 return true;
 
@@ -89,7 +88,7 @@ namespace Application
                 };
             }
 
-            return new NewUserResultDto() { IsSuccess = false, ErrorMessage="Unknown" };
+            return new NewUserResultDto() { IsSuccess = false, ErrorMessage = "Unknown" };
         }
 
         //ToDoUpdateRoleMethod

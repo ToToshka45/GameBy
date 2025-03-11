@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Dto
 {
-    public class PlayerAddDto
+    public class ParticipantAddDto
     {
         public int Id { get; set; }
         public int EventId { get; set; }

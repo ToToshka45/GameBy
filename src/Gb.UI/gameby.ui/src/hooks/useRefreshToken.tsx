@@ -1,13 +1,13 @@
 import { useAuth } from "../contexts/AuthContext";
-import axios from "../services/axios";
-import AuthData from "../types/AuthData";
+import { axiosPrivate } from "../services/axios";
+import AuthData from "../interfaces/AuthData";
 
 const useRefreshToken = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;
 
   const refresh = async (): Promise<string | undefined> => {
     try {
-      const res = await axios.get("/RefreshToken", {
+      const res = await axiosPrivate.get("auth/refresh-token", {
         withCredentials: true,
       });
 

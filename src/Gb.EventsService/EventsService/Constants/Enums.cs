@@ -2,7 +2,10 @@
 {
     public enum EventStatus
     {
-        Upcoming,
+        Announced, 
+        RegistrationInProcess,
+        RegistrationClosed,
+        InProgress,
         Finished,
         Canceled
     }

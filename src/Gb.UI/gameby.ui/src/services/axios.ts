@@ -1,12 +1,13 @@
 import axios from "axios";
 import { getViteEnv } from "../common/utils";
 
-const BASE_URL = getViteEnv("BASE_URL");
+const AUTH_URL = getViteEnv("AUTH_HTTP_URL");
+const EVENTS_URL = getViteEnv("EVENTS_HTTP_URL");
 
-export default axios.create({
-    baseURL: BASE_URL
+export const axiosAuth = axios.create({
+    baseURL: AUTH_URL
 });
 
 export const axiosPrivate = axios.create({
-    baseURL: BASE_URL
+    baseURL: EVENTS_URL
 })

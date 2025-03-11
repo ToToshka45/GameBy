@@ -1,6 +1,4 @@
-import UserAuth from "../../../interfaces/UserAuth";
-
-export const users: UserAuth[] = [
+export const users = [
         {   
             id: 1,
             username: "admin",

@@ -26,9 +26,9 @@ namespace DataAccess.Abstractions
 
         Task<IEnumerable<T>> GetRangeByIdsAsync(List<int> ids);
 
-        Task<T> AddAsync(T entity);
+        Task<T?> AddAsync(T entity);
 
-        Task<T> UpdateAsync(T entity);
+        Task<T?> UpdateAsync(T entity);
 
         Task<bool> DeleteAsync(T entity);
     }

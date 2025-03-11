@@ -54,8 +54,8 @@ const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
               <Card>
                 <StyledCardHeader
                   title={event.title}
-                  subheader={`${event.date.format(DATE_FORMAT)} - ${
-                    EventCategory[event.category]
+                  subheader={`${event.eventDate.format(DATE_FORMAT)} - ${
+                    EventCategory[event.eventCategory]
                   }`}
                   action={
                     <Chip
@@ -67,12 +67,12 @@ const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
                 />
                 <CardMedia
                   component="img"
-                  image={event.avatar}
+                  image={event.eventAvatarUrl}
                   src={"src/assets/event-pics/event_default.jpg"}
                 />
-                <CardContent sx={{ bgcolor: blue[100] }}>
-                  <Typography variant="caption">{event.content}</Typography>
-                </CardContent>
+                {/* <CardContent sx={{ height: "100%", bgcolor: blue[100] }}>
+                  <Typography variant="caption">{event.description}</Typography>
+                </CardContent> */}
                 {/* <CardActions /> */}
               </Card>
             </Box>

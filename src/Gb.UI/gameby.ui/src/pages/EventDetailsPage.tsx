@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
 import { loremIpsum } from "../common/consts/fakeData/defaults";
 import { useAuth } from "../contexts/AuthContext";
-import AuthData from "../types/AuthData";
+import AuthData from "../interfaces/AuthData";
 import useFetchEvent from "../hooks/useFetchEvent";
 import { ParticipationState } from "../common/enums/EventEnums";
 import EventParticipant from "../interfaces/EventParticipant";
@@ -44,7 +44,7 @@ export default function EventDetailsPage() {
       try {
         if (!eventId) throw new Error("Event is not found");
 
-        const event = fetchEvent(Number.parseInt(eventId));
+        const event = await fetchEvent(Number.parseInt(eventId));
         setOccuringEvent(event);
       } catch (err) {
         console.error(
@@ -103,7 +103,7 @@ export default function EventDetailsPage() {
             </Typography>
           </Box>
           <Typography variant="caption" fontSize={{ md: 14 }}>
-            <b>Start date:</b> {occuringEvent?.date.format(DATE_FORMAT)}
+            <b>Start date:</b> {occuringEvent?.eventDate.format(DATE_FORMAT)}
           </Typography>
           <Chip
             label={occuringEvent?.stateDetails.state}
@@ -125,7 +125,7 @@ export default function EventDetailsPage() {
       <Grid item xs={6}>
         <CardMedia
           component="img"
-          image={"../" + occuringEvent?.avatar}
+          image={"../" + occuringEvent?.eventAvatarUrl}
           // src={"src/assets/event-pics/event_default.jpg"}
           height="100%"
         />

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import LoginRequest from "../interfaces/LoginRequest";
-import axios from "../services/axios";
-import AuthData from "../types/AuthData";
+import LoginRequest from "../interfaces/Requests/LoginRequest";
+import { axiosAuth } from "../services/axios";
+import AuthData from "../interfaces/AuthData";
 import { jwtDecode } from "jwt-decode";
 import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
 
@@ -14,7 +14,7 @@ const useLogin = () => {
   }, [userAuth]);
 
   const login = async (data: LoginRequest) => {
-    const res = await axios.post("auth/login", data);
+    const res = await axiosAuth.post("auth/login", data);
     console.log("Login response: ", res.data);
     if (res) {
       const { id, username, email, accessToken, refreshToken } = res.data;

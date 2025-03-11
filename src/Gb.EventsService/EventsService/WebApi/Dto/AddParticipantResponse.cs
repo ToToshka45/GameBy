@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Dto
 {
-    public class PlayerAddedResponse
+    public class AddParticipantResponse
     {
         public int Id { get; set; }
 

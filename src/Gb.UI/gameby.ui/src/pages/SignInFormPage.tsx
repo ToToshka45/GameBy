@@ -15,7 +15,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { isEmailSchema } from "../schemas/IsEmailSchema";
 import useLogin from "../hooks/useLogin";
-import LoginRequest from "../interfaces/LoginRequest";
+import LoginRequest from "../interfaces/Requests/LoginRequest";
 
 const SignInFormPage = () => {
   const [passHidden, setPassHidden] = useState(true);

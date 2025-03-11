@@ -1,22 +1,22 @@
 ﻿using Application;
 using Application.Dto;
 using AutoMapper;
-using Common;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
 using WebApi.Dto;
 
 namespace WebApi.Controllers
 {
-    public class EventController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class EventsController : ControllerBase
     {
         private readonly EventService _eventService;
 
         private readonly IMapper _mapper;
-        public EventController(EventService eventService,IMapper mapper) {
-            _eventService=eventService;
-            _mapper=mapper;
-
+        public EventsController(EventService eventService, IMapper mapper)
+        {
+            _eventService = eventService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -26,18 +26,15 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("CreateEvent")]
-        public async Task<ActionResult<NewEventResponse>> CreateCustomerAsync(NewEventRequest request)
+        [HttpPost("create")]
+        public async Task<ActionResult<CreateEventResponse>> CreateEventAsync(CreateEventRequest request)
         {
+            var eventId = await _eventService.CreateEvent(_mapper.Map<CreateEventDto>(request));
 
-            EventDto res = await _eventService.
-                CreateNew(_mapper.Map<EventDto>(request));
+            if (eventId is null)
+                return BadRequest();
 
-            if (!res.IsSuccess)
-                return BadRequest(res.ErrMessage);
-
-            return _mapper.Map<NewEventResponse>(res);
-
+            return Ok(new CreateEventResponse(eventId.Value));
         }
 
         /// <summary>
@@ -47,17 +44,16 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("AddPlayer")]
-        public async Task<ActionResult<PlayerAddedResponse>> AddPlayerAsync(PlayerAddRequest request)
+        [HttpPost("{eventId:int}/participants/add")]
+        public async Task<ActionResult<AddParticipantResponse>> AddParticipantAsync(AddParticipantRequest request)
         {
-            PlayerAddDto res = await _eventService.
-                AddPlayer(_mapper.Map<PlayerAddDto>(request));
+            var res = await _eventService.
+                AddParticipant(_mapper.Map<ParticipantAddDto>(request));
 
             if (!res.IsSuccess)
                 return BadRequest(res.ErrMessage);
 
-            return _mapper.Map<PlayerAddedResponse>(res);
-
+            return _mapper.Map<AddParticipantResponse>(res);
         }
 
         /// <summary>
@@ -67,18 +63,19 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("RemovePlayer")]
-        public async Task<ActionResult<bool>> RemovePlayerAsync(PlayerAddRequest request)
+        [HttpPost("{eventId:int}/participants/remove")]
+        public async Task<ActionResult<bool>> RemovePlayerAsync(int eventId, RemoveParticipantRequest request)
         {
             bool res = await _eventService.
-                PlayerRemove(new PlayerRemoveDto() { UserId=request.UserId,EventId=request.EventId});
+                PlayerRemove(new PlayerRemoveDto() { UserId = request.UserId, EventId = eventId });
 
             if (!res)
                 return BadRequest();
 
             return true;
-
         }
+
+        // note: тут мне кажется лучше сделать универсальный метод смены состояния участника, типа ChangeParticipantState
 
         /// <summary>
         /// Отметить участника как непришедшего
@@ -87,17 +84,16 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("SetPlayerAbsent")]
-        public async Task<ActionResult<bool>> SetPlayerAbsent(PlayerAddRequest request)
+        [HttpPost("{eventId:int}/participants/absent")]
+        public async Task<ActionResult<bool>> SetPlayerAbsentAsync(int eventId, AddParticipantRequest request)
         {
             bool res = await _eventService.
-                SetPlayerIsAbsent(new PlayerRemoveDto() { UserId = request.UserId, EventId = request.EventId });
+                SetParticipantAbsent(new PlayerRemoveDto() { UserId = request.UserId, EventId = request.EventId });
 
             if (!res)
                 return BadRequest();
 
             return true;
-
         }
 
         /// <summary>
@@ -107,16 +103,15 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("CancelEvent")]
-        public async Task<ActionResult<bool>> RemoveEventAsync(int EventId)
+        [HttpPost("{eventId:int}/cancel")]
+        public async Task<ActionResult<bool>> CancelEventAsync(int eventId)
         {
-            bool res = await _eventService.EventRemove(EventId);
+            bool res = await _eventService.CancelEventAsync(eventId);
 
             if (!res)
                 return BadRequest();
 
             return true;
-
         }
 
         /// <summary>
@@ -126,16 +121,15 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpGet("FinishEvent")]
-        public async Task<ActionResult<bool>> FinishEventAsync(int EventId)
+        [HttpGet("{eventId:int}/finish")]
+        public async Task<ActionResult<bool>> FinishEventAsync(int eventId)
         {
-            var res = await _eventService.EventFinish(EventId);
+            var res = await _eventService.FinishEventAsync(eventId);
 
             if (res is null)
                 return BadRequest();
 
             return true;
-
         }
 
         /// <summary>
@@ -145,18 +139,15 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("UpdateEvent")]
-        public async Task<ActionResult<NewEventResponse>> UpdateEventAsync(UpdateEventRequest updateEvent)
+        [HttpPost("{eventId:int}/update")]
+        public async Task<ActionResult<CreateEventResponse>> UpdateEventAsync(int eventId, UpdateEventRequest updateEventRequest)
         {
-
-            var res = await _eventService.UpdateEvent(_mapper.Map<EventDto>(updateEvent));
+            var res = await _eventService.UpdateEvent(eventId, _mapper.Map<CreateEventDto>(updateEventRequest));
 
             if (res is null)
                 return BadRequest();
-            else
-                return _mapper.Map<NewEventResponse>(res);
 
-
+            return Ok(_mapper.Map<CreateEventResponse>(res));
         }
 
         /// <summary>
@@ -166,17 +157,36 @@ namespace WebApi.Controllers
         /// Event if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpGet("GetEvent")]
-        public async Task<ActionResult<EventDto>> GetEventAsync(int EventId)
+        [HttpGet("{eventId:int}")]
+        public async Task<ActionResult<CreateEventDto>> GetEventAsync(int eventId)
         {
-            var res = await _eventService.GetEvent(EventId);
+            var res = await _eventService.GetEvent(eventId);
 
             if (res is null)
                 return BadRequest();
-            else
-                return res;
 
-
+            return Ok(res);
+        }
+        
+        /// <summary>
+        /// Все мероприятия + фильтры
+        /// </summary>
+        /// <returns>
+        /// Events if success or BadRequest 
+        /// </returns>
+        [HttpPost]
+        public async Task<ActionResult<List<GetEventResponse>>> GetAllEvents(EventsFilters filters)
+        {
+            try
+            {
+                var dto = _mapper.Map<EventsFiltersDto>(filters);
+                var res = await _eventService.GetEvents(dto);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }     
         }
 
         /// <summary>
@@ -184,41 +194,16 @@ namespace WebApi.Controllers
         /// </summary>
         /// <returns>
         /// Events if success or BadRequest 
-        /// 
         /// </returns>
-        [HttpPost("SearchEvents")]
-        public async Task<ActionResult<List<ShortEventDto>>> SearchEventsAsync(EventsFilter searchEventRequest)
-        {
+        //[HttpPost("filter")]
+        //public async Task<ActionResult<List<GetEventsResponse>>> SearchEventsAsync(EventsFilters searchEventRequest)
+        //{
+        //    var res = await _eventService.GetEvents(_mapper.Map<EventsFilterDto>(searchEventRequest));
 
-            var res = await _eventService.GetEvents(_mapper.Map<EventsFilterDto>(searchEventRequest));
-
-            if (res is null)
-                return BadRequest();
-            else
-                return res;
-
-
-        }
-
-        /// <summary>
-        /// Все мероприятия
-        /// </summary>
-        /// <returns>
-        /// Events if success or BadRequest 
-        /// 
-        /// </returns>
-        [HttpGet("GetAllEvents")]
-        public async Task<ActionResult<List<ShortEventDto>>> GetAllEventsAsync(int UserId)
-        {
-
-            var res = await _eventService.GetAllEvents(UserId);
-
-            if (res is null)
-                return BadRequest();
-            else
-                return res;
-
-
-        }
+        //    if (res is null)
+        //        return BadRequest();
+            
+        //    return Ok(res);
+        //}
     }
 }

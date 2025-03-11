@@ -3,11 +3,9 @@ using Application.EventHandlers;
 using DataAccess;
 using DataAccess.Abstractions;
 using DataAccess.Repositories;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using System.Reflection;
 using WebApi.MapperProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +17,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
+
 //amqps://
 var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
 var RedisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
@@ -27,7 +27,6 @@ var RedisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
 //var PgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
 //var RedisConnect= "localhost:1920";
 
-
 builder.Services.AddDbContext<DataContext>(x =>
 {
     //x.UseNpgsql("Host=localhost;Port=5432;Database=usersdb;Username=postgres;Password=123w");
@@ -35,7 +34,6 @@ builder.Services.AddDbContext<DataContext>(x =>
     x.UseLazyLoadingProxies();
     x.LogTo(Console.WriteLine, LogLevel.Information);
 });
-
 
 builder.Services.AddSingleton<RabbitService>();
 builder.Services.AddScoped<RegisterService>();
@@ -51,16 +49,15 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins(builder.Configuration["CORS:Origins"] ?? "http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            //.AllowCredentials()
+            .AllowCredentials()
             ;
-
-        //if (builder.Environment.IsDevelopment()) prebuilt.AllowAnyOrigin();
-        //else prebuilt.WithOrigins(builder.Configuration.GetValue<string[]?>("Origins") ?? []);
     });
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
 //"localhost:1919"
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(RedisConnect));
@@ -111,7 +108,11 @@ using (var scope = app.Services.CreateScope())
     await rabbitService.Init("");
 }
 
+//app.UseCookiePolicy(new CookiePolicyOptions
+//{
+//    MinimumSameSitePolicy = SameSiteMode.Lax,
+//    HttpOnly = HttpOnlyPolicy.Always,
+//    Secure = CookieSecurePolicy.Always
+//});
+
 app.Run();
-
-
-

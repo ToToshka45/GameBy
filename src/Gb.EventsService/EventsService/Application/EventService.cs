@@ -2,143 +2,119 @@
 using AutoMapper;
 using Common;
 using Constants;
+using DataAccess;
 using DataAccess.Abstractions;
 using Domain;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Numerics;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using System.Threading.Tasks;
+using WebApi.Dto;
 
 namespace Application
 {
     public class EventService
     {
         private readonly IRepository<Event> _eventRepository;
+        private readonly DbSet<Event> _events;
 
         private readonly IMapper _mapper;
 
         private readonly RabbitMqService _rabbitMqService;
 
-        public EventService(IRepository<Event> eventRepository, IMapper mapper, RabbitMqService rabbitMqService)
+        public EventService(IRepository<Event> eventRepository, DataContext dbContext, IMapper mapper, RabbitMqService rabbitMqService)
         {
             _eventRepository = eventRepository;
             _mapper = mapper;
             _rabbitMqService = rabbitMqService;
+            _events = dbContext.Set<Event>();
         }
 
-        public async Task<EventDto> CreateNew(EventDto eventDto)
+        public async Task<int?> CreateEvent(CreateEventDto eventDto)
         {
-            eventDto.CreationDate=DateTime.Now;
-            eventDto.EventStatus = Constants.EventStatus.Upcoming;
-            var res=await _eventRepository.AddAsync(_mapper.Map<Event>(eventDto));
-            if (res != null)
-            {
-                eventDto.IsSuccess = true;
-                eventDto.Id = res.Id;
-            }
-                
-            return eventDto;
+            // note: check an OrganizerId to exist in the DB
+
+            eventDto.CreationDate = DateTime.Now;
+            eventDto.EventStatus = Constants.EventStatus.Announced;
+            var res = await _eventRepository.AddAsync(_mapper.Map<Event>(eventDto));
+            //if (res != null)
+            //{
+            //    eventDto.IsSuccess = true;
+            //    eventDto.Id = res.Id;
+            //}
+            if (res is null) return null;
+            return res.Id;
         }
 
-        public async Task<EventDto> GetEvent(int EventId)
+        public async Task<CreateEventDto?> GetEvent(int EventId)
         {
-
-            var Event = await _eventRepository.GetByIdAsync(EventId);
-            if (Event is null)
-            {
-                return null;
-            }
-
-            return _mapper.Map<EventDto>(Event);
+            var @event = await _eventRepository.GetByIdAsync(EventId);
+            return @event is not null ? _mapper.Map<CreateEventDto>(@event) : null;
         }
 
-        public async Task<List<ShortEventDto>> GetEvents(EventsFilterDto eventsFilterDto)
+        public async Task<List<GetEventsDto>> GetEvents(EventsFiltersDto filters)
         {
-            eventsFilterDto.SetUp();
-            var Events = await _eventRepository.Search(x =>
-        (string.IsNullOrEmpty(eventsFilterDto.EventTitle) || x.Title.ToLower().Contains(eventsFilterDto.EventTitle)) &&
-        x.EventStatus==EventStatus.Upcoming &&
-        (!eventsFilterDto.EventCategory.HasValue || x.EventCategory == eventsFilterDto.EventCategory) &&
-        (!eventsFilterDto.FromDate.HasValue || x.EventDate >= eventsFilterDto.FromDate) &&
-        (!eventsFilterDto.ToDate.HasValue || x.EventDate <= eventsFilterDto.ToDate));
+            var query = _events
+                .Where(e => e.EventDate >= filters.AfterDate && e.EventDate < filters.BeforeDate); 
 
-            if (Events is null)
+            if (filters.EventCategories?.Length > 0)
             {
-                return null;
+                query = query.Where(e => filters.EventCategories.Contains(e.EventCategory));
+            }
+            if (!string.IsNullOrWhiteSpace(filters.Title))
+            {
+                query = query.Where(e => e.Title == filters.Title);
             }
 
-            List<ShortEventDto> res= new List<ShortEventDto>();
-            foreach (var Event in Events)
-            {
-                var ShortEvent = _mapper.Map<ShortEventDto>(Event);
-                ShortEvent.PlayerPlaces = $"{Event.EventMembers.Count} из {Event.ParticipantLimit}";
-                if (Event.EventMembers.Any(x => x.UserId == eventsFilterDto.UserId))
-                { ShortEvent.IsUserParticipated = true; }
-                if (Event.OrganizerId == eventsFilterDto.UserId)
-                    ShortEvent.IsUserOrganizer = true;
-                res.Add(ShortEvent);
-            }
+            // TODO: pagination ??
 
-            return res;
+            var events = await query
+                .OrderBy(x => x.EventDate)
+                .ToListAsync();
+
+            return _mapper.Map<List<GetEventsDto>>(events);
         }
 
-        public async Task<List<ShortEventDto>> GetAllEvents(int UserId)
+        //public async Task<List<GetEventsDto>> GetEvents(int userId, EventsFiltersDto filters)
+        //{
+        //    var events = await _eventRepository.GetAllAsync();
+        //    var res = new List<GetEventsDto>();
+        //    foreach (var @event in events)
+        //    {
+        //        var shortEvent = _mapper.Map<GetEventsDto>(@event);
+        //        //shortEvent.PlayerPlaces = $"{@event.EventMembers.Count} из {@event.ParticipantLimit}";
+        //        if (@event.EventMembers.Any(x => x.UserId == userId))
+        //            shortEvent.IsUserParticipant = true; 
+        //        if (@event.OrganizerId == userId)
+        //            shortEvent.IsUserOrganizer = true;
+        //        res.Add(shortEvent);
+        //    }
+
+        //    // we return an empty collection or a filled one either way, so no need to explicitly return the empty array
+        //    return res;
+        //}
+
+        public async Task<CreateEventDto> UpdateEvent(int eventId, CreateEventDto eventDto)
         {
-
-            var Events = await _eventRepository.GetAllAsync();
-            if (Events is null)
-            {
-                return null;
-            }
-
-            List<ShortEventDto> res = new List<ShortEventDto>();
-            foreach (var Event in Events)
-            {
-                var ShortEvent = _mapper.Map<ShortEventDto>(Event);
-                ShortEvent.PlayerPlaces = $"{Event.EventMembers.Count} из {Event.ParticipantLimit}";
-                if (Event.EventMembers.Any(x => x.UserId == UserId))
-                { ShortEvent.IsUserParticipated = true; }
-                if(Event.OrganizerId==UserId)
-                    ShortEvent.IsUserOrganizer=true;
-                res.Add(ShortEvent);
-            }
-
-            return res;
-        }
-
-        public async Task<EventDto> UpdateEvent(EventDto eventDto)
-        {
-            var EventToUpd = await _eventRepository.GetByIdAsync(eventDto.Id);
-            EventToUpd.EventDate = eventDto.EventDate;
-            EventToUpd.EventStatus = eventDto.EventStatus;
-            EventToUpd.ParticipantMinimum = eventDto.ParticipantMinimum;
-            EventToUpd.MaxDuration = eventDto.MaxDuration;
-            EventToUpd.Location = eventDto.Location;
-            EventToUpd.Description = eventDto.Description;
-            EventToUpd.Title = eventDto.Title;
-            EventToUpd.ParticipantLimit = eventDto.ParticipantLimit;
-            EventToUpd.ParticipantMinimum  =eventDto.ParticipantMinimum;
-            var UpdatedEvent = await _eventRepository.UpdateAsync(EventToUpd);
-            if (UpdatedEvent != null)
-            {
-                eventDto.IsSuccess = true;
-            }
+            var eventToUpd = await _eventRepository.GetByIdAsync(eventId);
+            eventToUpd.EventDate = eventDto.EventDate;
+            eventToUpd.EventStatus = eventDto.EventStatus;
+            eventToUpd.ParticipantMinimum = eventDto.ParticipantMinimum;
+            eventToUpd.MaxDuration = eventDto.MaxDuration;
+            eventToUpd.Location = eventDto.Location;
+            eventToUpd.Description = eventDto.Description;
+            eventToUpd.Title = eventDto.Title;
+            eventToUpd.ParticipantLimit = eventDto.ParticipantLimit;
+            eventToUpd.ParticipantMinimum = eventDto.ParticipantMinimum;
+            var updatedEvent = await _eventRepository.UpdateAsync(eventToUpd);
 
             return eventDto;
         }
 
-        public async Task<PlayerAddDto> AddPlayer(PlayerAddDto addDto)
+        public async Task<ParticipantAddDto> AddParticipant(ParticipantAddDto addDto)
         {
             var res = addDto;
 
-            var player = _mapper.Map<EventMember>(addDto);
-            player.Role=Constants.EventUserRole.Player;
+            var player = _mapper.Map<Participant>(addDto);
+            player.Role = Constants.EventUserRole.Player;
             var EventToAdd = await _eventRepository.GetByIdAsync(addDto.EventId);
             player.EventId = EventToAdd.Id;
             EventToAdd.EventMembers.Add(player);
@@ -146,20 +122,20 @@ namespace Application
             EventAction eventActionPlayerAdded = new EventAction()
             {
                 ParticipantId = player.UserId,
-                EventId= addDto.EventId,
-                EventType= Constants.EventType.PlayerAdded,
-                PublicText="Игрок принял участие"
+                EventId = addDto.EventId,
+                EventType = Constants.EventType.PlayerAdded,
+                PublicText = "Игрок принял участие"
 
             };
             EventToAdd.EventActions.Add(eventActionPlayerAdded);
-            
-            var UpdatedEvent=await _eventRepository.UpdateAsync(EventToAdd);
-            
-            if (UpdatedEvent != null)
+
+            var updatedEvent = await _eventRepository.UpdateAsync(EventToAdd);
+
+            if (updatedEvent != null)
             {
                 res.IsSuccess = true;
                 //ToDo
-                res.Id = UpdatedEvent.EventMembers.FirstOrDefault(x=>x.UserId==addDto.UserId).Id;
+                res.Id = updatedEvent.EventMembers.FirstOrDefault(x => x.UserId == addDto.UserId).Id;
             }
 
             return res;
@@ -167,7 +143,6 @@ namespace Application
 
         public async Task<bool> PlayerRemove(PlayerRemoveDto playerRemove)
         {
-
             var EventToDelete = await _eventRepository.GetByIdAsync(playerRemove.EventId);
 
             if (EventToDelete is null)
@@ -192,28 +167,26 @@ namespace Application
             };
             EventToDelete.EventActions.Add(eventActionPlayerRemoved);
 
-
             await _eventRepository.UpdateAsync(EventToDelete);
 
             return true;
         }
 
-        public async Task<bool> SetPlayerIsAbsent(PlayerRemoveDto playerRemove)
+        public async Task<bool> SetParticipantAbsent(PlayerRemoveDto playerRemove)
         {
+            var eventToDelete = await _eventRepository.GetByIdAsync(playerRemove.EventId);
 
-            var EventToDelete = await _eventRepository.GetByIdAsync(playerRemove.EventId);
-
-            if (EventToDelete is null)
+            if (eventToDelete is null)
             {
                 return false;
             }
 
-            if(EventToDelete.EventStatus!=EventStatus.Finished)
+            if (eventToDelete.EventStatus != EventStatus.Finished)
             {
                 return false;
             }
 
-            var PlayerToRemove = EventToDelete.EventMembers.FirstOrDefault(x => x.UserId == playerRemove.UserId);
+            var PlayerToRemove = eventToDelete.EventMembers.FirstOrDefault(x => x.UserId == playerRemove.UserId);
             if (PlayerToRemove is null)
                 return false;
 
@@ -228,37 +201,35 @@ namespace Application
                 PublicText = "Игрок не принял участие"
 
             };
-            EventToDelete.EventActions.Add(eventActionPlayerAbsent);
+            eventToDelete.EventActions.Add(eventActionPlayerAbsent);
 
-
-            await _eventRepository.UpdateAsync(EventToDelete);
+            await _eventRepository.UpdateAsync(eventToDelete);
 
             return true;
         }
 
-        public async Task<bool> EventRemove(int EventId)
+        public async Task<bool> CancelEventAsync(int EventId)
         {
+            var eventToDelete = await _eventRepository.GetByIdAsync(EventId);
 
-            var EventToDelete = await _eventRepository.GetByIdAsync(EventId);
-
-            if (EventToDelete is null) 
+            if (eventToDelete is null)
             {
                 return false;
             }
 
-            if(EventToDelete.EventDate>DateTime.Now) return false;
+            if (eventToDelete.EventDate > DateTime.Now) return false;
 
-            return await _eventRepository.DeleteAsync(EventToDelete);
+            return await _eventRepository.DeleteAsync(eventToDelete);
         }
 
-        public async Task<FinalizeEventRequest> EventFinish(int EventId)
+        public async Task<FinalizeEventRequest> FinishEventAsync(int EventId)
         {
-
             var eventToFinsish = await _eventRepository.GetByIdAsync(EventId);
 
-            if (eventToFinsish.EventDate > DateTime.Now) { 
+            if (eventToFinsish.EventDate > DateTime.Now)
+            {
                 eventToFinsish.EventDate = DateTime.Now.ToUniversalTime();
-               
+
             }
             eventToFinsish.EventStatus = EventStatus.Finished;
             EventAction eventAction = new EventAction()
@@ -266,19 +237,19 @@ namespace Application
                 CreationDate = DateTime.Now,
                 EventId = EventId,
                 EventType = EventType.EventFinished,
-                PublicText="Мероприятие завершено"
+                PublicText = "Мероприятие завершено"
             };
             eventToFinsish.EventActions.Add(eventAction);
 
-            foreach(EventMember member in eventToFinsish.EventMembers)
+            foreach (Participant member in eventToFinsish.EventMembers)
             {
                 EventAction eventmemberAction = new EventAction()
                 {
                     CreationDate = DateTime.Now,
                     EventId = EventId,
-                    ParticipantId=member.UserId,
-                    EventType = member.IsAbsent?EventType.PlayerNotParticipated:EventType.PlayerParticipate,
-                    PublicText = member.IsAbsent?"Игрок не принял участие":"Игрок поучаствовал"
+                    ParticipantId = member.UserId,
+                    EventType = member.IsAbsent ? EventType.PlayerNotParticipated : EventType.PlayerParticipate,
+                    PublicText = member.IsAbsent ? "Игрок не принял участие" : "Игрок поучаствовал"
                 };
                 eventToFinsish.EventActions.Add(eventmemberAction);
             }
@@ -293,8 +264,6 @@ namespace Application
             res.OrganizerId = eventToFinsish.OrganizerId;
             res.Title = eventToFinsish.Title;
 
-            
-
             List<AddParticipantRequest> participantRequests = new List<AddParticipantRequest>();
             foreach (var eventMember in eventToFinsish.EventMembers)
             {
@@ -305,9 +274,7 @@ namespace Application
                     participantRequest.State = ParticipationState.Cancelled;
                 else
                     participantRequest.State = ParticipationState.Participated;
-
             }
-
 
             res.Participants = participantRequests;
 

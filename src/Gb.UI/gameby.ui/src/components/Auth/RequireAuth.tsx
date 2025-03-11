@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import AuthData from "../../types/AuthData";
+import AuthData from "../../interfaces/AuthData";
 import { useAuth } from "../../contexts/AuthContext";
 
 /** The Login check component. If a User is not logged in,

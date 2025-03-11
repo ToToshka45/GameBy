@@ -14,7 +14,7 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 import { useCallback, useState } from "react";
 import { green, orange, pink } from "@mui/material/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
-import EventCreationForm, {
+import CreateEventData, {
   createDefaultEvent,
   eventCreationSchema,
 } from "../schemas/EventCreationForm";
@@ -30,7 +30,7 @@ export default function CreateEventPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<EventCreationForm>({
+  } = useForm<CreateEventData>({
     resolver: zodResolver(eventCreationSchema),
     defaultValues: createDefaultEvent(),
   });
@@ -62,7 +62,7 @@ export default function CreateEventPage() {
     onDrop,
   });
 
-  const onSubmit: SubmitHandler<EventCreationForm> = (data) => {
+  const onSubmit: SubmitHandler<CreateEventData> = (data) => {
     console.log(data);
   };
 

@@ -1,15 +1,20 @@
 export enum EventCategory {
-    Quiz,
+    RPG,
     Strategy,
     Mafia,
-    Sports
+    Quiz,
+    Poker,
+    HideAndSeek,
+    Unclarified
 }
 
-export enum EventProgressionState {
+export enum EventStatus {
     Announced,
     RegistrationInProcess,
     RegistrationClosed,
+    InProgress,
     Finished,
+    Cancelled
 }
 
 export enum ParticipationState {

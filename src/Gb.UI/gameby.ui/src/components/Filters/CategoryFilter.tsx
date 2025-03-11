@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { EventCategory } from "../../common/enums/EventEnums";
 import { EventCategoryFilterUnit } from "../../interfaces/EventCategoryFilterUnit";
-import FiltersProps from "../../types/FiltersProps";
+import FiltersProps from "../../interfaces/FiltersProps";
 import FiltersPropsContext from "../../contexts/FiltersPropsContext";
 
 const categoriesList: EventCategoryFilterUnit[] = [

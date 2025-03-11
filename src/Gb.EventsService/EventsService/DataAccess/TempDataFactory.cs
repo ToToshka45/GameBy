@@ -28,7 +28,7 @@ namespace DataAccess
                 CreationDate = DateTime.Now.ToUniversalTime(),
                 EventCategory=Common.EventCategory.Poker,
                 EventDate=DateTime.Now.AddDays(2).ToUniversalTime(),
-                EventStatus=Constants.EventStatus.Upcoming,
+                EventStatus=Constants.EventStatus.Announced,
                 Description="Покер техасский холдэм. Мин ставка 20. Банк каждого 1000",
                 Title="Игра в покер",
                 ParticipantMinimum=3,
@@ -37,15 +37,15 @@ namespace DataAccess
                 IsClosedParticipation=false,
                 MaxDuration=5,
                 OrganizerId=1,
-                EventMembers=new System.Collections.ObjectModel.Collection<EventMember>()
+                EventMembers=new System.Collections.ObjectModel.Collection<Participant>()
                 {
-                    new EventMember()
+                    new Participant()
                     {
                         UserId = 2,
                         Role = Constants.EventUserRole.Player,
                         EventId = 1
                     },
-                    new EventMember()
+                    new Participant()
                     {
                         UserId = 3,
                         Role = Constants.EventUserRole.Player,
@@ -63,7 +63,7 @@ namespace DataAccess
                 CreationDate = DateTime.Now.ToUniversalTime(),
                 EventCategory = Common.EventCategory.Mafia,
                 EventDate = DateTime.Now.AddDays(1).ToUniversalTime(),
-                EventStatus = Constants.EventStatus.Upcoming,
+                EventStatus = Constants.EventStatus.Announced,
                 Description = "Мафия с коммисаром и врачом",
                 Title = "Мафия",
                 ParticipantMinimum = 6,
@@ -72,15 +72,15 @@ namespace DataAccess
                 IsClosedParticipation = false,
                 MaxDuration = 4,
                 OrganizerId = 4,
-                EventMembers = new System.Collections.ObjectModel.Collection<EventMember>()
+                EventMembers = new System.Collections.ObjectModel.Collection<Participant>()
                 {
-                    new EventMember()
+                    new Participant()
                     {
                         UserId = 5,
                         Role = Constants.EventUserRole.Player,
                         EventId = 2
                     },
-                    new EventMember()
+                    new Participant()
                     {
                         UserId = 6,
                         Role = Constants.EventUserRole.Player,

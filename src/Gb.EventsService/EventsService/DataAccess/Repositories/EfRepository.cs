@@ -1,12 +1,8 @@
 ﻿using DataAccess.Abstractions;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
@@ -14,10 +10,12 @@ namespace DataAccess.Repositories
         where T : BaseEntity
     {
         private readonly DataContext _dataContext;
+        private readonly ILogger<EfRepository<T>> _logger;
 
-        public EfRepository(DataContext dataContext)
+        public EfRepository(DataContext dataContext, ILogger<EfRepository<T>> logger)
         {
             _dataContext = dataContext;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -45,26 +43,19 @@ namespace DataAccess.Repositories
             return entities;
         }
 
-        public async Task<T> AddAsync(T entity)
+        public async Task<T?> AddAsync(T entity)
         {
-            try
-            {
-                await _dataContext.Set<T>().AddAsync(entity);
+            await _dataContext.Set<T>().AddAsync(entity);
 
-                int changes = await _dataContext.SaveChangesAsync();
+            int changes = await _dataContext.SaveChangesAsync();
 
-                if (changes > 0)
-                    return entity;
+            if (changes > 0)
+                return entity;
 
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            return null;
         }
 
-        public async Task<T> UpdateAsync(T entity)
+        public async Task<T?> UpdateAsync(T entity)
         {
             try
             {
@@ -74,12 +65,12 @@ namespace DataAccess.Repositories
                     return entity;
 
                 return null;
-
             }
             catch (Exception ex)
             {
-                return null;
+                _logger.LogError(ex, "Error has occured");
             }
+            return null;
         }
 
         public async Task<bool> DeleteAsync(T entity)

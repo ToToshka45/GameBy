@@ -6,7 +6,6 @@ import { StyledCardHeader } from "../components/Events/OccuringEventsGrid";
 import { EventCategory } from "../common/enums/EventEnums";
 import { handleNavigateEvent } from "../common/functions";
 import { useNavigate } from "react-router-dom";
-import { events } from "../common/consts/fakeData/testOccuringEvents";
 
 export default function MyEventsPage() {
   const [organizerEvents, setOrganizerEvents] = useState<OccuringEvent[]>([]);
@@ -19,8 +18,8 @@ export default function MyEventsPage() {
     try {
       // TODO: fetch from the server
       // await fetchByUserId();
-      setGamerEvents(events);
-      setOrganizerEvents(events);
+      // setGamerEvents(defaultEvents);
+      // setOrganizerEvents(defaultEvents);
     } catch (e) {
       console.log("Error occured while fetching user events:", e);
     }
@@ -59,13 +58,13 @@ export default function MyEventsPage() {
                   <Card sx={{ height: 200, width: 200 }}>
                     <StyledCardHeader
                       title={event.title}
-                      subheader={`${event.date} - ${
-                        EventCategory[event.category]
+                      subheader={`${event.eventDate} - ${
+                        EventCategory[event.eventCategory]
                       }`}
                     />
                     <CardMedia
                       component="img"
-                      image={event.avatar}
+                      image={event.eventAvatarUrl}
                       src={"src/assets/event-pics/event_default.jpg"}
                     />
                     {/* <CardContent></CardContent> */}
@@ -101,13 +100,13 @@ export default function MyEventsPage() {
                   <Card sx={{ height: 200, width: 200 }}>
                     <StyledCardHeader
                       title={event.title}
-                      subheader={`${event.date} - ${
-                        EventCategory[event.category]
+                      subheader={`${event.eventDate} - ${
+                        EventCategory[event.eventCategory]
                       }`}
                     />
                     <CardMedia
                       component="img"
-                      image={event.avatar}
+                      image={event.eventAvatarUrl}
                       src={"src/assets/event-pics/event_default.jpg"}
                     />
                     {/* <CardContent></CardContent> */}

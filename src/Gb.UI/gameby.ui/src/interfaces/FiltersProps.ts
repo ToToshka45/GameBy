@@ -2,8 +2,8 @@ import { DateRange } from "@mui/x-date-pickers-pro";
 import { Dayjs } from "dayjs";
 import { EventCategory } from "../common/enums/EventEnums";
 
-/** Props are used to filter out the events depending on the chosen filter settings by a User. */
-type FiltersProps = {
+/** Props are used to filter out events, depending on the chosen filter settings by a User. */
+export default interface FiltersProps {
   filteringTitle: string;
   setFilteringTitle: React.Dispatch<React.SetStateAction<string>> | undefined;
   filteringCategories: EventCategory[];
@@ -15,5 +15,3 @@ type FiltersProps = {
     | React.Dispatch<React.SetStateAction<DateRange<Dayjs>>>
     | undefined;
 };
-
-export default FiltersProps;

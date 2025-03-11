@@ -2,11 +2,9 @@ import { useEffect } from "react";
 import { axiosPrivate } from "../services/axios";
 import useRefreshToken from "./useRefreshToken";
 import { useAuth } from "../contexts/AuthContext";
-import AuthData from "../types/AuthData";
+import AuthData from "../interfaces/AuthData";
 import axios from "axios";
 
-/** Responsible for intercepting a response, recieved by axios.
- * If the response returned 403 (Forbidden) we can retry by reinitizalixing an Access Token. */
 const usePrivateAxios = () => {
   const refresh = useRefreshToken();
   const { userAuth } = useAuth() as AuthData;
@@ -14,7 +12,7 @@ const usePrivateAxios = () => {
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       (config) => {
-        // if Authorization header is not set - we should do it before a request is sent
+        // if the Authorization header is not set - we should do it before a request is sent
         if (!config.headers["Authorization"]) {
           config.headers["Authorization"] = `Bearer ${userAuth?.accessToken}`;
         }
@@ -28,12 +26,12 @@ const usePrivateAxios = () => {
     // we set a callback which will occur in the case of an error. The error we`re looking for is 403, meaning our AccessToken is expired.
     const responseIntercept = axiosPrivate.interceptors.response.use(
       (response) => response,
-      async (error: unknown) => {
+      async (error) => {
         if (!axios.isAxiosError(error)) return;
 
         // we get the request we sent
         const prevReq = error?.config;
-        // we try to resend the request only if it exists, if an error if 403 Forbidden and if we haven`t done it yet (defined with the 'sent' header)
+        // we try to resend the request only if it exists, if an error is 403 Forbidden and if we haven`t done it yet (defined with the 'sent' header)
         if (
           prevReq &&
           error.status === 403 &&
@@ -47,6 +45,8 @@ const usePrivateAxios = () => {
           prevReq.headers["Authorization"] = `Bearer ${accessToken}`;
           return axiosPrivate(prevReq);
         }
+        // if we got 403 and sent = true, then I redirect to the login page
+        // else if ()
         return Promise.reject(error);
       }
     );

@@ -78,7 +78,7 @@ namespace WebApi.Controllers
         /// <returns>
         /// LoginInfo Response or BadRequest 
         /// </returns>
-        [HttpPost("TokenInfo")]
+        [HttpPost("validate-token")]
         public async Task<ActionResult<int>> GetTokenInfo(string accessToken)
         {
             //ToDo Хранить refresh token
@@ -90,7 +90,7 @@ namespace WebApi.Controllers
                 return res;
             }
 
-            return BadRequest();
+            return StatusCode(403);
         }
 
         [HttpGet("About")]

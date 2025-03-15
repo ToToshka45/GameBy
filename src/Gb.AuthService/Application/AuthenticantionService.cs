@@ -2,6 +2,7 @@
 using DataAccess.Abstractions;
 using Domain;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,12 +21,15 @@ namespace Application
 
         private readonly JwtSettings _jwtSettings;
 
+        private readonly ILogger<AuthenticantionService> _logger;
+
         public AuthenticantionService(IRepository<User> userRepository, IRepository<Role> roleRepository,
-            UserTokenService userService, IOptions<JwtSettings> options)
+            UserTokenService userService, IOptions<JwtSettings> options,ILogger<AuthenticantionService> logger)
         {
             _userRepository = userRepository;
             _userService = userService;
             _jwtSettings = options.Value;
+            _logger=logger;
         }
 
         /*
@@ -217,6 +221,12 @@ namespace Application
             }
             catch (SecurityTokenException e)
             {
+                _logger.LogError(e, "Security token validation failed for access token: {AccessToken}", accessToken);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while validating the access token: {AccessToken}", accessToken);
                 return null;
             }
             return Convert.ToInt32(principal.Identity.Name);

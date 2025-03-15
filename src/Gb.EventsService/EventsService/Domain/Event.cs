@@ -20,7 +20,7 @@ namespace Domain
         public int ParticipantLimit { get; set; }
         public int ParticipantMinimum { get; set; }
         public virtual Collection<EventAction> EventActions { get; set; }
-        public virtual Collection<Participant> EventMembers { get; set; }
+        public virtual Collection<Participant> Participants { get; set; }
 
 
     }

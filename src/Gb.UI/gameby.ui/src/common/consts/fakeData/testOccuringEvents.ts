@@ -1,5 +1,5 @@
 // import { EventCategory, EventStatus, ParticipationState } from "../../enums/EventEnums";
-import { OccuringEvent } from "../../../interfaces/OccuringEvent";
+import { OccuringEvent } from "../../../interfaces/EventEntities";
 // import dayjs from "dayjs";
 // import EventStateDetails from "../eventStateDetails";
 // import { loremIpsum } from "./defaults";

@@ -9,12 +9,13 @@ public class CreateEventRequest
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public DateTime CreationDate { get; set; }
+    public DateTime StartDate { get; set; }
     public DateTime EventDate { get; set; }
-    public int MaxDuration { get; set; } // note: max duration of what and why is it int and not TimeSpan?
+    public short EventDurationInHours { get; set; }
     public string Location { get; set; } = string.Empty;
-    public bool IsClosedParticipation { get; set; } // note: what is it for?
-    public EventStatus EventStatus { get; set; } // note: it is not set on creation
+    //public bool IsClosedParticipation { get; set; }
+    public EventStatus EventStatus { get; set; }
     public EventCategory EventCategory { get; set; }
-    public int ParticipantLimit { get; set; }
-    public int ParticipantMinimum { get; set; }
+    public int MaxParticipants { get; set; }
+    public int MinParticipants { get; set; }
 }

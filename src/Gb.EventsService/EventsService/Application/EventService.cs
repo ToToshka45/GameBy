@@ -50,7 +50,7 @@ namespace Application
             return @event is not null ? _mapper.Map<CreateEventDto>(@event) : null;
         }
 
-        public async Task<List<GetEventsDto>> GetEvents(EventsFiltersDto filters)
+        public async Task<List<GetShortEventDto>> GetEvents(EventsFiltersDto filters)
         {
             var query = _events
                 .Where(e => e.EventDate >= filters.AfterDate && e.EventDate < filters.BeforeDate); 
@@ -61,7 +61,7 @@ namespace Application
             }
             if (!string.IsNullOrWhiteSpace(filters.Title))
             {
-                query = query.Where(e => e.Title == filters.Title);
+                query = query.Where(e => e.Title.Trim().ToLower().Contains(filters.Title.Trim().ToLower()));
             }
 
             // TODO: pagination ??
@@ -70,27 +70,8 @@ namespace Application
                 .OrderBy(x => x.EventDate)
                 .ToListAsync();
 
-            return _mapper.Map<List<GetEventsDto>>(events);
+            return _mapper.Map<List<GetShortEventDto>>(events);
         }
-
-        //public async Task<List<GetEventsDto>> GetEvents(int userId, EventsFiltersDto filters)
-        //{
-        //    var events = await _eventRepository.GetAllAsync();
-        //    var res = new List<GetEventsDto>();
-        //    foreach (var @event in events)
-        //    {
-        //        var shortEvent = _mapper.Map<GetEventsDto>(@event);
-        //        //shortEvent.PlayerPlaces = $"{@event.EventMembers.Count} из {@event.ParticipantLimit}";
-        //        if (@event.EventMembers.Any(x => x.UserId == userId))
-        //            shortEvent.IsUserParticipant = true; 
-        //        if (@event.OrganizerId == userId)
-        //            shortEvent.IsUserOrganizer = true;
-        //        res.Add(shortEvent);
-        //    }
-
-        //    // we return an empty collection or a filled one either way, so no need to explicitly return the empty array
-        //    return res;
-        //}
 
         public async Task<CreateEventDto> UpdateEvent(int eventId, CreateEventDto eventDto)
         {
@@ -117,7 +98,7 @@ namespace Application
             player.Role = Constants.EventUserRole.Player;
             var EventToAdd = await _eventRepository.GetByIdAsync(addDto.EventId);
             player.EventId = EventToAdd.Id;
-            EventToAdd.EventMembers.Add(player);
+            EventToAdd.Participants.Add(player);
 
             EventAction eventActionPlayerAdded = new EventAction()
             {
@@ -135,7 +116,7 @@ namespace Application
             {
                 res.IsSuccess = true;
                 //ToDo
-                res.Id = updatedEvent.EventMembers.FirstOrDefault(x => x.UserId == addDto.UserId).Id;
+                res.Id = updatedEvent.Participants.FirstOrDefault(x => x.UserId == addDto.UserId).Id;
             }
 
             return res;
@@ -150,12 +131,12 @@ namespace Application
                 return false;
             }
 
-            var PlayerToRemove = EventToDelete.EventMembers.FirstOrDefault(x => x.UserId == playerRemove.UserId);
+            var PlayerToRemove = EventToDelete.Participants.FirstOrDefault(x => x.UserId == playerRemove.UserId);
             if (PlayerToRemove is null)
                 return false;
 
             PlayerToRemove.LeaveDate = DateTime.Now;
-            EventToDelete.EventMembers.Remove(PlayerToRemove);
+            EventToDelete.Participants.Remove(PlayerToRemove);
 
             EventAction eventActionPlayerRemoved = new EventAction()
             {
@@ -186,7 +167,7 @@ namespace Application
                 return false;
             }
 
-            var PlayerToRemove = eventToDelete.EventMembers.FirstOrDefault(x => x.UserId == playerRemove.UserId);
+            var PlayerToRemove = eventToDelete.Participants.FirstOrDefault(x => x.UserId == playerRemove.UserId);
             if (PlayerToRemove is null)
                 return false;
 
@@ -241,7 +222,7 @@ namespace Application
             };
             eventToFinsish.EventActions.Add(eventAction);
 
-            foreach (Participant member in eventToFinsish.EventMembers)
+            foreach (Participant member in eventToFinsish.Participants)
             {
                 EventAction eventmemberAction = new EventAction()
                 {
@@ -265,7 +246,7 @@ namespace Application
             res.Title = eventToFinsish.Title;
 
             List<AddParticipantRequest> participantRequests = new List<AddParticipantRequest>();
-            foreach (var eventMember in eventToFinsish.EventMembers)
+            foreach (var eventMember in eventToFinsish.Participants)
             {
                 AddParticipantRequest participantRequest = new AddParticipantRequest();
                 participantRequest.ExternalParticipantId = eventMember.Id;

@@ -1,5 +1,5 @@
 import { Box, Card, CardMedia, Grid, Typography } from "@mui/material";
-import { OccuringEvent } from "../interfaces/OccuringEvent";
+import { OccuringEvent } from "../interfaces/EventEntities";
 import { useEffect, useState } from "react";
 import { lightBlue } from "@mui/material/colors";
 import { StyledCardHeader } from "../components/Events/OccuringEventsGrid";

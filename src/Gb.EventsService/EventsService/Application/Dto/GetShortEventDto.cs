@@ -3,7 +3,7 @@ using Constants;
 
 namespace WebApi.Dto
 {
-    public class GetEventsDto
+    public class GetShortEventDto
     {
         public int Id { get; set; }
         public int OrganizerId { get; set; }

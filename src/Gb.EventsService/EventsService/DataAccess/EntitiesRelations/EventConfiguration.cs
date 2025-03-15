@@ -21,7 +21,7 @@ namespace DataAccess.EntitiesRelations
                    .WithOne() // Assuming EventAction has no navigation back to Event
                    .HasForeignKey("EventId"); // Assuming foreign key in EventAction table
 
-            builder.HasMany(e => e.EventMembers)
+            builder.HasMany(e => e.Participants)
                    .WithOne() // Assuming EventMember has no navigation back to Event
                    .HasForeignKey("EventId");
         }

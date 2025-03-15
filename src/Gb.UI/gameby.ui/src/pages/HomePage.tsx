@@ -1,6 +1,6 @@
 import { Box, Paper } from "@mui/material";
 import { FiltersMenu } from "../components/FiltersMenu";
-import { OccuringEventsPage } from "./OccuringEventsPage";
+import OccuringEventsPage from "./OccuringEventsPage";
 import { useState } from "react";
 import { EventCategory } from "../common/enums/EventEnums";
 import dayjs, { Dayjs } from "dayjs";

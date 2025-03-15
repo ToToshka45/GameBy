@@ -5,7 +5,8 @@ export enum EventCategory {
     Quiz,
     Poker,
     HideAndSeek,
-    Unclarified
+    Sports,
+    Undefined
 }
 
 export enum EventStatus {

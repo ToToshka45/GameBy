@@ -3,8 +3,8 @@ import { EventCategory } from "../common/enums/EventEnums";
 import EventStateWithColor from "./EventStateWithColor";
 import EventParticipant from "./EventParticipant";
 
-export interface OccuringEventProps {
-    events: OccuringEvent[]
+export interface DisplayEventProps {
+    events: DisplayEvent[]
 }
 
 export interface OccuringEvent {
@@ -21,3 +21,12 @@ export interface OccuringEvent {
     minParticipants: number;
     participants: EventParticipant[];
   }
+
+export interface DisplayEvent {
+    id: number,
+    eventAvatarUrl: string;
+    title: string;
+    eventCategory: EventCategory;
+    eventDate: Dayjs;
+    stateDetails: EventStateWithColor;
+}

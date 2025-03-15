@@ -167,7 +167,7 @@ namespace WebApi.Controllers
 
             return Ok(res);
         }
-        
+
         /// <summary>
         /// Все мероприятия + фильтры
         /// </summary>
@@ -175,18 +175,11 @@ namespace WebApi.Controllers
         /// Events if success or BadRequest 
         /// </returns>
         [HttpPost]
-        public async Task<ActionResult<List<GetEventResponse>>> GetAllEvents(EventsFilters filters)
+        public async Task<ActionResult<List<GetEventResponse>>> GetEvents(EventsFilters filters)
         {
-            try
-            {
-                var dto = _mapper.Map<EventsFiltersDto>(filters);
-                var res = await _eventService.GetEvents(dto);
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }     
+            var dto = _mapper.Map<EventsFiltersDto>(filters);
+            var res = await _eventService.GetEvents(dto);
+            return Ok(res);
         }
 
         /// <summary>
@@ -202,7 +195,7 @@ namespace WebApi.Controllers
 
         //    if (res is null)
         //        return BadRequest();
-            
+
         //    return Ok(res);
         //}
     }

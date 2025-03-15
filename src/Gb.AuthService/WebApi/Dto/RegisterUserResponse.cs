@@ -2,9 +2,9 @@
 
 namespace WebApi.Dto
 {
-    public class NewUserResponse:BaseEntity
+    public class RegisterUserResponse:BaseEntity
     {
-        public string UserName {get; set;}
+        public string Username {get; set;}
 
         public string AccessToken { get; set; }
 

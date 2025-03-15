@@ -1,4 +1,4 @@
-import { OccuringEvent } from "../interfaces/OccuringEvent";
+import { OccuringEvent } from "../interfaces/EventEntities";
 import { axiosPrivate } from "../services/axios";
 
 const useFetchEvent = () => {

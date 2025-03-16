@@ -17,5 +17,9 @@ public class CreateEventDto
     public EventCategory EventCategory { get; set; }
     public int ParticipantLimit { get; set; }
     public int ParticipantMinimum { get; set; }
+
+    public string? ThemeFile {get;set;}
+
+    public string? ThemeFileName {get;set;}
     //public bool IsSuccess { get; set; } // note: ??
 }

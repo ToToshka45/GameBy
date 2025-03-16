@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-//var PgConnect = "Host=localhost;Port=5436;Database=eventsdb;Username=postgres;Password=123w";
+//var PgConnect = "Host=localhost;Port=5433;Database=eventsdb;Username=postgres;Password=123w";
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,6 +29,7 @@ builder.Services.AddDbContext<DataContext>(x =>
 });
 
 builder.Services.AddSingleton<RabbitMqService>();
+builder.Services.AddSingleton<MinioService>();
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
 builder.Services.AddAutoMapper(typeof(WebApiMappingProfiles), typeof(ApplicationMappingProfiles));
 

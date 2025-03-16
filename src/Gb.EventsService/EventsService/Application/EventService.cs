@@ -6,8 +6,10 @@ using DataAccess;
 using DataAccess.Abstractions;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApi.Dto;
+using Microsoft.AspNetCore.Http;
 
 namespace Application
 {
@@ -20,12 +22,16 @@ namespace Application
 
         private readonly RabbitMqService _rabbitMqService;
 
-        public EventService(IRepository<Event> eventRepository, DataContext dbContext, IMapper mapper, RabbitMqService rabbitMqService)
+        private readonly MinioService _minioService;
+
+        public EventService(IRepository<Event> eventRepository, DataContext dbContext, IMapper mapper, 
+        RabbitMqService rabbitMqService,MinioService minioService)
         {
             _eventRepository = eventRepository;
             _mapper = mapper;
             _rabbitMqService = rabbitMqService;
             _events = dbContext.Set<Event>();
+            _minioService=minioService;
         }
 
         public async Task<int?> CreateEvent(CreateEventDto eventDto)
@@ -47,7 +53,27 @@ namespace Application
         public async Task<CreateEventDto?> GetEvent(int EventId)
         {
             var @event = await _eventRepository.GetByIdAsync(EventId);
-            return @event is not null ? _mapper.Map<CreateEventDto>(@event) : null;
+            if (@event is null)
+            {
+                return null;
+            }
+            var res=_mapper.Map<CreateEventDto>(@event);
+
+            if(@event.ThemeId!=null)
+            {
+                var fileStream = await _minioService.DownloadFileAsync(@event.Id.ToString());
+            
+                if(fileStream!=null)
+                {
+                    var base64Content = Convert.ToBase64String(fileStream.ToArray());
+                    res.ThemeFile=base64Content;
+                    res.ThemeFileName="theme"+@event.ThemeExtension;
+                }
+            }
+            
+                
+
+            return res;
         }
 
         public async Task<List<GetEventsDto>> GetEvents(EventsFiltersDto filters)
@@ -220,6 +246,57 @@ namespace Application
             if (eventToDelete.EventDate > DateTime.Now) return false;
 
             return await _eventRepository.DeleteAsync(eventToDelete);
+        }
+
+        public async Task<bool> AddThemeToEventAsync(int EventId,IFormFile file)
+        {
+            var eventToAdd = await _eventRepository.GetByIdAsync(EventId);
+
+            if (eventToAdd is null)
+            {
+                return false;
+            }
+
+            if (file == null || file.Length == 0)
+                return false;
+            
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+
+    // Check if the extension is allowed
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return false;
+                //return BadRequest("Invalid file extension. Allowed extensions are: .jpg, .jpeg, .png, .gif.");
+            }
+
+    // Check if the MIME type is allowed
+            if (!allowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
+            {
+                return false;
+                //return BadRequest("Invalid file type. Allowed types are: image/jpeg, image/png, image/gif.");
+            }
+            //if (eventToAdd.EventDate > DateTime.Now) return false;
+            await _minioService.UploadFileAsync(eventToAdd.Id.ToString(), file.OpenReadStream());
+            eventToAdd.ThemeId=eventToAdd.Id;
+            eventToAdd.ThemeExtension=fileExtension;
+            await _eventRepository.UpdateAsync(eventToAdd);
+            return true;
+            //return await _eventRepository.DeleteAsync(eventToDelete);
+        }
+
+        public async Task<(Stream,string?)> GetMediaTest(int eventId)
+        {
+            var eventToAdd = await _eventRepository.GetByIdAsync(eventId);
+
+            if (eventToAdd is null)
+            {
+                return (null,null);
+            }
+            var fileStream = await _minioService.DownloadFileAsync(eventId.ToString());
+            return (fileStream,eventToAdd.ThemeExtension);
         }
 
         public async Task<FinalizeEventRequest> FinishEventAsync(int EventId)

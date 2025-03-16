@@ -133,6 +133,35 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
+        /// Добавить тему мероприятия
+        /// </summary>
+        /// <returns>
+        /// Event if success or BadRequest 
+        /// InternalError Если не удалось добавить картинку
+        /// </returns>
+        [HttpPost("{eventId:int}/add-image")]
+        public async Task<ActionResult<bool>> AddImageToEventAsync(int eventId,IFormFile file)
+        {
+            var res = await _eventService.AddThemeToEventAsync(eventId,file);
+
+            if (!res)
+                return BadRequest();
+
+            return true;
+        }
+        /*
+        [HttpGet("{eventId:int}/test-image")]
+        public async Task<ActionResult> GetImageEventAsync(int eventId)
+        {
+            var fileStream = await _eventService.GetMediaTest(eventId);
+        
+            if (fileStream is null)
+                return BadRequest();
+
+            return File(fileStream, "application/octet-stream", "test."+);
+        }*/
+
+        /// <summary>
         /// Изменить мероприятие
         /// </summary>
         /// <returns>

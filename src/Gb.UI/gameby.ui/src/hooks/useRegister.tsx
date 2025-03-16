@@ -5,10 +5,16 @@ import { jwtDecode } from "jwt-decode";
 import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
 import { axiosAuth } from "../services/axios";
 import RegisterUserRequest from "../interfaces/Requests/RegisterUserRequest";
+import { useEffect } from "react";
 
 const useRegister = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;
   const ac = new AbortController();
+
+  useEffect(() => {
+    if (userAuth)
+      console.log("User data changed after registration: ", userAuth);
+  }, [userAuth]);
 
   const register = async (data: SignUpFormData) => {
     try {
@@ -19,11 +25,12 @@ const useRegister = () => {
       };
       const stringified = JSON.stringify(registerUserRequest);
       console.log("Sending a register payload: ", stringified);
-      const res = await axiosAuth.post("register/new", stringified, {
+      const res = await axiosAuth.post("register", stringified, {
         signal: ac.signal,
         headers: { "Content-Type": "application/json" },
         // withCredentials: true,
       });
+      console.log("Received register respose: ", res);
 
       if (res.data) {
         const { id, username, email, accessToken, refreshToken } = res.data;
@@ -39,7 +46,6 @@ const useRegister = () => {
           roles,
         });
       }
-      console.log("User data: ", userAuth);
 
       return userAuth;
     } catch (err) {

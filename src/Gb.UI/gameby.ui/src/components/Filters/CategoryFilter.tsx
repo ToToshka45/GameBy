@@ -1,36 +1,8 @@
 import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useContext, useState } from "react";
-import { EventCategory } from "../../common/enums/EventEnums";
-import { EventCategoryFilterUnit } from "../../interfaces/EventCategoryFilterUnit";
 import FiltersProps from "../../interfaces/FiltersProps";
 import FiltersPropsContext from "../../contexts/FiltersPropsContext";
-
-const categoriesList: EventCategoryFilterUnit[] = [
-  {
-    name: "Strategy",
-    img: "src/assets/categories/strategy.png",
-    category: EventCategory.Strategy,
-    isActive: false,
-  },
-  {
-    name: "Quiz",
-    img: "src/assets/categories/quiz.png",
-    category: EventCategory.Quiz,
-    isActive: false,
-  },
-  {
-    name: "Sports",
-    img: "src/assets/categories/football_ball.png",
-    category: EventCategory.Sports,
-    isActive: false,
-  },
-  {
-    name: "Mafia",
-    img: "src/assets/categories/mafia_fedora.png",
-    category: EventCategory.Mafia,
-    isActive: false,
-  },
-];
+import { categoriesList } from "../../common/categoriesPayload";
 
 export const CategoryFilter = () => {
   const [categories, setCategories] = useState(categoriesList);

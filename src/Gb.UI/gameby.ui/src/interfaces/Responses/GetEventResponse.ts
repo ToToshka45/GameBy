@@ -1,7 +1,7 @@
-import { EventCategory, EventStatus } from "../common/enums/EventEnums";
-import Participant from "./EventParticipant";
+import { EventCategory, EventStatus } from "../../common/enums/EventEnums";
+import Participant from "../EventParticipant";
 
-export default interface GetEventsResponse {
+export default interface GetEventResponse {
     id: number;
     organizerId: number;
     title: string;

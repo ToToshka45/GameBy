@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { OccuringEvent } from "../interfaces/OccuringEvent";
+import { OccuringEvent } from "../interfaces/EventEntities";
 import { useEffect, useState } from "react";
 import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
 import { loremIpsum } from "../common/consts/fakeData/defaults";

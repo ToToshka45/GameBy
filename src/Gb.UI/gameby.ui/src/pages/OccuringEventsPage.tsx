@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
-import OccuringEventsGrid from "../components/Events/OccuringEventsGrid";
-import { OccuringEvent } from "../interfaces/OccuringEvent";
+import DisplayEventsGrid from "../components/Events/OccuringEventsGrid";
+import { DisplayEvent } from "../interfaces/EventEntities";
 import { EventCategory } from "../common/enums/EventEnums";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
@@ -9,13 +9,13 @@ import FiltersProps from "../interfaces/FiltersProps";
 // import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
 import { axiosPrivate } from "../services/axios";
 import axios from "axios";
-import GetEventsResponse from "../interfaces/GetEventsResponse";
+import GetShortEventResponse from "../interfaces/Responses/GetEventResponse";
 import EventStateDetails from "../common/consts/eventStateDetails";
 import { useAuth } from "../contexts/AuthContext";
 import AuthData from "../interfaces/AuthData";
 
-export const OccuringEventsPage = () => {
-  const [events, setEvents] = useState<OccuringEvent[]>([]);
+const OccuringEventsPage = () => {
+  const [events, setEvents] = useState<DisplayEvent[]>([]);
   // const [eventsFiltered, setEventsFiltered] = useState<OccuringEvent[]>(events);
   const { userAuth } = useAuth() as AuthData;
   const filterProps = useContext<FiltersProps | undefined>(FiltersPropsContext);
@@ -31,27 +31,21 @@ export const OccuringEventsPage = () => {
           title: filterProps?.filteringTitle,
           afterDate: filterProps?.filteringDates[0],
           beforeDate: filterProps?.filteringDates[1],
-          eventCategoris: filterProps?.filteringCategories,
+          eventCategories: filterProps?.filteringCategories,
           userId: userAuth?.id,
         };
         const res = await axiosPrivate.post("events", eventFilters);
-        console.log("Fetched data: ", res);
         if (res && res.data) {
-          const fetchedEvents: GetEventsResponse[] = res.data;
-          const occuringEvents: OccuringEvent[] = fetchedEvents.map((ev) => {
+          const fetchedEvents: GetShortEventResponse[] = res.data;
+          const occuringEvents: DisplayEvent[] = fetchedEvents.map((ev) => {
             return {
               id: ev.id,
-              organizerId: ev.organizerId,
               title: ev.title,
               description: ev.description,
-              location: ev.location,
               eventAvatarUrl: ev.eventAvatarUrl,
               eventCategory: ev.eventCategory,
               eventDate: dayjs(ev.eventDate),
-              maxParticipants: ev.maxParticipants,
-              minParticipants: ev.minParticipants,
               stateDetails: EventStateDetails[ev.eventStatus],
-              participants: ev.participants,
             };
           });
           setEvents(occuringEvents);
@@ -96,8 +90,10 @@ export const OccuringEventsPage = () => {
         <Typography variant="h4" color="secondary" gutterBottom>
           Upcoming events
         </Typography>
-        <OccuringEventsGrid events={events} />
+        <DisplayEventsGrid events={events} />
       </Container>
     </Box>
   );
 };
+
+export default OccuringEventsPage;

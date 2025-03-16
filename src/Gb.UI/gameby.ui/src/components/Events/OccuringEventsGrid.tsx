@@ -1,7 +1,6 @@
 import {
   Card,
   CardHeader,
-  CardContent,
   CardMedia,
   Typography,
   Box,
@@ -9,12 +8,16 @@ import {
   Grid,
   Chip,
 } from "@mui/material";
-import { OccuringEventProps } from "../../interfaces/OccuringEvent";
-import { blue, orange } from "@mui/material/colors";
+import {
+  DisplayEventProps,
+  DisplayEvent,
+} from "../../interfaces/EventEntities";
+import { orange } from "@mui/material/colors";
 import { EventCategory } from "../../common/enums/EventEnums";
 import { useNavigate } from "react-router-dom";
 import { DATE_FORMAT } from "../../common/consts/fakeData/testOccuringEvents";
 import { handleNavigateEvent } from "../../common/functions";
+import { ReactNode } from "react";
 
 export const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   backgroundColor: orange[200],
@@ -28,7 +31,18 @@ export const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   },
 }));
 
-const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
+const renderTitle = (event: DisplayEvent): ReactNode => {
+  return (
+    <Box display="flex" flexDirection="row" gap={0.5}>
+      <Typography>{event.title}</Typography>
+      <Typography variant="caption">
+        ({EventCategory[event.eventCategory]})
+      </Typography>
+    </Box>
+  );
+};
+
+const DisplayEventsGrid = ({ events }: DisplayEventProps) => {
   const navigate = useNavigate();
 
   return (
@@ -53,10 +67,8 @@ const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
             >
               <Card>
                 <StyledCardHeader
-                  title={event.title}
-                  subheader={`${event.eventDate.format(DATE_FORMAT)} - ${
-                    EventCategory[event.eventCategory]
-                  }`}
+                  title={renderTitle(event)}
+                  subheader={`Starting on: ${event.eventDate.format(DATE_FORMAT)}`}
                   action={
                     <Chip
                       size="medium"
@@ -83,4 +95,4 @@ const OccuringEventsGrid = ({ events }: OccuringEventProps) => {
   );
 };
 
-export default OccuringEventsGrid;
+export default DisplayEventsGrid;

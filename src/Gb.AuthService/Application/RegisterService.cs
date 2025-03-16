@@ -82,7 +82,7 @@ namespace Application
                 await _mediator.Publish(userAddedEvent);
                 return new NewUserResultDto()
                 {
-                    UserName = newUser.Login.Name,
+                    Username = newUser.Login.Name,
                     Id = newUser.Id,
                     IsSuccess = true
                 };

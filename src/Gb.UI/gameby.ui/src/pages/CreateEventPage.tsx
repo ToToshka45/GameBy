@@ -1,7 +1,11 @@
 import {
   Box,
   Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -18,12 +22,24 @@ import CreateEventData, {
   createDefaultEvent,
   eventCreationSchema,
 } from "../schemas/EventCreationForm";
+import useCreateEvent from "../hooks/useCreateEvent";
+import { useNavigate } from "react-router";
+import { EventCategory } from "../common/enums/EventEnums";
+
+const categoriesDict = Object.entries(EventCategory)
+  .filter(([key]) => !Number.isNaN(Number(key))) // Filtering by a key, we need to get only a numeric Keys, so that values would only be strings
+  .map(([key, value]) => ({
+    key,
+    value,
+  }));
 
 export default function CreateEventPage() {
   const [image, setImage] = useState<FileWithPath | undefined>();
   const [imgPreview, setImgPreview] = useState<string | ArrayBuffer | null>(
     null
   );
+  const navigate = useNavigate();
+  const createEvent = useCreateEvent();
 
   const {
     control,
@@ -35,6 +51,7 @@ export default function CreateEventPage() {
     defaultValues: createDefaultEvent(),
   });
 
+  //#region drop image
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     const imageUploaded = acceptedFiles[0];
     if (imageUploaded === null) {
@@ -61,9 +78,13 @@ export default function CreateEventPage() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
   });
+  //#endregion
 
-  const onSubmit: SubmitHandler<CreateEventData> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<CreateEventData> = async (
+    data: CreateEventData
+  ) => {
+    const eventId = await createEvent(data);
+    if (eventId) navigate(`event/${eventId}`);
   };
 
   return (
@@ -90,7 +111,7 @@ export default function CreateEventPage() {
           py: { xs: "4%", md: "1%" },
         }}
       >
-        <form
+        <FormControl
           onSubmit={handleSubmit(onSubmit)}
           style={{
             display: "flex",
@@ -110,6 +131,24 @@ export default function CreateEventPage() {
               {errors.title?.message}
             </Typography>
           )}
+          \\
+          <Controller
+            name="eventCategory"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <Select
+                {...field}
+                aria-placeholder="event-category"
+                labelId="event-category-label"
+                label="Event Category"
+              >
+                {categoriesDict.map((category) => (
+                  <MenuItem key={category.key}>{category.value}</MenuItem>
+                ))}
+              </Select>
+            )}
+          />
           <TextField
             {...register("description")}
             label="Description"
@@ -123,7 +162,6 @@ export default function CreateEventPage() {
               {errors.description?.message}
             </Typography>
           )}
-
           <Stack direction="row" gap={1}>
             <Box sx={{ width: { sx: "100%", md: "40%" } }}>
               <TextField
@@ -170,7 +208,6 @@ export default function CreateEventPage() {
               )}
             </Box>
           </Stack>
-
           <Stack direction="row" gap={10} my={2}>
             <Box>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -220,9 +257,7 @@ export default function CreateEventPage() {
               )}
             </Box>
           </Stack>
-
           {/* TODO: add a real-time map API*/}
-
           <Box
             border="0.5px solid gray"
             textAlign="center"
@@ -275,7 +310,7 @@ export default function CreateEventPage() {
               Create Event
             </Button>
           </Box>
-        </form>
+        </FormControl>
         {image !== null && <img src={imgPreview as string} />}
       </Paper>
     </Box>

@@ -33,8 +33,8 @@ namespace WebApi.Controllers
         /// Customer if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("new")]
-        public async Task<ActionResult<NewUserResponse>> CreateCustomerAsync(RegiserUserRequest request)
+        [HttpPost]
+        public async Task<ActionResult<RegisterUserResponse>> RegisterAsync(RegiserUserRequest request)
         {
             var res = await _registerService.AddNewUser(_mapper.Map<NewUserDto>(request));
 
@@ -43,10 +43,10 @@ namespace WebApi.Controllers
 
             var authres = await _authenticatorService.AuthUserById(res.Id);
 
-            return new NewUserResponse()
+            return new RegisterUserResponse()
             {
-                UserName = res.UserName,
                 Id = res.Id,
+                Username = res.Username,
                 AccessToken = authres.AccessToken,
                 RefreshToken = authres.RefreshToken
             };

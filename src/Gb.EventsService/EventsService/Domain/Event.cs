@@ -24,7 +24,7 @@ namespace Domain
 
         public string? ThemeExtension {get;set;}
         public virtual Collection<EventAction> EventActions { get; set; }
-        public virtual Collection<Participant> EventMembers { get; set; }
+        public virtual Collection<Participant> Participants { get; set; }
 
 
     }

@@ -1,8 +1,8 @@
 import { NavigateFunction } from "react-router-dom";
-import { OccuringEvent } from "../interfaces/OccuringEvent";
+import { DisplayEvent, OccuringEvent } from "../interfaces/EventEntities";
 
 export const handleNavigateEvent = (
-  event: OccuringEvent,
+  event: DisplayEvent,
   navigate: NavigateFunction
 ) => {
   navigate(`/event/${event.id}`, { state: { eventDetails: event } });

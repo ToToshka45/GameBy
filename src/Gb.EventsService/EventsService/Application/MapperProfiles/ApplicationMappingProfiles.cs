@@ -11,6 +11,6 @@ public class ApplicationMappingProfiles : Profile
         CreateMap<CreateEventDto, Event>();
         CreateMap<Event, CreateEventDto>();
         CreateMap<ParticipantAddDto,Participant>();
-        CreateMap<Event, GetEventsDto>();
+        CreateMap<Event, GetShortEventDto>();
     }
 }

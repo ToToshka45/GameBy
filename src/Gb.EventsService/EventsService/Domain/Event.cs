@@ -22,6 +22,7 @@ namespace Domain
         public virtual Collection<EventAction> EventActions { get; set; } = [];
         public virtual Collection<Participant> Participants { get; set; } = [];
 
-
+        public int? ThemeId { get; set; }
+        public string? ThemeExtension { get; set; }
     }
 }

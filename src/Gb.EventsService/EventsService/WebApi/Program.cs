@@ -43,6 +43,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<RabbitMqService>();
+builder.Services.AddSingleton<MinioService>();
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
 builder.Services.AddAutoMapper(typeof(WebApiMappingProfiles), typeof(ApplicationMappingProfiles));
 

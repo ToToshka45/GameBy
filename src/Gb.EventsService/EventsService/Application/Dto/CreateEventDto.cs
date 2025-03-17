@@ -19,5 +19,10 @@ public class CreateEventDto
     public int MaxParticipants { get; set; }
     public int MinParticipants { get; set; }
     public IReadOnlyCollection<Participant> Participants { get; set; }
+
+    // note: avatar
+    public string? ThemeFile { get; set; }
+
+    public string? ThemeFileName { get; set; }
     //public bool IsSuccess { get; set; } // note: ??
 }

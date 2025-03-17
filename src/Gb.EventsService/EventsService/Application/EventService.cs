@@ -8,8 +8,11 @@ using DataAccess.Repositories;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApi.Dto;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace Application;
 
@@ -23,8 +26,8 @@ public class EventService
     private readonly RabbitMqService _rabbitMqService;
 
     private readonly ILogger<EventService> _logger;
-
-    public EventService(IRepository<Event> eventRepository, DataContext dbContext, IMapper mapper, RabbitMqService rabbitMqService, ILogger<EventService> logger)
+    private readonly MinioService _minioService;
+    public EventService(IRepository<Event> eventRepository, DataContext dbContext, IMapper mapper, RabbitMqService rabbitMqService, ILogger<EventService> logger, MinioService minioService)
     {
         _eventRepository = eventRepository;
         _mapper = mapper;
@@ -65,14 +68,42 @@ public class EventService
 
     public async Task<CreateEventDto?> GetEvent(int EventId)
     {
-        var @event = await _eventRepository.GetByIdAsync(EventId);
+        var @event = await _eventRepository.GetByIdAsync(EventId); 
+        if (@event.ThemeId != null)
+        {
+            var fileStream = await _minioService.DownloadFileAsync(@event.Id.ToString());
+
+            if (fileStream != null)
+            {
+                var base64Content = Convert.ToBase64String(fileStream.ToArray());
+                res.ThemeFile = base64Content;
+                res.ThemeFileName = "theme" + @event.ThemeExtension;
+            }
+        }
         return @event is not null ? _mapper.Map<CreateEventDto>(@event) : null;
     }
 
-    public async Task<List<GetShortEventDto>> GetEvents(EventsFiltersDto filters)
-    {
-        var query = _events
-            .Where(e => e.EventDate >= filters.AfterDate && e.EventDate < filters.BeforeDate); 
+            if(@event.ThemeId!=null)
+            {
+                var fileStream = await _minioService.DownloadFileAsync(@event.Id.ToString());
+            
+                if(fileStream!=null)
+                {
+                    var base64Content = Convert.ToBase64String(fileStream.ToArray());
+                    res.ThemeFile=base64Content;
+                    res.ThemeFileName="theme"+@event.ThemeExtension;
+                }
+            }
+            
+                
+
+            return res;
+        }
+
+        public async Task<List<GetShortEventDto>> GetEvents(EventsFiltersDto filters)
+        {
+            var query = _events
+                .Where(e => e.EventDate >= filters.AfterDate && e.EventDate < filters.BeforeDate); 
 
         if (filters.EventCategories?.Length > 0)
         {
@@ -224,9 +255,60 @@ public class EventService
         return await _eventRepository.DeleteAsync(eventToDelete);
     }
 
-    public async Task<FinalizeEventRequest> FinishEventAsync(int EventId)
-    {
-        var eventToFinsish = await _eventRepository.GetByIdAsync(EventId);
+        public async Task<bool> AddThemeToEventAsync(int EventId,IFormFile file)
+        {
+            var eventToAdd = await _eventRepository.GetByIdAsync(EventId);
+
+            if (eventToAdd is null)
+            {
+                return false;
+            }
+
+            if (file == null || file.Length == 0)
+                return false;
+            
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+
+    // Check if the extension is allowed
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return false;
+                //return BadRequest("Invalid file extension. Allowed extensions are: .jpg, .jpeg, .png, .gif.");
+            }
+
+    // Check if the MIME type is allowed
+            if (!allowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
+            {
+                return false;
+                //return BadRequest("Invalid file type. Allowed types are: image/jpeg, image/png, image/gif.");
+            }
+            //if (eventToAdd.EventDate > DateTime.Now) return false;
+            await _minioService.UploadFileAsync(eventToAdd.Id.ToString(), file.OpenReadStream());
+            eventToAdd.ThemeId=eventToAdd.Id;
+            eventToAdd.ThemeExtension=fileExtension;
+            await _eventRepository.UpdateAsync(eventToAdd);
+            return true;
+            //return await _eventRepository.DeleteAsync(eventToDelete);
+        }
+
+        public async Task<(Stream,string?)> GetMediaTest(int eventId)
+        {
+            var eventToAdd = await _eventRepository.GetByIdAsync(eventId);
+
+            if (eventToAdd is null)
+            {
+                return (null,null);
+            }
+            var fileStream = await _minioService.DownloadFileAsync(eventId.ToString());
+            return (fileStream,eventToAdd.ThemeExtension);
+        }
+
+        public async Task<FinalizeEventRequest> FinishEventAsync(int EventId)
+        {
+            var eventToFinsish = await _eventRepository.GetByIdAsync(EventId);
 
         if (eventToFinsish.EventDate > DateTime.Now)
         {

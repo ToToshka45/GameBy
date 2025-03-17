@@ -13,6 +13,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import useRegister from "../hooks/useRegister";
+import axios from "axios";
 
 // TODO: check existing users with a provided email
 // TODO: check other users to have the same username as provided
@@ -29,6 +30,7 @@ const SignUpFormPage = () => {
   const {
     control,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -44,8 +46,19 @@ const SignUpFormPage = () => {
     data: SignUpFormData
   ) => {
     // handle data (send to the server)
-    const userAuth = await register(data);
-    if (userAuth !== null) navigate(from, { replace: true });
+    try {
+      const userAuth = await register(data);
+      if (userAuth !== null) navigate(from, { replace: true });
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 401) {
+          setError("root", {
+            type: "manual",
+            message: "Username or password is incorrect. Pleast try again.",
+          });
+        }
+      }
+    }
   };
 
   const handlePassHidden = () => {
@@ -175,6 +188,9 @@ const SignUpFormPage = () => {
             <Link to="/sign-in" style={{ fontSize: 16 }}>
               Sign In
             </Link>
+            <Typography variant="body2" color="error" pt={2}>
+              {errors.root && errors.root.message}
+            </Typography>
           </Box>
         </Box>
       </Paper>

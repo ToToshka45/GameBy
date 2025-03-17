@@ -109,13 +109,14 @@ namespace Application
             result.RefreshToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
             result.IsSuccess = true;
 
-            _userService.AddUserToken(new UserToken()
-            {
-                RefreshToken = result.RefreshToken,
-                ExpirationDate = DateTime.Now.AddSeconds(20),
-                UserId = user.Id,
-                UserRoles = user.Roles.Select(x => x.Role.RoleName).ToList()
-            });
+            _userService.AddUserToken(new()
+                {
+                    RefreshToken = result.RefreshToken,
+                    ExpirationDate = DateTime.Now.AddSeconds(20),
+                    UserId = user.Id,
+                    UserRoles = user.Roles.Select(x => x.Role.RoleName).ToList()
+                }
+            );
 
             return result;
         }
@@ -185,7 +186,7 @@ namespace Application
 
             foreach (string roleName in userRoleNames)
             {
-                claims.Add(new Claim(ClaimTypes.Role, roleName));
+                claims.Add(new Claim("roles", roleName));
             }
             //claims.Add(new Claim(ClaimTypes.Name, userId.ToString()));
 

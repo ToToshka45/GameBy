@@ -1,6 +1,6 @@
-import { useAuth } from "../contexts/AuthContext";
 import { axiosPrivate } from "../services/axios";
 import AuthData from "../interfaces/AuthData";
+import useAuth from "./useAuth";
 
 const useRefreshToken = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;

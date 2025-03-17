@@ -9,8 +9,8 @@ namespace DataAccess.Repositories
     public class EfRepository<T> : IRepository<T>
         where T : BaseEntity
     {
-        private readonly DataContext _dataContext;
-        private readonly ILogger<EfRepository<T>> _logger;
+        protected readonly DataContext _dataContext;
+        protected readonly ILogger<EfRepository<T>> _logger;
 
         public EfRepository(DataContext dataContext, ILogger<EfRepository<T>> logger)
         {
@@ -30,7 +30,7 @@ namespace DataAccess.Repositories
             return await _dataContext.Set<T>().Where(predicate).ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(int id)
         {
             var entity = await _dataContext.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
 

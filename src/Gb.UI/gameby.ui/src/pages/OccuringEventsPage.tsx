@@ -11,8 +11,8 @@ import { axiosPrivate } from "../services/axios";
 import axios from "axios";
 import GetShortEventResponse from "../interfaces/Responses/GetEventResponse";
 import EventStateDetails from "../common/consts/eventStateDetails";
-import { useAuth } from "../contexts/AuthContext";
 import AuthData from "../interfaces/AuthData";
+import useAuth from "../hooks/useAuth";
 
 const OccuringEventsPage = () => {
   const [events, setEvents] = useState<DisplayEvent[]>([]);

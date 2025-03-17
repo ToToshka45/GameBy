@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import AuthData from "../../interfaces/AuthData";
-import { useAuth } from "../../contexts/AuthContext";
 import useRefreshToken from "../../hooks/useRefreshToken";
 import { Typography } from "@mui/material";
+import useAuth from "../../hooks/useAuth";
 
 export const PersistAuth = () => {
   const { userAuth } = useAuth() as AuthData;

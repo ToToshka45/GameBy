@@ -20,8 +20,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
 
 //amqps://
-var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-var RedisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
+var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+var redisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
 //var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
 
 //var PgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
@@ -30,7 +30,7 @@ var RedisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
 builder.Services.AddDbContext<DataContext>(x =>
 {
     //x.UseNpgsql("Host=localhost;Port=5432;Database=usersdb;Username=postgres;Password=123w");
-    x.UseNpgsql(PgConnect);
+    x.UseNpgsql(pgConnect);
     x.UseLazyLoadingProxies();
     x.LogTo(Console.WriteLine, LogLevel.Information);
 });
@@ -43,6 +43,8 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddAutoMapper(typeof(AppMappingProfiles));
 
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnect!));
 
 builder.Services.AddCors(options =>
 {
@@ -58,9 +60,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-
-//"localhost:1919"
-builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(RedisConnect));
 
 builder.Services.AddScoped<UserTokenService>();
 

@@ -18,8 +18,8 @@ import CreateEventPage from "../pages/CreateEventPage";
 import { NavLink, useNavigate } from "react-router";
 import EventDetailsPage from "../pages/EventDetailsPage";
 import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
 import AuthData from "../interfaces/AuthData";
+import useAuth from "../hooks/useAuth";
 
 const navMenu = [
   {

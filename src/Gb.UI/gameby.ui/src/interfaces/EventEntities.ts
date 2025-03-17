@@ -14,7 +14,7 @@ export interface OccuringEvent {
     title: string;
     description: string;
     eventCategory: EventCategory;
-    eventDate: Dayjs;
+    eventDate: Dayjs;    
     location: string;
     stateDetails: EventStateWithColor;
     maxParticipants: number;

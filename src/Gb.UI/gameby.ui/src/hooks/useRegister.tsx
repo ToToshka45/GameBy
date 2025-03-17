@@ -1,4 +1,3 @@
-import { useAuth } from "../contexts/AuthContext";
 import AuthData from "../interfaces/AuthData";
 import SignUpFormData from "../schemas/SignUpForm";
 import { jwtDecode } from "jwt-decode";
@@ -6,6 +5,7 @@ import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
 import { axiosAuth } from "../services/axios";
 import RegisterUserRequest from "../interfaces/Requests/RegisterUserRequest";
 import { useEffect } from "react";
+import useAuth from "./useAuth";
 
 const useRegister = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;
@@ -36,6 +36,7 @@ const useRegister = () => {
         const { id, username, email, accessToken, refreshToken } = res.data;
         const decoded = jwtDecode<ExtendedJwtPayload>(accessToken);
         const roles = decoded?.roles;
+        console.log("Received roles: ", roles);
 
         setUserAuth!({
           id,

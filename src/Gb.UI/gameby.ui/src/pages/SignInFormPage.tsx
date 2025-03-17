@@ -12,10 +12,10 @@ import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { z } from "zod";
 import { isEmailSchema } from "../schemas/IsEmailSchema";
 import useLogin from "../hooks/useLogin";
 import LoginRequest from "../interfaces/Requests/LoginRequest";
+import axios from "axios";
 
 const SignInFormPage = () => {
   const [passHidden, setPassHidden] = useState(true);
@@ -55,12 +55,15 @@ const SignInFormPage = () => {
     try {
       await login(loginRequest);
       navigate(from, { replace: true });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error occured while trying to login: ", err);
-      if (err instanceof z.ZodError) {
-        setError("root", {
-          message: err.message,
-        });
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 401) {
+          setError("root", {
+            type: "manual",
+            message: "Username or password is incorrect. Pleast try again.",
+          });
+        }
       }
     }
   };
@@ -150,6 +153,10 @@ const SignInFormPage = () => {
             <Link to="/sign-up" style={{ fontSize: 16 }}>
               Sign Up
             </Link>
+
+            <Typography variant="body2" color="error" pt={2}>
+              {errors.root && errors.root.message}
+            </Typography>
           </Box>
         </Box>
       </Paper>

@@ -3,7 +3,7 @@ using Domain;
 
 namespace DataAccess;
 
-public class TempDataFactory:IDbInitializer
+public class TempDataFactory : IDbInitializer
 {
     private readonly DataContext _dataContext;
 
@@ -14,24 +14,26 @@ public class TempDataFactory:IDbInitializer
 
     public void InitializeDb()
     {
+        if (_dataContext.Events.Any()) return;
+
         _dataContext.Database.EnsureDeleted();
         _dataContext.Database.EnsureCreated();
         var EventTemp1 = new Event()
         {
-            Id=1,
+            Id = 1,
             CreationDate = DateTime.Now.ToUniversalTime(),
-            EventCategory=Common.EventCategory.Poker,
-            EventDate=DateTime.Now.AddDays(2).ToUniversalTime(),
-            EventStatus=Constants.EventStatus.Announced,
-            Description="Покер техасский холдэм. Мин ставка 20. Банк каждого 1000",
-            Title="Игра в покер",
-            ParticipantMinimum=3,
-            ParticipantLimit=6,
-            Location= "Малая Ордынка ул., 37, Москва, 115184",
-            IsClosedParticipation=false,
-            MaxDuration=5,
-            OrganizerId=1,
-            Participants=new System.Collections.ObjectModel.Collection<Participant>()
+            EventCategory = Common.EventCategory.Poker,
+            EventDate = DateTime.Now.AddDays(2).ToUniversalTime(),
+            EventStatus = Constants.EventStatus.Announced,
+            Description = "Покер техасский холдэм. Мин ставка 20. Банк каждого 1000",
+            Title = "Игра в покер",
+            MinParticipants = 3,
+            MaxParticipants = 6,
+            Location = "Малая Ордынка ул., 37, Москва, 115184",
+            //IsClosedParticipation=false,
+            //MaxDuration=5,
+            OrganizerId = 1,
+            Participants = new System.Collections.ObjectModel.Collection<Participant>()
             {
                 new Participant()
                 {
@@ -46,7 +48,7 @@ public class TempDataFactory:IDbInitializer
                     EventId = 1
                 },
             }
-            
+
         };
         _dataContext.Add(EventTemp1);
         _dataContext.SaveChanges();
@@ -60,11 +62,11 @@ public class TempDataFactory:IDbInitializer
             EventStatus = Constants.EventStatus.Announced,
             Description = "Мафия с комиссаром и врачом",
             Title = "Мафия",
-            ParticipantMinimum = 6,
-            ParticipantLimit = 9,
+            MinParticipants = 6,
+            MaxParticipants = 9,
             Location = "ул. Моховая, 7, Москва, 119019",
-            IsClosedParticipation = false,
-            MaxDuration = 4,
+            //IsClosedParticipation = false,
+            //MaxDuration = 4,
             OrganizerId = 4,
             Participants = new System.Collections.ObjectModel.Collection<Participant>()
             {
@@ -87,6 +89,5 @@ public class TempDataFactory:IDbInitializer
         _dataContext.Add(EventTemp2);
         _dataContext.SaveChanges();
         //var EventMember1 = ;
-
     }
 }

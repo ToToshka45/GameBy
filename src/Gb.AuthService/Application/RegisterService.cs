@@ -26,9 +26,9 @@ namespace Application
 
         public async Task<bool> CheckLoginExists(string login)
         {
-            var ExistingUser =await _userRepository.Search(x => x.Login.Name == login);
+            var ExistingUser = await _userRepository.Search(x => x.Login.Name == login);
 
-            if (ExistingUser.Count()==0)
+            if (ExistingUser.Count() == 0)
                 return true;
 
             return false;
@@ -36,7 +36,7 @@ namespace Application
 
         public async Task<bool> CheckEmailExists(string email)
         {
-            var ExistingUser =await _userRepository.Search(x => x.Email.Value == email);
+            var ExistingUser = await _userRepository.Search(x => x.Email.Value == email);
 
 
             if (ExistingUser.Count() == 0)
@@ -69,16 +69,23 @@ namespace Application
             var playerRole = await _roleRepository.GetByIdAsync(1);
             var orgRole = await _roleRepository.GetByIdAsync(2);
 
-            user.Roles = new List<UserRole>() { new UserRole() {
-                Role = playerRole,
-                User=user
-            }, new UserRole() {Role=orgRole,User=user } };
+            user.Roles = [
+                new UserRole() 
+                {
+                    Role = playerRole,
+                    User=user
+                },
+                new UserRole()
+                {
+                    Role=orgRole,
+                    User=user
+                }
+            ];
 
             var newUser = await _userRepository.AddAsync(user);
             if (newUser != null)
             {
-
-                var userAddedEvent = new UserAddedEvent(newUser.Id,newUser.Login.Name);
+                var userAddedEvent = new UserAddedEvent(newUser.Id, newUser.Login.Name);
                 await _mediator.Publish(userAddedEvent);
                 return new NewUserResultDto()
                 {

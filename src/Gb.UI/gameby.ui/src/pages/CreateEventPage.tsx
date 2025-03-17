@@ -26,8 +26,8 @@ import useCreateEvent from "../hooks/useCreateEvent";
 import { useNavigate } from "react-router";
 import { EventCategory } from "../common/enums/EventEnums";
 
-const categoriesDict = Object.entries(EventCategory)
-  .filter(([key]) => !Number.isNaN(Number(key))) // Filtering by a key, we need to get only a numeric Keys, so that values would only be strings
+const categories = Object.entries(EventCategory)
+  .filter(([key, value]) => !Number.isNaN(Number(key)) && value !== "Undefined") // Filtering by a key, we need to get only a numeric Keys, so that values would only be strings
   .map(([key, value]) => ({
     key,
     value,
@@ -83,8 +83,13 @@ export default function CreateEventPage() {
   const onSubmit: SubmitHandler<CreateEventData> = async (
     data: CreateEventData
   ) => {
-    const eventId = await createEvent(data);
-    if (eventId) navigate(`event/${eventId}`);
+    try {
+      const eventId = await createEvent(data);
+      console.log("Saved a new event with id: ", eventId);
+      if (eventId) navigate(`event/${eventId}`);
+    } catch (err) {
+      console.error("Error has occured while creating a new event: ", err);
+    }
   };
 
   return (
@@ -111,7 +116,7 @@ export default function CreateEventPage() {
           py: { xs: "4%", md: "1%" },
         }}
       >
-        <FormControl
+        <form
           onSubmit={handleSubmit(onSubmit)}
           style={{
             display: "flex",
@@ -131,24 +136,30 @@ export default function CreateEventPage() {
               {errors.title?.message}
             </Typography>
           )}
-          \\
+
           <Controller
             name="eventCategory"
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <Select
-                {...field}
-                aria-placeholder="event-category"
-                labelId="event-category-label"
-                label="Event Category"
-              >
-                {categoriesDict.map((category) => (
-                  <MenuItem key={category.key}>{category.value}</MenuItem>
-                ))}
-              </Select>
+              <FormControl>
+                <InputLabel id="event-category-label">Category</InputLabel>
+                <Select
+                  {...field}
+                  aria-placeholder="event-category"
+                  labelId="event-category-label"
+                  label="Event Category"
+                >
+                  {categories.map((category) => (
+                    <MenuItem key={category.key} value={category.value}>
+                      {category.value}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
           />
+
           <TextField
             {...register("description")}
             label="Description"
@@ -310,7 +321,7 @@ export default function CreateEventPage() {
               Create Event
             </Button>
           </Box>
-        </FormControl>
+        </form>
         {image !== null && <img src={imgPreview as string} />}
       </Paper>
     </Box>

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
 import LoginRequest from "../interfaces/Requests/LoginRequest";
 import { axiosAuth } from "../services/axios";
 import AuthData from "../interfaces/AuthData";
 import { jwtDecode } from "jwt-decode";
 import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
+import useAuth from "./useAuth";
 
 const useLogin = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;

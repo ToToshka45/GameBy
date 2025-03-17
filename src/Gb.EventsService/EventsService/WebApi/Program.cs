@@ -5,6 +5,7 @@ using Application.MapperProfiles;
 using DataAccess;
 using DataAccess.Abstractions;
 using DataAccess.Repositories;
+using Domain;
 using Microsoft.EntityFrameworkCore;
 using WebApi.MappingProfiles;
 
@@ -12,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
 //var PgConnect = "Host=localhost;Port=5436;Database=eventsdb;Username=postgres;Password=123w";
 
 builder.Services.AddControllers();
@@ -23,9 +24,22 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(x =>
 {
     //x.UseNpgsql("Host=localhost;Port=5432;Database=usersdb;Username=postgres;Password=123w");
-    x.UseNpgsql(PgConnect);
+    x.UseNpgsql(pgConnect);
     x.UseLazyLoadingProxies();
     x.LogTo(Console.WriteLine, LogLevel.Information);
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy
+            .WithOrigins(builder.Configuration["CORS:Origins"] ?? "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            ;
+    });
 });
 
 builder.Services.AddSingleton<RabbitMqService>();
@@ -34,6 +48,7 @@ builder.Services.AddAutoMapper(typeof(WebApiMappingProfiles), typeof(Application
 
 builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+builder.Services.AddScoped<IRepository<Event>, EventsRepository>();
 
 var app = builder.Build();
 
@@ -50,10 +65,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+app.UseCors();
 
 // Initialize the database (if needed)
 using (var scope = app.Services.CreateScope())

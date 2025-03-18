@@ -14,7 +14,7 @@ public class TempDataFactory : IDbInitializer
 
     public void InitializeDb()
     {
-        //_dataContext.Database.EnsureDeleted();
+        _dataContext.Database.EnsureDeleted();
         _dataContext.Database.EnsureCreated();
         if (_dataContext.Events.Any()) return;
 
@@ -34,8 +34,7 @@ public class TempDataFactory : IDbInitializer
                 //IsClosedParticipation=false,
                 //MaxDuration=5,
                 OrganizerId = 1,
-                Participants = new System.Collections.ObjectModel.Collection<Participant>()
-                {
+                Participants = [
                     new Participant()
                     {
                         UserId = 2,
@@ -54,7 +53,7 @@ public class TempDataFactory : IDbInitializer
                         State = Common.ParticipationState.PendingAcceptance,
                         ApplyDate = DateTime.Now.AddHours(-10).ToUniversalTime(),
                     },
-                }
+                ]
             },
             new()
             {
@@ -71,9 +70,8 @@ public class TempDataFactory : IDbInitializer
                 //IsClosedParticipation = false,
                 //MaxDuration = 4,
                 OrganizerId = 1,
-                Participants = new System.Collections.ObjectModel.Collection<Participant>()
-                {
-                    new Participant()
+                Participants = [
+                    new()
                     {
                         UserId = 5,
                         Username = "SheKnowsStuff",
@@ -83,7 +81,7 @@ public class TempDataFactory : IDbInitializer
                         AcceptedDate = DateTime.Now.AddDays(-1).ToUniversalTime(),
                         State = Common.ParticipationState.Accepted
                     },
-                    new Participant()
+                    new()
                     {
                         UserId = 6,
                         Username = "RandomPlayer",
@@ -92,7 +90,7 @@ public class TempDataFactory : IDbInitializer
                         ApplyDate = DateTime.Now.AddDays(-1).ToUniversalTime(),
                         State = Common.ParticipationState.PendingAcceptance
                     }
-                }
+                ]
             }
         ];
 

@@ -19,8 +19,8 @@ namespace Domain
         public EventStatus EventStatus { get; set; }
         public int MaxParticipants { get; set; }
         public int MinParticipants { get; set; }
-        public virtual Collection<EventAction> EventActions { get; set; } = [];
-        public virtual Collection<Participant> Participants { get; set; } = [];
+        public virtual IList<EventAction> EventActions { get; set; } = [];
+        public virtual IList<Participant> Participants { get; set; } = [];
 
         //public int? ThemeId { get; set; }
         //public string? ThemeExtension { get; set; }

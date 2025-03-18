@@ -14,8 +14,8 @@ public class ParticipantsConfiguration : IEntityTypeConfiguration<Participant>
 
         // Configure relationships
         builder.HasOne<Event>()
-               .WithOne()
-               .HasForeignKey<Participant>(p => p.EventId);
+               .WithMany()
+               .HasForeignKey(p => p.EventId);
 
         builder.Property(e => e.State)
             .HasConversion<string>();

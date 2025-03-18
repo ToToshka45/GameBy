@@ -20,8 +20,8 @@ import AuthData from "../interfaces/AuthData";
 import useFetchEvent from "../hooks/useFetchEvent";
 import { ParticipationState } from "../common/enums/EventEnums";
 import Participant from "../interfaces/EventParticipant";
-import { ThumbUp, ThumbDown } from "@mui/icons-material";
-import { green, red } from "@mui/material/colors";
+import { ThumbUp, ThumbDown, Person } from "@mui/icons-material";
+import { blue, green, red } from "@mui/material/colors";
 import useAuth from "../hooks/useAuth";
 
 export default function EventDetailsPage() {
@@ -221,13 +221,15 @@ export default function EventDetailsPage() {
                 </Typography>
               </Paper>
               <Paper elevation={1} sx={{ height: "40vh" }}>
-                {acceptedParticipants.length > 0 ? (
+                {acceptedParticipants.length === 0 ? (
                   <Typography variant="body2">No participants yet</Typography>
                 ) : (
                   <List>
                     {acceptedParticipants.map((participant, index) => (
                       <ListItem key={index}>
-                        <ListItemIcon></ListItemIcon>
+                        <ListItemIcon>
+                          <Person fontSize="medium" sx={{ color: blue[500] }} />
+                        </ListItemIcon>
                         <Typography variant="body2">
                           {participant.username}
                         </Typography>

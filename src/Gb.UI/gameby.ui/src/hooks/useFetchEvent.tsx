@@ -3,8 +3,12 @@ import EventStateDetails from "../common/consts/eventStateDetails";
 import { OccuringEvent } from "../interfaces/EventEntities";
 import GetEventResponse from "../interfaces/Responses/GetEventResponse";
 import { axiosPrivate } from "../services/axios";
+import useAuth from "./useAuth";
+import AuthData from "../interfaces/AuthData";
 
 const useFetchEvent = () => {
+  const { userAuth } = useAuth() as AuthData;
+
   const fetchEvent = async (
     eventId: number
   ): Promise<OccuringEvent | undefined> => {
@@ -14,7 +18,11 @@ const useFetchEvent = () => {
 
     try {
       console.log("Trying to fetch an event data...");
-      const res = await axiosPrivate.get(`Events/${eventId}`);
+
+      const res = await axiosPrivate.post(`events/${eventId}`, {
+        userId: userAuth?.id,
+      });
+
       if (res && res.data) {
         console.log("Fetched a response: ", res.data);
         const responseBody = res.data as GetEventResponse;
@@ -31,6 +39,8 @@ const useFetchEvent = () => {
           eventAvatarUrl: responseBody.eventAvatarUrl,
           eventDate: dayjs(responseBody.eventDate),
           stateDetails: EventStateDetails[responseBody.eventStatus],
+          isParticipant: responseBody.isParticipant,
+          isOrganizer: responseBody.isOrganizer,
         };
 
         return event;

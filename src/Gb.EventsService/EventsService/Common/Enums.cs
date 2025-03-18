@@ -46,7 +46,7 @@
         /// <summary>
         /// A Gamer was accepted to take part in an event.
         /// </summary>
-        Registered,
+        Accepted,
         /// <summary>
         /// A Gamer has cancelled his participation after he was registered.
         /// </summary>

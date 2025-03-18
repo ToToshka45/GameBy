@@ -14,6 +14,7 @@ namespace WebApi.MappingProfiles
             CreateMap<ParticipantAddDto, AddParticipantResponse>();
             CreateMap<CreateEventDto, UpdateEventRequest> ();
             CreateMap<CreateEventResponse, CreateEventDto>();
+            CreateMap<GetEventDto, GetEventResponse>();
             CreateMap<EventsFilters, EventsFiltersDto>();
         }
     }

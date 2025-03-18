@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 import { EventCategory } from "../common/enums/EventEnums";
 import EventStateWithColor from "./EventStateWithColor";
-import EventParticipant from "./EventParticipant";
+import Participant from "./EventParticipant";
 
 export interface DisplayEventProps {
     events: DisplayEvent[]
@@ -19,7 +19,9 @@ export interface OccuringEvent {
     stateDetails: EventStateWithColor;
     maxParticipants: number;
     minParticipants: number;
-    participants: EventParticipant[];
+    participants: Participant[];
+    isParticipant: boolean;
+    isOrganizer: boolean;
   }
 
 export interface DisplayEvent {

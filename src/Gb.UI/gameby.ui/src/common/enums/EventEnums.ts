@@ -21,7 +21,7 @@ export enum EventStatus {
 export enum ParticipationState {
     PendingAcceptance,
     Declined,
-    Registered,
+    Accepted,
     Cancelled,
     Participated,
     Unclarified 

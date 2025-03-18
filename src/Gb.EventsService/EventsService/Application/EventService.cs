@@ -34,6 +34,7 @@ public class EventService
         _rabbitMqService = rabbitMqService;
         _events = dbContext.Set<Event>();
         _logger = logger;
+        _minioService = minioService;
     }
 
     public async Task<int?> CreateEvent(CreateEventDto eventDto)
@@ -66,100 +67,112 @@ public class EventService
         }
     }
 
-    public async Task<CreateEventDto?> GetEvent(int EventId)
+    public async Task<CreateEventDto?> GetEvent(int eventId, int? userId)
     {
-        var @event = await _eventRepository.GetByIdAsync(EventId);
+        var @event = await _eventRepository.GetByIdAsync(eventId);
         if (@event == null) { return null; }
 
         var res = _mapper.Map<CreateEventDto>(@event);
-
-        if (@event.ThemeId != null)
+        if (userId.HasValue)
         {
-            var fileStream = await _minioService.DownloadFileAsync(@event.Id.ToString());
-
-            if (fileStream != null)
-            {
-                var base64Content = Convert.ToBase64String(fileStream.ToArray());
-                res.ThemeFile = base64Content;
-                res.ThemeFileName = "theme" + @event.ThemeExtension;
-            }
+            res.IsParticipants = @event.Participants.Any(p => p.UserId == userId);
+            res.IsOrganizer = @event.OrganizerId == userId;
         }
+        //if (@event.ThemeId != null)
+        //{
+        //    var fileStream = await _minioService.DownloadFileAsync(@event.Id.ToString());
+
+        //    if (fileStream != null)
+        //    {
+        //        var base64Content = Convert.ToBase64String(fileStream.ToArray());
+        //        res.ThemeFile = base64Content;
+        //        res.ThemeFileName = "theme" + @event.ThemeExtension;
+        //    }
+        //}
 
         return res;
     }
 
-    public async Task<bool> AddThemeToEventAsync(int EventId, IFormFile file)
-    {
-        var eventToAdd = await _eventRepository.GetByIdAsync(EventId);
+    //public async Task<bool> AddThemeToEventAsync(int EventId, IFormFile file)
+    //{
+    //    var eventToAdd = await _eventRepository.GetByIdAsync(EventId);
 
-        if (eventToAdd is null)
-        {
-            return false;
-        }
+    //    if (eventToAdd is null)
+    //    {
+    //        return false;
+    //    }
 
-        if (file == null || file.Length == 0)
-            return false;
+    //    if (file == null || file.Length == 0)
+    //        return false;
 
-        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+    //    var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-        var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+    //    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+    //    var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
 
-        // Check if the extension is allowed
-        if (!allowedExtensions.Contains(fileExtension))
-        {
-            return false;
-            //return BadRequest("Invalid file extension. Allowed extensions are: .jpg, .jpeg, .png, .gif.");
-        }
+    //    // Check if the extension is allowed
+    //    if (!allowedExtensions.Contains(fileExtension))
+    //    {
+    //        return false;
+    //        //return BadRequest("Invalid file extension. Allowed extensions are: .jpg, .jpeg, .png, .gif.");
+    //    }
 
-        // Check if the MIME type is allowed
-        if (!allowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
-        {
-            return false;
-            //return BadRequest("Invalid file type. Allowed types are: image/jpeg, image/png, image/gif.");
-        }
-        //if (eventToAdd.EventDate > DateTime.Now) return false;
-        await _minioService.UploadFileAsync(eventToAdd.Id.ToString(), file.OpenReadStream());
-        eventToAdd.ThemeId = eventToAdd.Id;
-        eventToAdd.ThemeExtension = fileExtension;
-        await _eventRepository.UpdateAsync(eventToAdd);
-        return true;
-        //return await _eventRepository.DeleteAsync(eventToDelete);
-    }
+    //    // Check if the MIME type is allowed
+    //    if (!allowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
+    //    {
+    //        return false;
+    //        //return BadRequest("Invalid file type. Allowed types are: image/jpeg, image/png, image/gif.");
+    //    }
+    //    //if (eventToAdd.EventDate > DateTime.Now) return false;
+    //    await _minioService.UploadFileAsync(eventToAdd.Id.ToString(), file.OpenReadStream());
+    //    eventToAdd.ThemeId = eventToAdd.Id;
+    //    eventToAdd.ThemeExtension = fileExtension;
+    //    await _eventRepository.UpdateAsync(eventToAdd);
+    //    return true;
+    //    //return await _eventRepository.DeleteAsync(eventToDelete);
+    //}
 
-    public async Task<(Stream?, string?)> GetMediaTest(int eventId)
-    {
-        var eventToAdd = await _eventRepository.GetByIdAsync(eventId);
+    //public async Task<(Stream?, string?)> GetMediaTest(int eventId)
+    //{
+    //    var eventToAdd = await _eventRepository.GetByIdAsync(eventId);
 
-        if (eventToAdd is null)
-        {
-            return (null, null);
-        }
-        var fileStream = await _minioService.DownloadFileAsync(eventId.ToString());
-        return (fileStream, eventToAdd.ThemeExtension);
-    }
+    //    if (eventToAdd is null)
+    //    {
+    //        return (null, null);
+    //    }
+    //    var fileStream = await _minioService.DownloadFileAsync(eventId.ToString());
+    //    return (fileStream, eventToAdd.ThemeExtension);
+    //}
 
     public async Task<List<GetShortEventDto>> GetEvents(EventsFiltersDto filters)
     {
-        var query = _events
-            .Where(e => e.EventDate >= filters.AfterDate && e.EventDate < filters.BeforeDate);
-
-        if (filters.EventCategories?.Length > 0)
+        try
         {
-            query = query.Where(e => filters.EventCategories.Contains(e.EventCategory));
+            var query = _events
+                .Where(e => e.EventDate >= filters.AfterDate && e.EventDate < filters.BeforeDate);
+
+            if (filters.EventCategories?.Length > 0)
+            {
+                query = query.Where(e => filters.EventCategories.Contains(e.EventCategory));
+            }
+            if (!string.IsNullOrWhiteSpace(filters.Title))
+            {
+                query = query.Where(e => e.Title.Trim().ToLower().Contains(filters.Title.Trim().ToLower()));
+            }
+
+            // TODO: pagination ??
+
+            var events = await query
+                .OrderBy(x => x.EventDate)
+                .ToListAsync();
+
+            return _mapper.Map<List<GetShortEventDto>>(events);
         }
-        if (!string.IsNullOrWhiteSpace(filters.Title))
+        catch (Exception ex)
         {
-            query = query.Where(e => e.Title.Trim().ToLower().Contains(filters.Title.Trim().ToLower()));
+            _logger.LogError(ex, "Error has occured while retrieving events.");
+            throw;
         }
-
-        // TODO: pagination ??
-
-        var events = await query
-            .OrderBy(x => x.EventDate)
-            .ToListAsync();
-
-        return _mapper.Map<List<GetShortEventDto>>(events);
     }
 
     public async Task<CreateEventDto?> UpdateEvent(int eventId, CreateEventDto eventDto)
@@ -186,7 +199,7 @@ public class EventService
         var res = addDto;
 
         var player = _mapper.Map<Participant>(addDto);
-        player.Role = Constants.EventUserRole.Player;
+        //player.Role = Constants.EventUserRole.Player;
         var eventToAdd = await _eventRepository.GetByIdAsync(addDto.EventId);
         player.EventId = eventToAdd.Id;
         eventToAdd.Participants.Add(player);
@@ -263,7 +276,7 @@ public class EventService
             return false;
 
         PlayerToRemove.LeaveDate = DateTime.Now;
-        PlayerToRemove.IsAbsent = true;
+        //PlayerToRemove.IsAbsent = true;
 
         EventAction eventActionPlayerAbsent = new EventAction()
         {
@@ -320,8 +333,8 @@ public class EventService
                 CreationDate = DateTime.Now,
                 EventId = EventId,
                 ParticipantId = member.UserId,
-                EventType = member.IsAbsent ? EventType.PlayerNotParticipated : EventType.PlayerParticipate,
-                PublicText = member.IsAbsent ? "Игрок не принял участие" : "Игрок поучаствовал"
+                //EventType = member.IsAbsent ? EventType.PlayerNotParticipated : EventType.PlayerParticipate,
+                //PublicText = member.IsAbsent ? "Игрок не принял участие" : "Игрок поучаствовал"
             };
             eventToFinish.EventActions.Add(eventmemberAction);
         }
@@ -342,10 +355,10 @@ public class EventService
             AddParticipantRequest participantRequest = new AddParticipantRequest();
             participantRequest.ExternalParticipantId = eventMember.Id;
             participantRequest.ExternalUserId = eventMember.UserId;
-            if (eventMember.IsAbsent)
-                participantRequest.State = ParticipationState.Cancelled;
-            else
-                participantRequest.State = ParticipationState.Participated;
+            //if (eventMember.IsAbsent)
+            //    participantRequest.State = ParticipationState.Cancelled;
+            //else
+            //    participantRequest.State = ParticipationState.Participated;
         }
 
         res.Participants = participantRequests;

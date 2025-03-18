@@ -13,5 +13,7 @@ export default interface GetEventResponse {
     eventStatus: EventStatus;
     maxParticipants: number;
     minParticipants: number;
-    participants: Participant[]
+    participants: Participant[];
+    isParticipant: boolean;
+    isOrganizer: boolean;
 }

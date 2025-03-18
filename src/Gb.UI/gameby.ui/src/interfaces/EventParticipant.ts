@@ -1,11 +1,13 @@
+import { Dayjs } from "dayjs";
 import { ParticipationState } from "../common/enums/EventEnums";
 
-interface EventParticipant { 
+export default interface Participant { 
     id: number;
     userId: number;
-    userName: string;
+    username: string;
     eventId: number;
-    participationState: ParticipationState
+    state: ParticipationState;
+    applyDate: Dayjs;
+    acceptedDate: Dayjs;
+    leaveDate: Dayjs;
 }
-
-export default EventParticipant;

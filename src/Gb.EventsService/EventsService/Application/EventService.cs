@@ -67,15 +67,15 @@ public class EventService
         }
     }
 
-    public async Task<CreateEventDto?> GetEvent(int eventId, int? userId)
+    public async Task<GetEventDto?> GetEvent(int eventId, int? userId)
     {
         var @event = await _eventRepository.GetByIdAsync(eventId);
         if (@event == null) { return null; }
 
-        var res = _mapper.Map<CreateEventDto>(@event);
+        var res = _mapper.Map<GetEventDto>(@event);
         if (userId.HasValue)
         {
-            res.IsParticipants = @event.Participants.Any(p => p.UserId == userId);
+            res.IsParticipant = @event.Participants.Any(p => p.UserId == userId);
             res.IsOrganizer = @event.OrganizerId == userId;
         }
         //if (@event.ThemeId != null)
@@ -194,36 +194,34 @@ public class EventService
         return eventDto;
     }
 
-    public async Task<ParticipantAddDto> AddParticipant(ParticipantAddDto addDto)
+    public async Task AddParticipant(AddParticipantDto addDto)
     {
-        var res = addDto;
-
         var player = _mapper.Map<Participant>(addDto);
-        //player.Role = Constants.EventUserRole.Player;
+        player.ApplyDate = addDto.ApplyDate;
         var eventToAdd = await _eventRepository.GetByIdAsync(addDto.EventId);
-        player.EventId = eventToAdd.Id;
+        ArgumentNullException.ThrowIfNull(eventToAdd);
         eventToAdd.Participants.Add(player);
 
-        EventAction eventActionPlayerAdded = new EventAction()
-        {
-            ParticipantId = player.UserId,
-            EventId = addDto.EventId,
-            EventType = Constants.EventType.PlayerAdded,
-            PublicText = "Игрок принял участие"
+        //EventAction eventActionPlayerAdded = new EventAction()
+        //{
+        //    ParticipantId = player.UserId,
+        //    EventId = addDto.EventId,
+        //    EventType = Constants.EventType.PlayerAdded,
+        //    PublicText = "Игрок принял участие"
 
-        };
-        eventToAdd.EventActions.Add(eventActionPlayerAdded);
+        //};
+        //eventToAdd.EventActions.Add(eventActionPlayerAdded);
 
-        var updatedEvent = await _eventRepository.UpdateAsync(eventToAdd);
+        await _eventRepository.UpdateAsync(eventToAdd);
 
-        if (updatedEvent != null)
-        {
-            res.IsSuccess = true;
-            //ToDo
-            res.Id = updatedEvent.Participants.FirstOrDefault(x => x.UserId == addDto.UserId).Id;
-        }
+        //if (updatedEvent != null)
+        //{
+        //    res.IsSuccess = true;
+        //    //ToDo
+        //    res.Id = updatedEvent.Participants.FirstOrDefault(x => x.UserId == addDto.UserId).Id;
+        //}
 
-        return res;
+        //return res;
     }
 
     public async Task<bool> PlayerRemove(PlayerRemoveDto playerRemove)
@@ -367,5 +365,20 @@ public class EventService
         _rabbitMqService.SendMessage("rating_service_event_finished", JsonSerializer.Serialize(res));
 
         return res;
+    }
+
+    public async Task UpdateParticipantState(int eventId, int participantId, ParticipationState state, DateTime? acceptedDate)
+    {
+        var @event = await _eventRepository.GetByIdAsync(eventId);
+        if (@event is null) return;
+
+        var participant = @event.Participants.FirstOrDefault(p => p.Id == participantId);
+        if (participant is null) return;
+
+        participant.State = state;
+        if (acceptedDate.HasValue)
+            participant.AcceptedDate = acceptedDate.Value;
+
+        await _eventRepository.UpdateAsync(@event);
     }
 }

@@ -6,7 +6,7 @@ export default interface Participant {
     userId: number;
     username: string;
     eventId: number;
-    state: ParticipationState;
+    state: ParticipationState | string;
     applyDate: Dayjs;
     acceptedDate: Dayjs;
     leaveDate: Dayjs;

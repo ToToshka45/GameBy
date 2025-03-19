@@ -19,7 +19,7 @@ public class CreateEventDto
     public int MaxParticipants { get; set; }
     public int MinParticipants { get; set; }
     public IReadOnlyCollection<Participant> Participants { get; set; }
-    public bool IsParticipants { get; set; }
+    public bool IsParticipant { get; set; }
     public bool IsOrganizer { get; set; }
 
     // note: avatar

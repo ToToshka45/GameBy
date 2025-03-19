@@ -10,12 +10,13 @@ namespace WebApi.MappingProfiles
         {
             CreateMap<CreateEventRequest, CreateEventDto>();
             CreateMap<CreateEventDto, CreateEventResponse>();
-            CreateMap<AddParticipantRequest, ParticipantAddDto>();
-            CreateMap<ParticipantAddDto, AddParticipantResponse>();
+            CreateMap<AddParticipantRequest, AddParticipantDto>();
+            CreateMap<AddParticipantDto, AddParticipantResponse>();
             CreateMap<CreateEventDto, UpdateEventRequest> ();
             CreateMap<CreateEventResponse, CreateEventDto>();
             CreateMap<GetEventDto, GetEventResponse>();
             CreateMap<EventsFilters, EventsFiltersDto>();
+            CreateMap<GetParticipantDto, GetParticipantResponse>();
         }
     }
 }

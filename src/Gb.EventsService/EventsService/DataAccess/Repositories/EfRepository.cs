@@ -57,19 +57,12 @@ namespace DataAccess.Repositories
 
         public async Task<T?> UpdateAsync(T entity)
         {
-            try
-            {
-                int changes = await _dataContext.SaveChangesAsync();
+            _dataContext.Update(entity);
+            int changes = await _dataContext.SaveChangesAsync();
 
-                if (changes > 0)
-                    return entity;
+            if (changes > 0)
+                return entity;
 
-                return null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error has occured");
-            }
             return null;
         }
 

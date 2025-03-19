@@ -1,6 +1,5 @@
 ﻿using Common;
 using Constants;
-using Domain;
 
 namespace Application.Dto;
 
@@ -11,7 +10,6 @@ public class GetEventDto
     public string? EventAvatarUrl { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
-    public DateTime CreationDate { get; set; }
     public DateTime EventDate { get; set; }
     //public int MaxDuration { get; set; }
     public string? Location { get; set; }
@@ -21,7 +19,9 @@ public class GetEventDto
     public int MaxParticipants { get; set; }
     public int MinParticipants { get; set; }
     //public List<EventAction> EventActions { get; set; }
-    public List<Participant> Participants { get; set; } = [];
+    public IList<GetParticipantDto> Participants { get; set; } = [];
+    public bool IsParticipant { get; set; }
+    public bool IsOrganizer { get; set; }
     //public bool IsSuccess { get; set; }
     //public string ErrMessage { get; set; }
 }

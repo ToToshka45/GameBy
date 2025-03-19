@@ -45,15 +45,12 @@ namespace WebApi.Controllers
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
         [HttpPost("{eventId:int}/participants/add")]
-        public async Task<ActionResult<AddParticipantResponse>> AddParticipantAsync(AddParticipantRequest request)
+        public async Task<IActionResult> AddParticipantAsync(int eventId, AddParticipantRequest request)
         {
-            var res = await _eventService.
-                AddParticipant(_mapper.Map<ParticipantAddDto>(request));
-
-            if (!res.IsSuccess)
-                return BadRequest(res.ErrMessage);
-
-            return _mapper.Map<AddParticipantResponse>(res);
+            var dto = _mapper.Map<AddParticipantDto>(request);
+            dto.EventId = eventId;
+            await _eventService.AddParticipant(dto);
+            return Ok();
         }
 
         /// <summary>
@@ -75,6 +72,14 @@ namespace WebApi.Controllers
             return true;
         }
 
+        [HttpGet("{eventId:int}/participants/{participantId:int}")]
+        public async Task<IActionResult> SetParticipantState(int eventId, int participantId, [FromQuery] Common.ParticipationState state, [FromBody] DateTime? acceptedDate)
+        {
+            if (eventId == 0 || participantId == 0 || state is Common.ParticipationState.Unclarified) return BadRequest();
+            await _eventService.UpdateParticipantState(eventId, participantId, state, acceptedDate);
+            return Ok();
+        }
+
         // note: тут мне кажется лучше сделать универсальный метод смены состояния участника, типа ChangeParticipantState
 
         /// <summary>
@@ -87,8 +92,7 @@ namespace WebApi.Controllers
         [HttpPost("{eventId:int}/participants/absent")]
         public async Task<ActionResult<bool>> SetPlayerAbsentAsync(int eventId, AddParticipantRequest request)
         {
-            bool res = await _eventService.
-                SetParticipantAbsent(new PlayerRemoveDto() { UserId = request.UserId, EventId = request.EventId });
+            bool res = await _eventService.SetParticipantAbsent(new PlayerRemoveDto() { UserId = request.UserId, EventId = eventId });
 
             if (!res)
                 return BadRequest();
@@ -188,14 +192,15 @@ namespace WebApi.Controllers
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
         [HttpPost("{eventId:int}")]
-        public async Task<ActionResult<CreateEventDto>> GetEventAsync(int eventId, EventFetchingParams parameters)
+        public async Task<ActionResult<GetEventDto>> GetEventAsync(int eventId, EventFetchingParams parameters)
         {
             var res = await _eventService.GetEvent(eventId, parameters.UserId);
 
             if (res is null)
                 return BadRequest();
+            var response = _mapper.Map<GetEventResponse>(res);
 
-            return Ok(res);
+            return Ok(response);
         }
 
         /// <summary>

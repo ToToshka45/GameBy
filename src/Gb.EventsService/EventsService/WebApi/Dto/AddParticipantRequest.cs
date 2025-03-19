@@ -1,8 +1,9 @@
-﻿namespace WebApi.Dto
+﻿namespace WebApi.Dto;
+
+public class AddParticipantRequest
 {
-    public class AddParticipantRequest
-    {
-        public int UserId { get; set; }
-        public int EventId { get; set; }
-    }
+    public int UserId { get; set; }
+    public string Username { get; set; }
+    //public string Email { get; set; }
+    public DateTime ApplyDate { get; set; }
 }

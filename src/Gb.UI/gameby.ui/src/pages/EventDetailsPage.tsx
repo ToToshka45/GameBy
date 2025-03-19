@@ -3,6 +3,10 @@ import {
   Button,
   CardMedia,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
   List,
@@ -17,10 +21,10 @@ import { useEffect, useState } from "react";
 import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
 import { loremIpsum } from "../common/consts/fakeData/defaults";
 import AuthData from "../interfaces/AuthData";
-import useFetchEvent from "../hooks/useFetchEvent";
+import useEventProcessing from "../hooks/useFetchEvent";
 import { ParticipationState } from "../common/enums/EventEnums";
 import Participant from "../interfaces/EventParticipant";
-import { ThumbUp, ThumbDown, Person } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Person, ArrowLeft } from "@mui/icons-material";
 import { blue, green, red } from "@mui/material/colors";
 import useAuth from "../hooks/useAuth";
 
@@ -40,29 +44,34 @@ export default function EventDetailsPage() {
   const [pendingParticipants, setPendingParticipants] = useState<Participant[]>(
     []
   );
-  const fetchEvent = useFetchEvent();
+  const { fetchEvent, sendParticipantState, sendParticipationRequest } =
+    useEventProcessing();
   const [isLoading, setIsLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [processingParticipant, setProcessingParticipant] = useState<
+    any | undefined
+  >();
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        if (!eventId) throw new Error("Event is not found");
-        setIsLoading(true);
-
-        const event = await fetchEvent(Number.parseInt(eventId));
-        console.log("Received an occuring event: ", event);
-        if (!event) throw new Error("Event is not found");
-        setOccuringEvent(event);
-      } catch (err) {
-        console.error(
-          "Error has occured while fetching the event details: ",
-          err
-        );
-      }
-    };
-
     fetch();
   }, []);
+
+  const fetch = async () => {
+    try {
+      if (!eventId) throw new Error("Event is not found");
+      setIsLoading(true);
+
+      const event = await fetchEvent(Number.parseInt(eventId));
+      console.log("Received an occuring event: ", event);
+      if (!event) throw new Error("Event is not found");
+      setOccuringEvent(event);
+    } catch (err) {
+      console.error(
+        "Error has occured while fetching the event details: ",
+        err
+      );
+    }
+  };
 
   useEffect(() => {
     console.log("Participants acquired: ", occuringEvent?.participants);
@@ -83,16 +92,62 @@ export default function EventDetailsPage() {
     setIsLoading(false);
   }, [occuringEvent]);
 
-  const handleEventApply = () => {
-    console.log(
-      "User with Id ",
-      `\"${userAuth!.id}\"`,
-      " applied to the event"
-    );
+  const handleEventApply = async () => {
+    try {
+      await sendParticipationRequest(
+        userAuth?.id!,
+        userAuth?.username!,
+        userAuth?.email!,
+        Number.parseInt(eventId!)
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      fetch();
+    }
   };
 
   const handleLoginNavigate = () => {
     navigate("/sign-in", { state: { from: location, replace: true } });
+  };
+
+  const handleParticipantRequest = (
+    participantId: number,
+    state: ParticipationState
+  ) => {
+    setProcessingParticipant({ participantId, state });
+    setOpenDialog(true);
+  };
+
+  const handleProcessingParticipant = async () => {
+    try {
+      console.log("Processing participant: ", processingParticipant);
+      await sendParticipantState(
+        processingParticipant.participantId!,
+        processingParticipant.state,
+        Number.parseInt(eventId!)
+      );
+      fetch();
+    } catch (err) {
+      console.error(
+        err,
+        "Error has occured while sending a participant acceptance request"
+      );
+    } finally {
+      handleCloseModal();
+    }
+  };
+
+  const handleCloseModal = () => {
+    setProcessingParticipant(undefined);
+    setOpenDialog(false);
+  };
+
+  const renderState = () => {
+    const state = occuringEvent?.participants.find(
+      (p) => p.userId === userAuth?.id
+    )?.state;
+    return ParticipationState[state as keyof typeof ParticipationState];
   };
 
   return (
@@ -170,7 +225,34 @@ export default function EventDetailsPage() {
                 Log In to Apply
               </Button>
             ) : occuringEvent?.isParticipant ? (
-              <Typography>You are participating</Typography> // TODO: how to handle participating states?
+              <Box
+                position="relative"
+                width="auto"
+                display="flex"
+                flexDirection="row"
+                border="1.5px solid gray"
+              >
+                <Typography
+                  sx={{
+                    textAlign: "start",
+                    pl: 4,
+                    py: 1,
+                    width: "50%",
+                  }}
+                >
+                  You are participating
+                </Typography>{" "}
+                <Typography
+                  sx={{
+                    textAlign: "start",
+                    pl: 4,
+                    py: 1,
+                    width: "50%",
+                  }}
+                >
+                  State: {renderState()}
+                </Typography>
+              </Box>
             ) : occuringEvent?.isOrganizer ? (
               <Box ml={1}>
                 <Paper elevation={2}>
@@ -185,10 +267,26 @@ export default function EventDetailsPage() {
                         <List>
                           {pendingParticipants?.map((participant, idx) => (
                             <ListItem key={idx}>
-                              <IconButton sx={{ color: green[500] }}>
+                              <IconButton
+                                sx={{ color: green[500] }}
+                                onClick={() =>
+                                  handleParticipantRequest(
+                                    participant.id,
+                                    ParticipationState.Accepted
+                                  )
+                                }
+                              >
                                 <ThumbUp />
                               </IconButton>
-                              <IconButton sx={{ color: red[500] }}>
+                              <IconButton
+                                sx={{ color: red[500] }}
+                                onClick={() =>
+                                  handleParticipantRequest(
+                                    participant.id,
+                                    ParticipationState.Declined
+                                  )
+                                }
+                              >
                                 <ThumbDown />
                               </IconButton>
                               <Typography variant="body2" ml={1}>
@@ -203,7 +301,7 @@ export default function EventDetailsPage() {
               </Box>
             ) : (
               <Button
-                onSubmit={handleEventApply}
+                onClick={handleEventApply}
                 variant="outlined"
                 size="medium"
                 color="primary"
@@ -221,12 +319,22 @@ export default function EventDetailsPage() {
                 </Typography>
               </Paper>
               <Paper elevation={1} sx={{ height: "40vh" }}>
-                {acceptedParticipants.length === 0 ? (
-                  <Typography variant="body2">No participants yet</Typography>
-                ) : (
+                {acceptedParticipants.length > 0 && (
                   <List>
                     {acceptedParticipants.map((participant, index) => (
                       <ListItem key={index}>
+                        {occuringEvent?.isOrganizer && (
+                          <IconButton
+                            onClick={() =>
+                              handleParticipantRequest(
+                                participant.id,
+                                ParticipationState.PendingAcceptance
+                              )
+                            }
+                          >
+                            <ArrowLeft />
+                          </IconButton>
+                        )}
                         <ListItemIcon>
                           <Person fontSize="medium" sx={{ color: blue[500] }} />
                         </ListItemIcon>
@@ -242,6 +350,19 @@ export default function EventDetailsPage() {
           </Grid>
         </Grid>
       )}
+
+      <Dialog open={openDialog}>
+        <DialogTitle>Confirmation</DialogTitle>
+        <DialogContent>Are you sure you want to proceed?</DialogContent>
+        <DialogActions>
+          <Button onClick={handleProcessingParticipant} color="primary">
+            Yes
+          </Button>
+          <Button onClick={handleCloseModal} color="secondary">
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

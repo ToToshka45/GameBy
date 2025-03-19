@@ -5,8 +5,9 @@ import GetEventResponse from "../interfaces/Responses/GetEventResponse";
 import { axiosPrivate } from "../services/axios";
 import useAuth from "./useAuth";
 import AuthData from "../interfaces/AuthData";
+import { ParticipationState } from "../common/enums/EventEnums";
 
-const useFetchEvent = () => {
+const useEventProcessing = () => {
   const { userAuth } = useAuth() as AuthData;
 
   const fetchEvent = async (
@@ -51,7 +52,37 @@ const useFetchEvent = () => {
     }
   };
 
-  return fetchEvent;
+  const sendParticipantState = async (
+    participantId: number,
+    newState: ParticipationState,
+    eventId: number,
+    acceptedDate?: Date
+  ) => {
+    try {
+      await axiosPrivate.post(
+        `events/${eventId}/participants/${participantId}?state=${newState}`,
+        { acceptedDate }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const sendParticipationRequest = async (
+    userId: number,
+    username: string,
+    email: string,
+    eventId: number
+  ) => {
+    console.log(`Sending a participantion request for a user ${username}...`);
+    await axiosPrivate.post(`/events/${eventId}/participants/add`, {
+      userId,
+      username,
+      applyDate: new Date(),
+    });
+  };
+
+  return { fetchEvent, sendParticipantState, sendParticipationRequest };
 };
 
-export default useFetchEvent;
+export default useEventProcessing;

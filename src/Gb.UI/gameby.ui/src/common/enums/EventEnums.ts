@@ -19,10 +19,10 @@ export enum EventStatus {
 }
 
 export enum ParticipationState {
-    PendingAcceptance,
-    Declined,
-    Accepted,
-    Cancelled,
-    Participated,
-    Unclarified 
+    PendingAcceptance = "Pending acceptance",
+    Declined = "Declined",
+    Accepted = "Accepted",
+    Cancelled = "Cancelled",
+    Participated = "Participated",
+    Unclarified = "Unclarified" 
 }

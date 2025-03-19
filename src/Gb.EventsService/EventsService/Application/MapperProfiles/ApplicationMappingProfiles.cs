@@ -7,10 +7,14 @@ namespace Application.MapperProfiles;
 
 public class ApplicationMappingProfiles : Profile
 {
-    public ApplicationMappingProfiles() {
+    public ApplicationMappingProfiles()
+    {
         CreateMap<CreateEventDto, Event>();
         CreateMap<Event, CreateEventDto>();
-        CreateMap<ParticipantAddDto,Participant>();
+        CreateMap<Event, GetEventDto>();
         CreateMap<Event, GetShortEventDto>();
+
+        CreateMap<AddParticipantDto, Participant>();
+        CreateMap<Participant, GetParticipantDto>();
     }
 }

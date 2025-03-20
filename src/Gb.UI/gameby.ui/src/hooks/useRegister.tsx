@@ -2,7 +2,7 @@ import AuthData from "../interfaces/AuthData";
 import SignUpFormData from "../schemas/SignUpForm";
 import { jwtDecode } from "jwt-decode";
 import ExtendedJwtPayload from "../interfaces/ExtendedJwtPayload";
-import { axiosAuth } from "../services/axios";
+import { baseAxios } from "../services/axios";
 import RegisterUserRequest from "../interfaces/Requests/RegisterUserRequest";
 import { useEffect } from "react";
 import useAuth from "./useAuth";
@@ -25,7 +25,7 @@ const useRegister = () => {
       };
       const stringified = JSON.stringify(registerUserRequest);
       console.log("Sending a register payload: ", stringified);
-      const res = await axiosAuth.post("register", stringified, {
+      const res = await baseAxios.post("register", stringified, {
         signal: ac.signal,
         headers: { "Content-Type": "application/json" },
         // withCredentials: true,

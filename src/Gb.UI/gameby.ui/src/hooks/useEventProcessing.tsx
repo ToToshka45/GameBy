@@ -1,14 +1,35 @@
 import dayjs from "dayjs";
 import EventStateDetails from "../common/consts/eventStateDetails";
-import { OccuringEvent } from "../interfaces/EventEntities";
+import { DisplayEvent, OccuringEvent } from "../interfaces/EventEntities";
 import GetEventResponse from "../interfaces/Responses/GetEventResponse";
-import { axiosPrivate } from "../services/axios";
 import useAuth from "./useAuth";
 import AuthData from "../interfaces/AuthData";
 import { ParticipationState } from "../common/enums/EventEnums";
+import usePrivateAxios from "./usePrivateAxios";
+import GetShortEventResponse from "../interfaces/Responses/GetShortEventResponse";
 
 const useEventProcessing = () => {
   const { userAuth } = useAuth() as AuthData;
+  const privateAxios = usePrivateAxios();
+
+  const fetchEvents = async (eventFilters: any) => {
+    const res = await privateAxios.post("events", eventFilters);
+    if (res && res.data) {
+      const fetchedEvents: GetShortEventResponse[] = res.data;
+      const occuringEvents: DisplayEvent[] = fetchedEvents.map((ev) => {
+        return {
+          id: ev.id,
+          title: ev.title,
+          eventAvatarUrl: ev.eventAvatarUrl,
+          eventCategory: ev.eventCategory,
+          eventDate: dayjs(ev.eventDate),
+          stateDetails: EventStateDetails[ev.eventStatus],
+        };
+      });
+      return occuringEvents;
+    }
+    return [];
+  };
 
   const fetchEvent = async (
     eventId: number
@@ -20,7 +41,7 @@ const useEventProcessing = () => {
     try {
       console.log("Trying to fetch an event data...");
 
-      const res = await axiosPrivate.post(`events/${eventId}`, {
+      const res = await privateAxios.post(`events/${eventId}`, {
         userId: userAuth?.id,
       });
 
@@ -59,7 +80,7 @@ const useEventProcessing = () => {
     acceptedDate?: Date
   ) => {
     try {
-      await axiosPrivate.post(
+      await privateAxios.post(
         `events/${eventId}/participants/${participantId}?state=${newState}`,
         { acceptedDate }
       );
@@ -71,18 +92,23 @@ const useEventProcessing = () => {
   const sendParticipationRequest = async (
     userId: number,
     username: string,
-    email: string,
+    // email: string,
     eventId: number
   ) => {
     console.log(`Sending a participantion request for a user ${username}...`);
-    await axiosPrivate.post(`/events/${eventId}/participants/add`, {
+    await privateAxios.post(`/events/${eventId}/participants/add`, {
       userId,
       username,
       applyDate: new Date(),
     });
   };
 
-  return { fetchEvent, sendParticipantState, sendParticipationRequest };
+  return {
+    fetchEvents,
+    fetchEvent,
+    sendParticipantState,
+    sendParticipationRequest,
+  };
 };
 
 export default useEventProcessing;

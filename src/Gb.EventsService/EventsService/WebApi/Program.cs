@@ -1,5 +1,3 @@
-
-
 using Application;
 using Application.MapperProfiles;
 using DataAccess;
@@ -28,6 +26,8 @@ builder.Services.AddDbContext<DataContext>(x =>
     x.UseLazyLoadingProxies();
     x.LogTo(Console.WriteLine, LogLevel.Information);
 });
+
+builder.Services.AddAuthentication("Bearer");
 
 builder.Services.AddCors(options =>
 {

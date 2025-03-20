@@ -16,6 +16,7 @@ public class TempDataFactory : IDbInitializer
     {
         //_dataContext.Database.EnsureDeleted();
         _dataContext.Database.EnsureCreated();
+
         if (_dataContext.Events.Any()) return;
 
         IEnumerable<Event> events = [
@@ -38,7 +39,7 @@ public class TempDataFactory : IDbInitializer
                     new Participant()
                     {
                         UserId = 2,
-                        Username = "DoomGuy",
+                        Username = "user2",
                         //Role = Constants.EventUserRole.Player,
                         EventId = 1,
                         State = Common.ParticipationState.PendingAcceptance,
@@ -47,7 +48,7 @@ public class TempDataFactory : IDbInitializer
                     new Participant()
                     {
                         UserId = 3,
-                        Username = "Coolest_Guy",
+                        Username = "user3",
                         //Role = Constants.EventUserRole.Player,
                         EventId = 1,
                         State = Common.ParticipationState.PendingAcceptance,
@@ -69,12 +70,12 @@ public class TempDataFactory : IDbInitializer
                 Location = "ул. Моховая, 7, Москва, 119019",
                 //IsClosedParticipation = false,
                 //MaxDuration = 4,
-                OrganizerId = 1,
+                OrganizerId = 3,
                 Participants = [
                     new()
                     {
-                        UserId = 5,
-                        Username = "SheKnowsStuff",
+                        UserId = 1,
+                        Username = "user1",
                         //Role = Constants.EventUserRole.Player,
                         EventId = 2,
                         ApplyDate = DateTime.Now.AddDays(-4).ToUniversalTime(),
@@ -83,8 +84,8 @@ public class TempDataFactory : IDbInitializer
                     },
                     new()
                     {
-                        UserId = 6,
-                        Username = "RandomPlayer",
+                        UserId = 2,
+                        Username = "user2",
                         //Role = Constants.EventUserRole.Player,
                         EventId = 2,
                         ApplyDate = DateTime.Now.AddDays(-1).ToUniversalTime(),

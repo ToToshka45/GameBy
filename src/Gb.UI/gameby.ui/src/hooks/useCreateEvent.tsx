@@ -7,7 +7,7 @@ import usePrivateAxios from "./usePrivateAxios";
 // TODO: think of idempotency
 const useCreateEvent = () => {
   const { userAuth } = useAuth() as AuthData;
-  const axiosPrivate = usePrivateAxios();
+  const privateAxios = usePrivateAxios();
 
   const createEvent = async (
     event: CreateEventData
@@ -27,7 +27,7 @@ const useCreateEvent = () => {
         organizerId: userAuth?.id,
       };
       console.log("Sending a request: ", createEventRequest);
-      const res = await axiosPrivate.post("events/create", createEventRequest);
+      const res = await privateAxios.post("events/create", createEventRequest);
       if (res && res.data) {
         const eventId: number = res.data.eventId;
         return eventId;

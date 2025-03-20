@@ -107,11 +107,4 @@ using (var scope = app.Services.CreateScope())
     await rabbitService.Init("");
 }
 
-//app.UseCookiePolicy(new CookiePolicyOptions
-//{
-//    MinimumSameSitePolicy = SameSiteMode.Lax,
-//    HttpOnly = HttpOnlyPolicy.Always,
-//    Secure = CookieSecurePolicy.Always
-//});
-
 app.Run();

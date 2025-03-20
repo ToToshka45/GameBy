@@ -1,23 +1,21 @@
-import { axiosPrivate } from "../services/axios";
+import axios from "axios";
 import AuthData from "../interfaces/AuthData";
 import useAuth from "./useAuth";
+import usePrivateAxios from "./usePrivateAxios";
 
 const useRefreshToken = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;
-
+  // const privateAxios = usePrivateAxios();
   const refresh = async (): Promise<string | undefined> => {
     try {
-      const res = await axiosPrivate.get("auth/refresh-token", {
-        withCredentials: true,
-      });
-
+      if (!userAuth) {
+        console.debug("UserAuth is not initialized. Not sending a refresh.");
+        return;
+      }
+      const res = await axios.get("auth/refresh");
       if (res && res.data) {
+        console.log("Received a refreshed token: ", res.data);
         setUserAuth!((prev) => {
-          console.info(
-            "Access token is ",
-            !res.data.accessToken && "not ",
-            "received"
-          );
           return { ...prev!, accessToken: res.data.accessToken };
         });
         return userAuth?.accessToken;
@@ -34,7 +32,6 @@ const useRefreshToken = () => {
     }
     return undefined;
   };
-
   return refresh;
 };
 

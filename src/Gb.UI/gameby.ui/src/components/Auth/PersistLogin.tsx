@@ -5,7 +5,7 @@ import useRefreshToken from "../../hooks/useRefreshToken";
 import { Typography } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
 
-export const PersistAuth = () => {
+export const PersistLogin = () => {
   const { userAuth } = useAuth() as AuthData;
   const refresh = useRefreshToken();
   const [isLoading, setIsLoading] = useState(true);
@@ -13,6 +13,7 @@ export const PersistAuth = () => {
   useEffect(() => {
     const persist = async () => {
       try {
+        console.log("Refreshing a previous token: ", userAuth?.accessToken);
         await refresh();
       } catch (err) {
         console.error(err);
@@ -25,8 +26,8 @@ export const PersistAuth = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Updated AccessToken");
-  }, [userAuth]);
+    console.log("Updated AccessToken: ", userAuth?.accessToken);
+  }, [isLoading]);
 
   return isLoading ? <Typography>Loading...</Typography> : <Outlet />;
 };

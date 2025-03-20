@@ -12,7 +12,7 @@ import SignUpFormPage from "./pages/SignUpFormPage";
 import App from "./App";
 import RequireAuth from "./components/Auth/RequireAuth";
 import { AuthProvider } from "./contexts/AuthContext";
-import { PersistAuth } from "./components/Auth/PersistAuth";
+import { PersistLogin } from "./components/Auth/PersistLogin";
 
 // components, that are nested within the RequireAuth component children array, are protected with auth
 const router = createBrowserRouter([
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       {
-        element: <PersistAuth />,
+        element: <PersistLogin />,
         children: [
           {
             element: <RequireAuth />,

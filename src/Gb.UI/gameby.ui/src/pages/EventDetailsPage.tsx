@@ -21,12 +21,12 @@ import { useEffect, useState } from "react";
 import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
 import { loremIpsum } from "../common/consts/fakeData/defaults";
 import AuthData from "../interfaces/AuthData";
-import useEventProcessing from "../hooks/useFetchEvent";
 import { ParticipationState } from "../common/enums/EventEnums";
 import Participant from "../interfaces/EventParticipant";
 import { ThumbUp, ThumbDown, Person, ArrowLeft } from "@mui/icons-material";
 import { blue, green, red } from "@mui/material/colors";
 import useAuth from "../hooks/useAuth";
+import useEventProcessing from "../hooks/useEventProcessing";
 
 export default function EventDetailsPage() {
   // this allows us to get a payload, sent alongside when we were redirected to the EventPage
@@ -82,12 +82,12 @@ export default function EventDetailsPage() {
       ) || [];
     setAcceptedParticipants(acceptedParticipants);
 
-    const pendingParticipants =
+    const pending =
       occuringEvent?.participants.filter(
-        (p: Participant) =>
-          p.state.toString() === ParticipationState.PendingAcceptance.toString()
+        (p: Participant) => p.state === "PendingAcceptance"
       ) || [];
-    setPendingParticipants(pendingParticipants);
+    setPendingParticipants(pending);
+    console.log("Pending participants: ", pending);
 
     setIsLoading(false);
   }, [occuringEvent]);
@@ -97,7 +97,7 @@ export default function EventDetailsPage() {
       await sendParticipationRequest(
         userAuth?.id!,
         userAuth?.username!,
-        userAuth?.email!,
+        // userAuth?.email!,
         Number.parseInt(eventId!)
       );
     } catch (err) {
@@ -263,7 +263,7 @@ export default function EventDetailsPage() {
                 <Paper elevation={1} sx={{ height: "40vh" }}>
                   <Box>
                     {!pendingParticipants ||
-                      (pendingParticipants.length > 0 && (
+                      (pendingParticipants.length && (
                         <List>
                           {pendingParticipants?.map((participant, idx) => (
                             <ListItem key={idx}>

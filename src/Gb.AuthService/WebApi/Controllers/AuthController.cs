@@ -2,7 +2,7 @@
 using WebApi.Dto;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace WebApi.Controllers
 {
@@ -11,21 +11,20 @@ namespace WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthenticantionService _authService;
-
         private readonly RegisterService _registerService;
-
         private readonly IMapper _mapper;
+        private readonly JwtSettings _jwtSettings;
 
         public AuthController(RegisterService registerService, AuthenticantionService authService,
-            IMapper mapper)
+            IMapper mapper, IOptions<JwtSettings> jwtSettings)
         {
             _authService = authService;
 
             _registerService = registerService;
 
             _mapper = mapper;
+            _jwtSettings = jwtSettings.Value;
         }
-
 
         /// <summary>
         /// Логин по паролю и логину или email
@@ -38,17 +37,26 @@ namespace WebApi.Controllers
         {
             var res = await _authService.AuthUser(request.Password, request.Username, request.Email);
 
-            if (!res.IsSuccess)
-                return Unauthorized(res.ErrorMessage);
+            if (res is null)
+                return Unauthorized();
 
-            return new LoginResponse()
+            HttpContext.Response.Cookies.Append("refreshToken", res.RefreshToken, new()
+            {
+                Expires = JwtSettings.RefreshTokenExpiresAt,
+                HttpOnly = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.Lax,
+                Secure = _jwtSettings.UseSslProtection
+            });
+
+            return Ok(new LoginResponse()
             {
                 Id = res.Id,
                 Username = res.Username,
                 Email = res.Email,
                 AccessToken = res.AccessToken,
-                RefreshToken = res.RefreshToken
-            };
+                //RefreshToken = res.RefreshToken
+            });
         }
 
         /// <summary>
@@ -57,9 +65,11 @@ namespace WebApi.Controllers
         /// <returns>
         /// Token Response or BadRequest 
         /// </returns>
-        [HttpPost("refresh-token")]
-        public async Task<ActionResult<LoginResponse>> RefreshTokens(string refreshToken)
+        [HttpGet("refresh")]
+        public async Task<ActionResult<LoginResponse>> RefreshTokens()
         {
+            HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
+            if (string.IsNullOrWhiteSpace(refreshToken)) return Unauthorized();
             //ToDo Хранить refresh token
             LoginResponse loginResultResponse = new();
             var res = await _authService.RefreshToken(refreshToken);

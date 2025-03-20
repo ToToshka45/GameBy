@@ -1,48 +1,58 @@
 ﻿using Domain.ValueObjects;
 using Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataAccess.Abstractions;
 
-namespace DataAccess
+namespace DataAccess;
+
+public class TempDataFactory : IDbInitializer
 {
-    public class TempDataFactory : IDbInitializer
+    private readonly DataContext _dataContext;
+
+    public TempDataFactory(DataContext dataContext)
     {
-        private readonly DataContext _dataContext;
+        _dataContext = dataContext;
+    }
 
-        public TempDataFactory(DataContext dataContext)
+    public void InitializeDb()
+    {
+        _dataContext.Database.EnsureDeleted();
+        _dataContext.Database.EnsureCreated();
+
+        if (!_dataContext.Roles.Any())
         {
-            _dataContext = dataContext;
+            var gamerRole = new Role() { RoleName = "Gamer", Id = 1 };
+            _dataContext.Add(gamerRole);
+            var organizerRole = new Role() { RoleName = "Organizer", Id = 2 };
+            _dataContext.Add(organizerRole);
+            _dataContext.SaveChanges();
         }
-
-        public void InitializeDb()
+        if (!_dataContext.Users.Any())
         {
-            //_dataContext.Database.EnsureDeleted();
-            _dataContext.Database.EnsureCreated();
-
-            if (!_dataContext.Roles.Any())
-            {
-                var gamerRole = new Role() { RoleName = "Gamer", Id = 1 };
-                _dataContext.Add(gamerRole);
-                var organizerRole = new Role() { RoleName = "Organizer", Id = 2 };
-                _dataContext.Add(organizerRole);
-                _dataContext.SaveChanges();
-            }
-            if (!_dataContext.Users.Any())
-            {
-                var userTest = new User()
+            IEnumerable<User> users = [
+                new()
                 {
-                    Email = new UserEmail("user@gameby.com"),
+                    Email = new UserEmail("user1@gameby.com"),
                     Login = new UserName("user1"),
                     Password = new UserPassword("user1"),
                     Roles = [new() { RoleId = 1, UserId = 1 }, new() { RoleId = 2, UserId = 1 }]
-                };
-                _dataContext.Add(userTest);
-                _dataContext.SaveChanges();
-            }
+                },
+                new()
+                {
+                    Email = new UserEmail("user2@gameby.com"),
+                    Login = new UserName("user2"),
+                    Password = new UserPassword("user2"),
+                    Roles = [new() { RoleId = 1, UserId = 1 }, new() { RoleId = 2, UserId = 1 }]
+                },
+                new()
+                {
+                    Email = new UserEmail("user3@gameby.com"),
+                    Login = new UserName("user3"),
+                    Password = new UserPassword("user3"),
+                    Roles = [new() { RoleId = 1, UserId = 1 }, new() { RoleId = 2, UserId = 1 }]
+                }
+            ];
+            _dataContext.AddRange(users);
+            _dataContext.SaveChanges();
         }
     }
 }

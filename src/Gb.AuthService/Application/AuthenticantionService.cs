@@ -24,12 +24,12 @@ namespace Application
         private readonly ILogger<AuthenticantionService> _logger;
 
         public AuthenticantionService(IRepository<User> userRepository, IRepository<Role> roleRepository,
-            UserTokenService userService, IOptions<JwtSettings> options,ILogger<AuthenticantionService> logger)
+            UserTokenService userService, IOptions<JwtSettings> options, ILogger<AuthenticantionService> logger)
         {
             _userRepository = userRepository;
             _userService = userService;
             _jwtSettings = options.Value;
-            _logger=logger;
+            _logger = logger;
         }
 
         /*
@@ -49,23 +49,20 @@ namespace Application
             return res;
         }*/
 
-        public async Task<AuthResultDto> AuthUserById(int UserId
-             )
+        public async Task<AuthResultDto> AuthUserById(int userId)
         {
-            AuthResultDto result = new AuthResultDto();
-
+            AuthResultDto result = new();
             User? user = null;
 
-            user = await _userRepository.GetByIdAsync(UserId);
+            user = await _userRepository.GetByIdAsync(userId);
 
-            result.AccessToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
-            result.RefreshToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
-            result.IsSuccess = true;
+            result.AccessToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
+            result.RefreshToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
 
             _userService.AddUserToken(new UserToken()
             {
                 RefreshToken = result.RefreshToken,
-                ExpirationDate = DateTime.Now.AddDays(7),
+                ExpirationDate = DateTime.Now.AddMinutes(1),
                 UserId = user.Id,
                 UserRoles = user.Roles.Select(x => x.Role.RoleName).ToList()
             });
@@ -73,10 +70,9 @@ namespace Application
             return result;
         }
 
-        public async Task<AuthResultDto> AuthUser(string userPassword, string userLogin, string userEmail)
+        public async Task<AuthResultDto?> AuthUser(string userPassword, string userLogin, string userEmail)
         {
-            AuthResultDto result = new();
-
+            AuthResultDto? result = new();
             User? user = null;
 
             if (!string.IsNullOrEmpty(userLogin))
@@ -90,29 +86,24 @@ namespace Application
 
             if (user == null)
             {
-                result.IsSuccess = false;
-                result.ErrorMessage = "Пользователь не найден";
-                return result;
+                return null;
             }
 
             if (user.Password.Value != userPassword)
             {
-                result.IsSuccess = false;
-                result.ErrorMessage = "Неверный логин или пароль";
-                return result;
+                return null;
             }
 
             result.Id = user.Id;
             result.Username = user.Login.Name;
             result.Email = user.Email.Value;
-            result.AccessToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
-            result.RefreshToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
-            result.IsSuccess = true;
+            result.AccessToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
+            result.RefreshToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
 
             _userService.AddUserToken(new()
                 {
                     RefreshToken = result.RefreshToken,
-                    ExpirationDate = DateTime.Now.AddSeconds(20),
+                    ExpirationDate = DateTime.Now.AddMinutes(1),
                     UserId = user.Id,
                     UserRoles = user.Roles.Select(x => x.Role.RoleName).ToList()
                 }
@@ -162,9 +153,9 @@ namespace Application
             res.RefreshToken = GenerateTokens(Guid.Parse(useridStr), user.Roles.Select(x => x.Role.RoleName).ToList(),
                 true);
             */
-            res.AccessToken = GenerateTokens(userToken.UserId, userToken.UserRoles
+            res.AccessToken = GenerateToken(userToken.UserId, userToken.UserRoles
                 );
-            res.RefreshToken = GenerateTokens(userToken.UserId, userToken.UserRoles,
+            res.RefreshToken = GenerateToken(userToken.UserId, userToken.UserRoles,
                 true);
             res.IsSuccess = true;
 
@@ -174,11 +165,11 @@ namespace Application
             return res;
         }
 
-        private string GenerateTokens(int userId, List<string> userRoleNames, bool isRefresh = false)
+        private string GenerateToken(int userId, List<string> userRoleNames, bool isRefresh = false)
         {
             string res = string.Empty;
 
-            List<Claim> claims = 
+            List<Claim> claims =
                 [
                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                    new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
@@ -206,7 +197,7 @@ namespace Application
             var token = new JwtSecurityToken(issuer: _jwtSettings.Issuer,
                                              audience: _jwtSettings.Audience,
                                              claims,
-                                             expires: expiresAt,
+                                             expires: isRefresh ? JwtSettings.RefreshTokenExpiresAt : JwtSettings.AccessTokenExpiresAt,
                                              signingCredentials: creds);
 
             res = new JwtSecurityTokenHandler().WriteToken(token);
@@ -219,18 +210,17 @@ namespace Application
             try
             {
                 principal = GetPrincipalFromTokens(accessToken);
+                return Convert.ToInt32(principal.Identity.Name);
             }
             catch (SecurityTokenException e)
             {
                 _logger.LogError(e, "Security token validation failed for access token: {AccessToken}", accessToken);
-                return null;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected error occurred while validating the access token: {AccessToken}", accessToken);
-                return null;
             }
-            return Convert.ToInt32(principal.Identity.Name);
+            return null;
         }
 
         private ClaimsPrincipal GetPrincipalFromTokens(string tokenStr)

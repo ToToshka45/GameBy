@@ -1,7 +1,6 @@
 ﻿using Application.Dto;
 using AutoMapper;
 using Domain;
-using WebApi.Dto;
 
 namespace Application.MapperProfiles;
 

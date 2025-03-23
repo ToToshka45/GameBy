@@ -200,7 +200,7 @@ namespace WebApi.Controllers
 
             if (res is null)
                 return BadRequest();
-            var response = _mapper.Map<GetEventResponse>(res);
+            var response = _mapper.Map<GetShortEventResponse>(res);
 
             return Ok(response);
         }
@@ -212,11 +212,25 @@ namespace WebApi.Controllers
         /// Events if success or BadRequest 
         /// </returns>
         [HttpPost]
-        public async Task<ActionResult<List<GetEventResponse>>> GetEvents(EventsFilters filters)
+        public async Task<ActionResult<List<GetShortEventResponse>>> GetEvents(EventsFilters filters)
         {
             var dto = _mapper.Map<EventsFiltersDto>(filters);
             var res = await _eventService.GetEvents(dto);
             return Ok(res);
+        }
+
+        /// <summary>
+        /// Все мероприятия + фильтры
+        /// </summary>
+        /// <returns>
+        /// Events if success or BadRequest 
+        /// </returns>
+        [HttpGet]
+        public async Task<ActionResult<GetUserEventsResponse>> GetUserEvents([FromQuery] int userId, [FromQuery] DateTime currentTime)
+        {
+            var result = await _eventService.GetUserEvents(userId, currentTime);
+            GetUserEventsResponse response = _mapper.Map<GetUserEventsResponse>(result);
+            return Ok(response);
         }
 
         /// <summary>

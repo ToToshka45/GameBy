@@ -4,15 +4,10 @@ using Common;
 using Constants;
 using DataAccess;
 using DataAccess.Abstractions;
-using DataAccess.Repositories;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using WebApi.Dto;
-using Microsoft.AspNetCore.Http;
-using System;
 
 namespace Application;
 
@@ -175,6 +170,31 @@ public class EventService
         }
     }
 
+    public async Task<GetEventsByUserIdDto> GetUserEvents(int userId, DateTime currentTime)
+    {
+        try
+        {
+            GetEventsByUserIdDto dto = new();
+            dto.UserId = userId;
+
+            dto.GamerEvents = await _events
+                .Where(e => e.EventDate >= currentTime && e.Participants.Any(p => p.UserId == userId))
+                .Select(e => _mapper.Map<GetShortEventDto>(e))
+                .ToListAsync();
+
+            dto.OrganizerEvents = await _events
+                .Where(e => e.EventDate >= currentTime && e.OrganizerId == userId)
+                .Select(e => _mapper.Map<GetShortEventDto>(e))
+                .ToListAsync();
+
+            return dto;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error has occured while retrieving events.");
+            throw;
+        }
+    }
     public async Task<CreateEventDto?> UpdateEvent(int eventId, CreateEventDto eventDto)
     {
         var eventToUpd = await _eventRepository.GetByIdAsync(eventId);

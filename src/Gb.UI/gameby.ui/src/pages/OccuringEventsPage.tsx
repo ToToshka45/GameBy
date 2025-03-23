@@ -2,7 +2,7 @@ import { Box, Container, Typography } from "@mui/material";
 import DisplayEventsGrid from "../components/Events/OccuringEventsGrid";
 import { DisplayEvent } from "../interfaces/EventEntities";
 import { EventCategory } from "../common/enums/EventEnums";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import FiltersPropsContext from "../contexts/FiltersPropsContext";
 import FiltersProps from "../interfaces/FiltersProps";
 // import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
@@ -21,7 +21,7 @@ const OccuringEventsPage = () => {
   const [afterDate, beforeDate] = filterProps!.filteringDates;
   const { fetchEvents } = useEventProcessing();
 
-  useEffect(() => {
+  useMemo(() => {
     const fetch = async () => {
       const eventFilters = {
         title: filterProps?.filteringTitle,

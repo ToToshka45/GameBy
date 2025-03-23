@@ -1,12 +1,17 @@
 import dayjs from "dayjs";
 import EventStateDetails from "../common/consts/eventStateDetails";
-import { DisplayEvent, OccuringEvent } from "../interfaces/EventEntities";
+import {
+  DisplayEvent,
+  OccuringEvent,
+  UserEvents,
+} from "../interfaces/EventEntities";
 import GetEventResponse from "../interfaces/Responses/GetEventResponse";
 import useAuth from "./useAuth";
 import AuthData from "../interfaces/AuthData";
 import { ParticipationState } from "../common/enums/EventEnums";
 import useInterceptingAxios from "./useInterceptingAxios";
 import GetShortEventResponse from "../interfaces/Responses/GetShortEventResponse";
+import GetUserEventsResponse from "../interfaces/Responses/GetUserEventsResponse";
 
 const useEventProcessing = () => {
   const { userAuth } = useAuth() as AuthData;
@@ -30,6 +35,46 @@ const useEventProcessing = () => {
       return occuringEvents;
     }
     return [];
+  };
+
+  const fetchUserEvents = async () => {
+    const res = await eventsAxios.get("events", {
+      params: { userId: userAuth?.id, currentTime: new Date() },
+      withCredentials: true,
+    });
+
+    if (res && res.data) {
+      console.log(
+        `Fetching events for the User ${userAuth?.username} with Id ${userAuth?.id}`
+      );
+      const fetchedEvents: GetUserEventsResponse = res.data;
+
+      const userEvents: UserEvents = {
+        userId: fetchedEvents.userId,
+        gamerEvents: fetchedEvents.gamerEvents.map((ev) => {
+          return {
+            id: ev.id,
+            title: ev.title,
+            eventAvatarUrl: ev.eventAvatarUrl,
+            eventCategory: ev.eventCategory,
+            eventDate: dayjs(ev.eventDate),
+            stateDetails: EventStateDetails[ev.eventStatus],
+          };
+        }),
+
+        organizerEvents: fetchedEvents.organizerEvents.map((ev) => {
+          return {
+            id: ev.id,
+            title: ev.title,
+            eventAvatarUrl: ev.eventAvatarUrl,
+            eventCategory: ev.eventCategory,
+            eventDate: dayjs(ev.eventDate),
+            stateDetails: EventStateDetails[ev.eventStatus],
+          };
+        }),
+      };
+      return userEvents;
+    }
   };
 
   const fetchEvent = async (
@@ -106,6 +151,7 @@ const useEventProcessing = () => {
 
   return {
     fetchEvents,
+    fetchUserEvents,
     fetchEvent,
     sendParticipantState,
     sendParticipationRequest,

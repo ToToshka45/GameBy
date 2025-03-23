@@ -1,39 +1,32 @@
 import { Box, Card, CardMedia, Grid, Typography } from "@mui/material";
-import { OccuringEvent } from "../interfaces/EventEntities";
+import { DisplayEvent } from "../interfaces/EventEntities";
 import { useEffect, useState } from "react";
 import { lightBlue } from "@mui/material/colors";
 import { StyledCardHeader } from "../components/Events/OccuringEventsGrid";
 import { EventCategory } from "../common/enums/EventEnums";
 import { handleNavigateEvent } from "../common/functions";
 import { useNavigate } from "react-router-dom";
+import useEventProcessing from "../hooks/useEventProcessing";
+import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
 
 export default function MyEventsPage() {
-  const [organizerEvents, setOrganizerEvents] = useState<OccuringEvent[]>([]);
-  const [gamerEvents, setGamerEvents] = useState<OccuringEvent[]>([]);
-
+  const [gamerEvents, setGamerEvents] = useState<DisplayEvent[]>([]);
+  const [organizerEvents, setOrganizerEvents] = useState<DisplayEvent[]>([]);
+  const { fetchUserEvents } = useEventProcessing();
   const navigate = useNavigate();
 
   // fetch events on the page load
   useEffect(() => {
-    try {
-      // TODO: fetch from the server
-      // await fetchByUserId();
-      // setGamerEvents(defaultEvents);
-      // setOrganizerEvents(defaultEvents);
-    } catch (e) {
-      console.log("Error occured while fetching user events:", e);
-    }
+    const fetch = async () => {
+      const response = await fetchUserEvents();
+      console.log("Fetched user events: ", response);
+      if (response) {
+        setGamerEvents(response.gamerEvents);
+        setOrganizerEvents(response.organizerEvents);
+      }
+    };
 
-    // const fetchByUserId = async () => {
-    //   const response = await axios.get("");
-
-    //   const {
-    //     data: { fetchedGamerEvents, fetchedOrganizerEvents },
-    //   } = response;
-
-    //   setGamerEvents(fetchedGamerEvents);
-    //   setOrganizerEvents(fetchedOrganizerEvents);
-    // };
+    fetch();
   }, []);
 
   return (
@@ -48,17 +41,24 @@ export default function MyEventsPage() {
           >
             YOU ORGANIZED
           </Typography>
-          <Grid container gap={3} px={4} overflow="scroll" wrap="nowrap">
-            {gamerEvents.map((event) => (
+          <Grid
+            container
+            gap={3}
+            px={4}
+            overflow="scroll"
+            wrap="nowrap"
+            height="70%"
+          >
+            {organizerEvents.map((event) => (
               <Grid item key={event.id}>
                 <Box
                   sx={{ cursor: "pointer" }}
                   onClick={() => handleNavigateEvent(event, navigate)}
                 >
-                  <Card sx={{ height: 200, width: 200 }}>
+                  <Card sx={{ height: 250, width: 300 }}>
                     <StyledCardHeader
                       title={event.title}
-                      subheader={`${event.eventDate} - ${
+                      subheader={`${event.eventDate?.format(DATE_FORMAT)} - ${
                         EventCategory[event.eventCategory]
                       }`}
                     />
@@ -90,17 +90,24 @@ export default function MyEventsPage() {
           >
             YOU ARE PARTICIPATING
           </Typography>
-          <Grid container gap={3} px={4} overflow="scroll" wrap="nowrap">
+          <Grid
+            container
+            gap={3}
+            px={4}
+            overflow="scroll"
+            wrap="nowrap"
+            height="70%"
+          >
             {gamerEvents.map((event) => (
-              <Grid item>
+              <Grid item key={event.id}>
                 <Box
                   sx={{ cursor: "pointer" }}
                   onClick={() => handleNavigateEvent(event, navigate)}
                 >
-                  <Card sx={{ height: 200, width: 200 }}>
+                  <Card sx={{ height: 250, width: 300 }}>
                     <StyledCardHeader
                       title={event.title}
-                      subheader={`${event.eventDate} - ${
+                      subheader={`${event.eventDate?.format(DATE_FORMAT)} - ${
                         EventCategory[event.eventCategory]
                       }`}
                     />

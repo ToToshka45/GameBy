@@ -32,3 +32,9 @@ export interface DisplayEvent {
     eventDate: Dayjs;
     stateDetails: EventStateWithColor;
 }
+
+export interface UserEvents {
+    userId: number,
+    gamerEvents: DisplayEvent[],
+    organizerEvents: DisplayEvent[]
+}

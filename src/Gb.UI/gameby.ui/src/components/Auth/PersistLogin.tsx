@@ -4,6 +4,8 @@ import AuthData from "../../interfaces/AuthData";
 import useRefreshToken from "../../hooks/useRefreshToken";
 import { Typography } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
+import { authAxios } from "../../services/axios";
+import axios from "axios";
 
 export const PersistLogin = () => {
   const { userAuth } = useAuth() as AuthData;
@@ -13,10 +15,20 @@ export const PersistLogin = () => {
   useEffect(() => {
     const persist = async () => {
       try {
-        console.log("Refreshing a previous token: ", userAuth?.accessToken);
-        await refresh();
+        await authAxios.get("auth/validate-token", {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${userAuth?.accessToken}` },
+        });
       } catch (err) {
-        console.error(err);
+        if (axios.isAxiosError(err)) {
+          console.error(err);
+          if (err.response?.status === 401) {
+            console.log(
+              `Received ${err.response?.status} status code. Refreshing a token.`
+            );
+            await refresh();
+          }
+        }
       } finally {
         setIsLoading(false);
       }
@@ -24,10 +36,6 @@ export const PersistLogin = () => {
 
     !userAuth?.accessToken ? persist() : setIsLoading(false);
   }, []);
-
-  useEffect(() => {
-    console.log("Updated AccessToken: ", userAuth?.accessToken);
-  }, [isLoading]);
 
   return isLoading ? <Typography>Loading...</Typography> : <Outlet />;
 };

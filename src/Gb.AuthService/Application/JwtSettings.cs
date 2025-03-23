@@ -2,8 +2,8 @@
 
 public sealed class JwtSettings
 {
-    public static DateTime AccessTokenExpiresAt { get; set; } = DateTime.UtcNow.AddMinutes(1);
-    public static DateTime RefreshTokenExpiresAt { get; set; } = DateTime.UtcNow.AddMinutes(10);
+    public static int AccessTokenExpiresInMinutes { get; set; } = 1;
+    public static int RefreshTokenExpiresInMinutes { get; set; } = 10;
 
     public string Issuer { get; set; }
     public string Audience { get; set; }

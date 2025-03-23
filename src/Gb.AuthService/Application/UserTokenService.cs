@@ -27,7 +27,6 @@ namespace Application
         public async Task UpdateUserToken(UserToken user, string previousToken) {
 
             await Database.KeyDeleteAsync(previousToken);
-
             AddUserToken(user);
         }
 

@@ -26,4 +26,10 @@ export const categoriesList: EventCategoryFilterUnit[] = [
     category: EventCategory.Mafia,
     isActive: false,
   },
+  {
+    name: "Poker",
+    img: "src/assets/categories/poker3.png",
+    category: EventCategory.Poker,
+    isActive: false,
+  }
 ];

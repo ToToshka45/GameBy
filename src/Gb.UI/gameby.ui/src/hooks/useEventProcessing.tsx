@@ -5,15 +5,16 @@ import GetEventResponse from "../interfaces/Responses/GetEventResponse";
 import useAuth from "./useAuth";
 import AuthData from "../interfaces/AuthData";
 import { ParticipationState } from "../common/enums/EventEnums";
-import usePrivateAxios from "./usePrivateAxios";
+import useInterceptingAxios from "./useInterceptingAxios";
 import GetShortEventResponse from "../interfaces/Responses/GetShortEventResponse";
 
 const useEventProcessing = () => {
   const { userAuth } = useAuth() as AuthData;
-  const privateAxios = usePrivateAxios();
+  const eventsAxios = useInterceptingAxios();
 
   const fetchEvents = async (eventFilters: any) => {
-    const res = await privateAxios.post("events", eventFilters);
+    const res = await eventsAxios.post("events", eventFilters);
+
     if (res && res.data) {
       const fetchedEvents: GetShortEventResponse[] = res.data;
       const occuringEvents: DisplayEvent[] = fetchedEvents.map((ev) => {
@@ -41,7 +42,7 @@ const useEventProcessing = () => {
     try {
       console.log("Trying to fetch an event data...");
 
-      const res = await privateAxios.post(`events/${eventId}`, {
+      const res = await eventsAxios.post(`events/${eventId}`, {
         userId: userAuth?.id,
       });
 
@@ -80,7 +81,7 @@ const useEventProcessing = () => {
     acceptedDate?: Date
   ) => {
     try {
-      await privateAxios.post(
+      await eventsAxios.post(
         `events/${eventId}/participants/${participantId}?state=${newState}`,
         { acceptedDate }
       );
@@ -96,7 +97,7 @@ const useEventProcessing = () => {
     eventId: number
   ) => {
     console.log(`Sending a participantion request for a user ${username}...`);
-    await privateAxios.post(`/events/${eventId}/participants/add`, {
+    await eventsAxios.post(`/events/${eventId}/participants/add`, {
       userId,
       username,
       applyDate: new Date(),

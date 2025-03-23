@@ -5,7 +5,8 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PG_CONNECT": "Host=localhost;Port=5434;Database=eventsdb;Username=postgres;Password=123w;"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5207"

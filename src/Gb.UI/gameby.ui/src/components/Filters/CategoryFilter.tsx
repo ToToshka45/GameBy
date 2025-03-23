@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import FiltersProps from "../../interfaces/FiltersProps";
 import FiltersPropsContext from "../../contexts/FiltersPropsContext";
-import { categoriesList } from "../../common/categoriesPayload";
+import { categoriesList } from "../../common/allCategories";
 
 export const CategoryFilter = () => {
   const [categories, setCategories] = useState(categoriesList);

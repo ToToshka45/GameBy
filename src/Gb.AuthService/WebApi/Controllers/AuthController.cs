@@ -3,6 +3,7 @@ using WebApi.Dto;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers
 {
@@ -40,14 +41,7 @@ namespace WebApi.Controllers
             if (res is null)
                 return Unauthorized();
 
-            HttpContext.Response.Cookies.Append("refreshToken", res.RefreshToken, new()
-            {
-                Expires = JwtSettings.RefreshTokenExpiresAt,
-                HttpOnly = true,
-                IsEssential = true,
-                SameSite = SameSiteMode.Lax,
-                Secure = _jwtSettings.UseSslProtection
-            });
+            AppendRefreshToken(res.RefreshToken);
 
             return Ok(new LoginResponse()
             {
@@ -66,20 +60,24 @@ namespace WebApi.Controllers
         /// Token Response or BadRequest 
         /// </returns>
         [HttpGet("refresh")]
-        public async Task<ActionResult<LoginResponse>> RefreshTokens()
+        public async Task<ActionResult<RefreshTokenResponse>> RefreshTokens()
         {
             HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
             if (string.IsNullOrWhiteSpace(refreshToken)) return Unauthorized();
             //ToDo Хранить refresh token
-            LoginResponse loginResultResponse = new();
             var res = await _authService.RefreshToken(refreshToken);
+            if (res is null)
+            {
+                Response.Cookies.Delete("refreshToken");
+                //AppendRefreshToken("");
+                return Unauthorized();
+            }
 
-            if (!res.IsSuccess) return BadRequest(res.ErrorMessage);
+            var response = _mapper.Map<RefreshTokenResponse>(res);
+            AppendRefreshToken(res.RefreshToken);
+            //loginResultResponse.RefreshToken = res.RefreshToken;
 
-            loginResultResponse.AccessToken = res.AccessToken;
-            loginResultResponse.RefreshToken = res.RefreshToken;
-
-            return Ok(loginResultResponse);
+            return Ok(response);
         }
 
         /// <summary>
@@ -88,19 +86,24 @@ namespace WebApi.Controllers
         /// <returns>
         /// LoginInfo Response or BadRequest 
         /// </returns>
-        [HttpPost("validate-token")]
-        public async Task<ActionResult<int>> GetTokenInfo(string accessToken)
+        [HttpGet("validate-token")]
+        //[Authorize]
+        public IActionResult ValidateToken()
         {
-            //ToDo Хранить refresh token
-            LoginResponse loginResultResponse = new LoginResponse();
-            var res = _authService.GetTokenInfo(accessToken);
-            if (res != null)
-            {
+            Request.Headers.TryGetValue("Authorization", out var value);
+            var bearerToken = value.ToString();
+            if (!bearerToken.StartsWith("Bearer ")) return Unauthorized(new { message = "Authorization header must start with 'Bearer'." });
 
-                return res;
+            var token = bearerToken.Substring("Bearer ".Length).Trim();
+
+            var res = _authService.GetTokenInfo(token);
+            if (res is null)
+            {
+                return Unauthorized();
             }
 
-            return StatusCode(403);
+            //return res is null ? Unauthorized() :
+            return Ok("Correct access token has been received");
         }
 
         [HttpGet("About")]
@@ -115,5 +118,16 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        private void AppendRefreshToken(string refreshToken)
+        {
+            HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new()
+            {
+                Expires = DateTime.UtcNow.AddMinutes(JwtSettings.RefreshTokenExpiresInMinutes),
+                HttpOnly = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.Strict,
+                Secure = _jwtSettings.UseSslProtection
+            });
+        }
     }
 }

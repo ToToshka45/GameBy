@@ -214,7 +214,6 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<List<GetEventResponse>>> GetEvents(EventsFilters filters)
         {
-            Request.Cookies.TryGetValue("refreshToken", out var token);
             var dto = _mapper.Map<EventsFiltersDto>(filters);
             var res = await _eventService.GetEvents(dto);
             return Ok(res);

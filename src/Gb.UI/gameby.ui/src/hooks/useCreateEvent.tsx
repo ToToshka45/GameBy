@@ -2,12 +2,12 @@ import AuthData from "../interfaces/AuthData";
 import CreateEventRequest from "../interfaces/Requests/CreateEventRequest";
 import CreateEventData from "../schemas/EventCreationForm";
 import useAuth from "./useAuth";
-import usePrivateAxios from "./usePrivateAxios";
+import useInterceptingAxios from "./useInterceptingAxios";
 
 // TODO: think of idempotency
 const useCreateEvent = () => {
   const { userAuth } = useAuth() as AuthData;
-  const privateAxios = usePrivateAxios();
+  const privateAxios = useInterceptingAxios();
 
   const createEvent = async (
     event: CreateEventData

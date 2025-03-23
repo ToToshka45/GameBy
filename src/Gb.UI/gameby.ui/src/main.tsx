@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
@@ -37,32 +36,30 @@ const router = createBrowserRouter([
               },
             ],
           },
+          {
+            path: "/",
+            element: <HomePage />,
+          },
+          {
+            path: "/sign-up",
+            element: <SignUpFormPage />,
+          },
+          {
+            path: "/sign-in",
+            element: <SignInFormPage />,
+          },
+          {
+            path: "/event/:eventId",
+            element: <EventDetailsPage />,
+          },
         ],
-      },
-      {
-        path: "/",
-        element: <HomePage />,
-      },
-      {
-        path: "/sign-up",
-        element: <SignUpFormPage />,
-      },
-      {
-        path: "/sign-in",
-        element: <SignInFormPage />,
-      },
-      {
-        path: "/event/:eventId",
-        element: <EventDetailsPage />,
       },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </StrictMode>
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>
 );

@@ -59,13 +59,7 @@ namespace Application
             result.AccessToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
             result.RefreshToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
 
-            _userService.AddUserToken(new UserToken()
-            {
-                RefreshToken = result.RefreshToken,
-                ExpirationDate = DateTime.Now.AddMinutes(1),
-                UserId = user.Id,
-                UserRoles = user.Roles.Select(x => x.Role.RoleName).ToList()
-            });
+            SetCachedRefreshToken(result.RefreshToken, user.Id, user.Roles);
 
             return result;
         }
@@ -100,64 +94,27 @@ namespace Application
             result.AccessToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
             result.RefreshToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
 
-            _userService.AddUserToken(new()
-                {
-                    RefreshToken = result.RefreshToken,
-                    ExpirationDate = DateTime.Now.AddMinutes(1),
-                    UserId = user.Id,
-                    UserRoles = user.Roles.Select(x => x.Role.RoleName).ToList()
-                }
-            );
+            SetCachedRefreshToken(result.RefreshToken, user.Id, user.Roles);
 
             return result;
         }
 
-        public async Task<RefreshAccessTokenDto> RefreshToken(string refreshToken)
+        public async Task<RefreshAccessTokenDto?> RefreshToken(string refreshToken)
         {
-            RefreshAccessTokenDto res = new RefreshAccessTokenDto();
-
-            UserToken userToken = _userService.FindUserByRefreshToken(refreshToken);
+            UserToken? userToken = _userService.FindUserByRefreshToken(refreshToken);
             if (userToken == null)
             {
-                res.ErrorMessage = "Invalid Token";
-                res.IsSuccess = false;
-                return res;
+                return null;
             }
 
+            RefreshAccessTokenDto res = new();
+            var userData = await _userRepository.GetByIdAsync(userToken.UserId);
             string previousToken = userToken.RefreshToken;
-            /*
-            ClaimsPrincipal principal = null;
-            try {
-               principal= GetPrincipalFromTokens(refreshToken); 
-            }
-            catch(SecurityTokenException e) {
-                res.ErrorMessage = "Invalid Token";
-                res.IsSuccess = false;
-                return res;
-            }
-            string useridStr = principal.Identity.Name;
-
-            var test=await _userRepository.GetAllAsync();
-
-            var user=await _userRepository.GetByIdAsync(Guid.Parse(useridStr));
-
-            if (user == null)
-            {
-                res.ErrorMessage = "Invalid Token";
-                res.IsSuccess = false;
-                return res;
-            }
-
-            res.AccessToken = GenerateTokens(Guid.Parse(useridStr), user.Roles.Select(x=>x.Role.RoleName).ToList()
-                );
-            res.RefreshToken = GenerateTokens(Guid.Parse(useridStr), user.Roles.Select(x => x.Role.RoleName).ToList(),
-                true);
-            */
-            res.AccessToken = GenerateToken(userToken.UserId, userToken.UserRoles
-                );
-            res.RefreshToken = GenerateToken(userToken.UserId, userToken.UserRoles,
-                true);
-            res.IsSuccess = true;
+            res.UserId = userToken.UserId;
+            res.Username = userData.Login.Name;
+            res.Email = userData.Email.Value;
+            res.AccessToken = GenerateToken(userToken.UserId, userToken.UserRoles);
+            res.RefreshToken = GenerateToken(userToken.UserId, userToken.UserRoles, true);
 
             userToken.RefreshToken = res.RefreshToken;
             await _userService.UpdateUserToken(userToken, previousToken);
@@ -184,20 +141,10 @@ namespace Application
             var key = new SymmetricSecurityKey(GetSecretKey());
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            DateTime expiresAt = DateTime.UtcNow;
-            if (isRefresh)
-            {
-                expiresAt = expiresAt.AddMinutes(10);
-            }
-            else
-            {
-                expiresAt = expiresAt.AddSeconds(30);
-            }
-
             var token = new JwtSecurityToken(issuer: _jwtSettings.Issuer,
                                              audience: _jwtSettings.Audience,
                                              claims,
-                                             expires: isRefresh ? JwtSettings.RefreshTokenExpiresAt : JwtSettings.AccessTokenExpiresAt,
+                                             expires: DateTime.Now.AddMinutes(isRefresh ? JwtSettings.RefreshTokenExpiresInMinutes : JwtSettings.AccessTokenExpiresInMinutes),
                                              signingCredentials: creds);
 
             res = new JwtSecurityTokenHandler().WriteToken(token);
@@ -240,6 +187,17 @@ namespace Application
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
+        }
+
+        private void SetCachedRefreshToken(string refreshToken, int userId, IEnumerable<UserRole> roles)
+        {
+            _userService.AddUserToken(new UserToken()
+            {
+                RefreshToken = refreshToken,
+                ExpirationDate = DateTime.Now.AddMinutes(10),
+                UserId = userId,
+                UserRoles = roles.Select(x => x.Role.RoleName).ToList()
+            });
         }
 
         private byte[] GetSecretKey()

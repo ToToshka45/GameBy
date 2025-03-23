@@ -9,6 +9,7 @@ namespace WebApi.MapperProfiles
         public AppMappingProfiles()
         {
             CreateMap<RegiserUserRequest, NewUserDto>();
+            CreateMap<RefreshAccessTokenDto, RefreshTokenResponse>();
         }
     }
 }

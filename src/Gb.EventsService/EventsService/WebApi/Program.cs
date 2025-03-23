@@ -13,8 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-//var PgConnect = "Host=localhost;Port=5436;Database=eventsdb;Username=postgres;Password=123w";
+//var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+var pgConnect = "Host=localhost;Port=5433;Database=eventsdb;Username=postgres;Password=123w";
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

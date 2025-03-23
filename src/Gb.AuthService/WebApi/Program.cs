@@ -20,11 +20,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
 
 //amqps://
-var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-var redisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
+//var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+//var redisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
+var redisConnect = "localhost:1920";
 //var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
 
-//var PgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
+var pgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
 //var RedisConnect= "localhost:1920";
 
 builder.Services.AddDbContext<DataContext>(x =>
@@ -45,6 +46,7 @@ builder.Services.AddAutoMapper(typeof(AppMappingProfiles));
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnect!));
+
 
 builder.Services.AddCors(options =>
 {
@@ -80,7 +82,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseRouting();
 

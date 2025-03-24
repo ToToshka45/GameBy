@@ -23,7 +23,7 @@ import CreateEventData, {
   eventCreationSchema,
 } from "../schemas/EventCreationForm";
 import useCreateEvent from "../hooks/useCreateEvent";
-import { useNavigate } from "react-router";
+import { replace, useNavigate } from "react-router";
 import { EventCategory } from "../common/enums/EventEnums";
 
 const categories = Object.entries(EventCategory)
@@ -86,7 +86,7 @@ export default function CreateEventPage() {
     try {
       const eventId = await createEvent(data);
       console.log("Saved a new event with id: ", eventId);
-      if (eventId) navigate(`event/${eventId}`);
+      if (eventId) navigate(`../event/${eventId}`, { relative: "route" });
     } catch (err) {
       console.error("Error has occured while creating a new event: ", err);
     }

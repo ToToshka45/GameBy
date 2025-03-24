@@ -1,8 +1,8 @@
 services:
   #Auth Db
-  auth-db:
+  auth-db-test:
     image: "postgres:latest"
-    container_name: auth-db
+    container_name: auth-db-test
     restart: always
     ports:
       - 5433:5432
@@ -11,9 +11,9 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   #tokens Db
-  auth-cache:
+  auth-cache-test:
     image: "redis:latest"
-    container_name: auth-cache
+    container_name: auth-cache-test
     restart: always
     ports:
       - 1919:6379

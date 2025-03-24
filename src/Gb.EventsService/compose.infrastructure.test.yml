@@ -15,3 +15,16 @@ services:
     restart: always
     ports:
       - 1920:6379
+  # s3 storage
+  events-s3-test:
+    image: minio/minio:latest
+    container_name: events-s3-test
+    restart: always
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    # volumes:
+    #   - minio_data:/data

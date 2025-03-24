@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.Configure<MinIOSettings>(builder.Configuration.GetSection(nameof(MinIOSettings)));
 var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
 //var PgConnect = "Host=localhost;Port=5436;Database=eventsdb;Username=postgres;Password=123w";
 

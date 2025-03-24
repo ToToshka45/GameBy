@@ -9,5 +9,6 @@ export default interface CreateEventRequest {
     endDate: Date;
     creationDate: Date;
     organizerId: number | undefined;
+    // eventAvatarUrl: FormData | string | undefined;
     // eventDurationInHours: number;
 }

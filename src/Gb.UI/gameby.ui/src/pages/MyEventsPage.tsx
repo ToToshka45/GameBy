@@ -8,18 +8,24 @@ import { handleNavigateEvent } from "../common/functions";
 import { useNavigate } from "react-router-dom";
 import useEventProcessing from "../hooks/useEventProcessing";
 import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";
+import AuthData from "../interfaces/AuthData";
+import useAuth from "../hooks/useAuth";
 
 export default function MyEventsPage() {
   const [gamerEvents, setGamerEvents] = useState<DisplayEvent[]>([]);
   const [organizerEvents, setOrganizerEvents] = useState<DisplayEvent[]>([]);
   const { fetchUserEvents } = useEventProcessing();
   const navigate = useNavigate();
+  const { userAuth } = useAuth() as AuthData;
 
   // fetch events on the page load
   useEffect(() => {
     const fetch = async () => {
       const response = await fetchUserEvents();
-      console.log("Fetched user events: ", response);
+      console.log(
+        `Fetched events of the user '${userAuth?.username}' with id ${userAuth?.id}: `,
+        response
+      );
       if (response) {
         setGamerEvents(response.gamerEvents);
         setOrganizerEvents(response.organizerEvents);

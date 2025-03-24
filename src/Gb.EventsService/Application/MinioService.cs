@@ -1,37 +1,34 @@
 using Minio;
 using Minio.Exceptions;
-using Amazon;
 using Amazon.S3;
-using Amazon.S3.Model;
-using Microsoft.Extensions.Configuration;
 using Minio.DataModel.Args;
+using Application;
+using Microsoft.Extensions.Options;
 
 public class MinioService
 {
-    private readonly IAmazonS3 _s3Client;
-
+    //private readonly IAmazonS3 _s3Client;
     private readonly MinioClient _minioClient;
-    private readonly string _endpoint;
+    //private readonly string _endpoint;
     private readonly string _bucketName;
+    private readonly MinIOSettings _settings;
 
-    public MinioService(IConfiguration configuration)
+    public MinioService(IOptions<MinIOSettings> options)
     {
-        var minioConfig = configuration.GetSection("MinIO");
-        var endpoint = minioConfig["Endpoint"];
-        var accessKey = minioConfig["AccessKey"];
-        var secretKey = minioConfig["SecretKey"];
-        _bucketName = minioConfig["BucketName"];
+        _settings = options.Value;
+        var endpoint = _settings.Endpoint;
+        var accessKey = _settings.AccessKey;
+        var secretKey = _settings.SecretKey;
+        _bucketName = _settings.BucketName;
 
-    
-        var useSSL = false;
-
-        _minioClient = (MinioClient?)new MinioClient()
+        _minioClient =
+            (MinioClient)new MinioClient()
             .WithEndpoint(endpoint)
             .WithCredentials(accessKey, secretKey)
-            .WithSSL(useSSL)
+            .WithSSL(_settings.UseSSL)
             .Build();
 
-        CreateBucketAsync();    
+        CreateBucketAsync().GetAwaiter().GetResult();
 
         /*
         var s3Config = new AmazonS3Config
@@ -44,7 +41,7 @@ public class MinioService
         _s3Client = new AmazonS3Client(accessKey, secretKey, s3Config);*/
     }
 
-    public async Task CreateBucketAsync()
+    private async Task CreateBucketAsync()
     {
         try
         {
@@ -56,8 +53,6 @@ public class MinioService
                 await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
                 Console.WriteLine($"Bucket '{_bucketName}' created successfully.");
             }
-            
-            
         }
         catch (MinioException ex)
         {
@@ -65,7 +60,7 @@ public class MinioService
         }
     }
 
-    public async Task UploadFileAsync( string objectName, Stream fileStream)
+    public async Task UploadFileAsync(string objectName, Stream fileStream)
     {
         try
         {
@@ -95,7 +90,7 @@ public class MinioService
         }
     }
 
-    public async Task<MemoryStream> DownloadFileAsync( string objectName)
+    public async Task<MemoryStream> DownloadFileAsync(string objectName)
     {
         try
         {

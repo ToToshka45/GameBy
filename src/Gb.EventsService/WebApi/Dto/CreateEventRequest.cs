@@ -20,4 +20,5 @@ public class CreateEventRequest
     public EventCategory EventCategory { get; set; }
     public int MaxParticipants { get; set; }
     public int MinParticipants { get; set; }
+    public IFormFile EventAvatar { get; set; }
 }

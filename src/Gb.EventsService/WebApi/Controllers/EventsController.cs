@@ -29,7 +29,7 @@ namespace WebApi.Controllers
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
         [HttpPost("create")]
-        public async Task<ActionResult<CreateEventResponse>> CreateEventAsync(CreateEventRequest request)
+        public async Task<ActionResult<CreateEventResponse>> CreateEventAsync([FromForm] CreateEventRequest request)
         {
             var eventId = await _eventService.CreateEvent(_mapper.Map<CreateEventDto>(request));
 
@@ -128,14 +128,16 @@ namespace WebApi.Controllers
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
         [HttpGet("{eventId:int}/finish")]
-        public async Task<ActionResult<bool>> FinishEventAsync(int eventId)
+        public async Task<IActionResult> FinishEventAsync(int eventId)
         {
             var res = await _eventService.FinishEventAsync(eventId);
 
             if (res is null)
                 return BadRequest();
 
-            return true;
+            // todo: event to send to the rating service
+
+            return Ok();
         }
 
         /// <summary>

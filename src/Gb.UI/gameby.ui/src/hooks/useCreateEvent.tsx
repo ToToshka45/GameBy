@@ -1,3 +1,4 @@
+import { FileWithPath } from "react-dropzone";
 import AuthData from "../interfaces/AuthData";
 import CreateEventRequest from "../interfaces/Requests/CreateEventRequest";
 import CreateEventData from "../schemas/EventCreationForm";
@@ -10,9 +11,11 @@ const useCreateEvent = () => {
   const privateAxios = useInterceptingAxios();
 
   const createEvent = async (
-    event: CreateEventData
+    event: CreateEventData,
+    image: FileWithPath | undefined
   ): Promise<number | undefined> => {
     try {
+      const formData = new FormData();
       const createEventRequest: CreateEventRequest = {
         // ...event,
         title: event.title,
@@ -26,8 +29,18 @@ const useCreateEvent = () => {
         creationDate: new Date(),
         organizerId: userAuth?.id,
       };
-      console.log("Sending a request: ", createEventRequest);
-      const res = await privateAxios.post("events/create", createEventRequest);
+      for (const key in createEventRequest) {
+        const data = (createEventRequest as any)[key];
+        if (key.toLowerCase().includes("date"))
+          formData.append(key, data.toISOString());
+        else formData.append(key, data);
+      }
+      if (image) formData.append("eventAvatar", image);
+
+      console.log(...formData);
+      const res = await privateAxios.post("events/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       if (res && res.data) {
         const eventId: number = res.data.eventId;
         return eventId;

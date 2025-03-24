@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react";
 import AuthData from "../interfaces/AuthData";
 import { authAxios } from "../services/axios";
 import useAuth from "./useAuth";
 
 const useRefreshToken = () => {
   const { userAuth, setUserAuth } = useAuth() as AuthData;
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
   // const privateAxios = usePrivateAxios();
   const refresh = async (): Promise<string | undefined> => {
     try {
@@ -14,7 +17,7 @@ const useRefreshToken = () => {
       if (res && res.data) {
         console.log("Received a refreshed token: ", res.data);
         setUserAuth!({ ...res.data });
-        return userAuth?.accessToken;
+        setIsDataLoaded(true);
       } else {
         throw new Error(
           "Unknown error has occured while fetching a new AccessToken."
@@ -29,6 +32,12 @@ const useRefreshToken = () => {
     }
     return undefined;
   };
+
+  useEffect(() => {
+    if (isDataLoaded) console.log("Received new userAuth data: ", userAuth);
+    setIsDataLoaded(false);
+  }, [isDataLoaded]);
+
   return refresh;
 };
 

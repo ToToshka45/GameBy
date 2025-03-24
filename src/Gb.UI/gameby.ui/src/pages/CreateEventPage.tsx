@@ -84,7 +84,11 @@ export default function CreateEventPage() {
     data: CreateEventData
   ) => {
     try {
-      const eventId = await createEvent(data);
+      console.log(
+        "Sending a payload",
+        image ? `with the image ${image}` : "without an image"
+      );
+      const eventId = await createEvent(data, image);
       console.log("Saved a new event with id: ", eventId);
       if (eventId) navigate(`../event/${eventId}`, { relative: "route" });
     } catch (err) {

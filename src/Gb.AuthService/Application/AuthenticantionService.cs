@@ -110,7 +110,7 @@ namespace Application
             RefreshAccessTokenDto res = new();
             var userData = await _userRepository.GetByIdAsync(userToken.UserId);
             string previousToken = userToken.RefreshToken;
-            res.UserId = userToken.UserId;
+            res.Id = userToken.UserId;
             res.Username = userData.Login.Name;
             res.Email = userData.Email.Value;
             res.AccessToken = GenerateToken(userToken.UserId, userToken.UserRoles);

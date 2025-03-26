@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using Application.Dto;
+using Common;
 using Constants;
 
 namespace WebApi.Dto;
@@ -8,6 +9,7 @@ public class GetShortEventResponse
     public int Id { get; set; }
     public int OrganizerId { get; set; }
     public string? EventAvatarUrl { get; set; }
+    public EventAvatarFile? EventAvatarFile { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
     public DateTime EventDate { get; set; }

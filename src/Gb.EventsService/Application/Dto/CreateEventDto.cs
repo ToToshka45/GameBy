@@ -1,6 +1,7 @@
 ﻿using Common;
 using Constants;
 using Domain;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Dto;
 
@@ -21,6 +22,8 @@ public class CreateEventDto
     public IReadOnlyCollection<Participant> Participants { get; set; }
     public bool IsParticipant { get; set; }
     public bool IsOrganizer { get; set; }
+    public IFormFile EventAvatar { get; set; }
+
 
     // note: avatar
     //public string? ThemeFile { get; set; }

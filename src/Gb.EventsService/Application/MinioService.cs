@@ -4,6 +4,8 @@ using Amazon.S3;
 using Minio.DataModel.Args;
 using Application;
 using Microsoft.Extensions.Options;
+using System.Net;
+using Microsoft.Extensions.Logging;
 
 public class MinioService
 {
@@ -12,9 +14,11 @@ public class MinioService
     //private readonly string _endpoint;
     private readonly string _bucketName;
     private readonly MinIOSettings _settings;
+    private readonly ILogger<MinioService> _logger;
 
-    public MinioService(IOptions<MinIOSettings> options)
+    public MinioService(IOptions<MinIOSettings> options, ILogger<MinioService> logger)
     {
+        _logger = logger;
         _settings = options.Value;
         var endpoint = _settings.Endpoint;
         var accessKey = _settings.AccessKey;
@@ -28,7 +32,7 @@ public class MinioService
             .WithSSL(_settings.UseSSL)
             .Build();
 
-        CreateBucketAsync().GetAwaiter().GetResult();
+        EnsureBucketCreatedAsync().GetAwaiter().GetResult();
 
         /*
         var s3Config = new AmazonS3Config
@@ -41,38 +45,18 @@ public class MinioService
         _s3Client = new AmazonS3Client(accessKey, secretKey, s3Config);*/
     }
 
-    private async Task CreateBucketAsync()
+    public async Task<string?> UploadFileAsync(string objectName, Stream fileStream)
     {
         try
         {
-            // Check if the bucket already exists
-            var exists = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(_bucketName));
-            if (!exists)
+            if (fileStream.Length <= 0)
             {
-                // Create the bucket if it doesn't exist
-                await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
-                Console.WriteLine($"Bucket '{_bucketName}' created successfully.");
-            }
-        }
-        catch (MinioException ex)
-        {
-            Console.WriteLine($"Error creating bucket: {ex.Message}");
-        }
-    }
-
-    public async Task UploadFileAsync(string objectName, Stream fileStream)
-    {
-        try
-        {
-            // Check if the bucket exists
-            var bucketExists = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(_bucketName));
-            if (!bucketExists)
-            {
-                throw new Exception($"Bucket '{_bucketName}' does not exist.");
+                _logger.LogInformation($"File stream was empty for a '{objectName}' file");
+                return null;
             }
 
             // Upload the file to the bucket
-            await _minioClient.PutObjectAsync(
+            var response = await _minioClient.PutObjectAsync(
                 new PutObjectArgs()
                     .WithBucket(_bucketName)
                     .WithObject(objectName)
@@ -81,16 +65,67 @@ public class MinioService
                     .WithContentType("application/octet-stream") // Set the content type
             );
 
-            Console.WriteLine($"File '{objectName}' uploaded successfully to bucket '{_bucketName}'.");
+            if (response.ResponseStatusCode == HttpStatusCode.BadRequest)
+            {
+                _logger.LogInformation(response.ResponseContent, "S3 Storage returned a 400 status");
+                return null;
+            }
+
+            _logger.LogInformation($"File '{objectName}' uploaded successfully to bucket '{_bucketName}'.");
+            return response.Etag;
+        }
+        catch (MinioException ex)
+        {
+            _logger.LogError(ex, "Error occured while uploading a file");
+            return null;
+        }
+    }
+
+    public async Task<string?> IssuePresignedUrlForUpload(string objectName)
+    {
+        try
+        {
+            var presignedUrl = await _minioClient.PresignedPutObjectAsync(
+                new PresignedPutObjectArgs()
+                    .WithBucket(_bucketName)
+                    .WithObject(objectName)
+                    .WithExpiry(60 * 60) // an hour
+            );
+
+            return presignedUrl;
         }
         catch (MinioException ex)
         {
             Console.WriteLine($"Error uploading file: {ex.Message}");
-            throw;
+            return null;
         }
     }
 
-    public async Task<MemoryStream> DownloadFileAsync(string objectName)
+    public async Task<string?> IssuePresignedUrlForDownload(string objectName)
+    {
+        try
+        {
+            _logger.LogInformation($"Trying to receive a presigned URL for the file '{objectName}'");
+
+            var presignedUrl = await _minioClient.PresignedPutObjectAsync(
+                new PresignedPutObjectArgs()
+                    .WithBucket(_bucketName)
+                    .WithObject(objectName)
+                    .WithExpiry(60 * 60) // an hour
+            );
+
+            _logger.LogInformation("Received a presigned url: " + presignedUrl);
+
+            return presignedUrl;
+        }
+        catch (MinioException ex)
+        {
+            _logger.LogError($"Error getting a presigned URL for a file download: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<MemoryStream?> DownloadFileAsync(string objectName)
     {
         try
         {
@@ -120,7 +155,30 @@ public class MinioService
         catch (MinioException ex)
         {
             Console.WriteLine($"Error downloading file: {ex.Message}");
-            throw;
+        }
+        return null;
+    }
+
+    public async Task GetPresignUrlAsync(PresignedGetObjectArgs args)
+    {
+        var url = await _minioClient.PresignedGetObjectAsync(args);
+    }
+    private async Task EnsureBucketCreatedAsync()
+    {
+        try
+        {
+            // Check if the bucket already exists
+            var exists = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(_bucketName));
+            if (!exists)
+            {
+                // Create the bucket if it doesn't exist
+                await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
+                Console.WriteLine($"Bucket '{_bucketName}' created successfully.");
+            }
+        }
+        catch (MinioException ex)
+        {
+            Console.WriteLine($"Error creating bucket: {ex.Message}");
         }
     }
 

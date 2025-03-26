@@ -127,6 +127,7 @@ export default function EventDetailsPage() {
         processingParticipant.state,
         Number.parseInt(eventId!)
       );
+
       fetch();
     } catch (err) {
       console.error(
@@ -263,7 +264,7 @@ export default function EventDetailsPage() {
                 <Paper elevation={1} sx={{ height: "40vh" }}>
                   <Box>
                     {!pendingParticipants ||
-                      (pendingParticipants.length && (
+                      (pendingParticipants.length > 0 && (
                         <List>
                           {pendingParticipants?.map((participant, idx) => (
                             <ListItem key={idx}>

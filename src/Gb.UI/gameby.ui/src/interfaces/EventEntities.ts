@@ -11,6 +11,7 @@ export interface OccuringEvent {
     id: number,
     organizerId: number;
     eventAvatarUrl: string;
+    eventAvatarFile: string | undefined;
     title: string;
     description: string;
     eventCategory: EventCategory;

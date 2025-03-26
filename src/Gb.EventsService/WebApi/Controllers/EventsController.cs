@@ -196,7 +196,7 @@ namespace WebApi.Controllers
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
         [HttpPost("{eventId:int}")]
-        public async Task<ActionResult<GetEventDto>> GetEventAsync(int eventId, EventFetchingParams parameters)
+        public async Task<ActionResult<GetEventDto>> GetEvent(int eventId, EventFetchingParams parameters)
         {
             var res = await _eventService.GetEvent(eventId, parameters.UserId);
 

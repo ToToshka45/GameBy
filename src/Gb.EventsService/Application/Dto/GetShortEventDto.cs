@@ -14,4 +14,5 @@ public class GetShortEventDto
     public EventStatus EventStatus { get; set; }
     public bool IsUserParticipant {  get; set; }
     public bool IsUserOrganizer { get; set; }
+    public string? PresignedImageUrl { get; set; }
 }

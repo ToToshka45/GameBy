@@ -7,6 +7,7 @@ using DataAccess.Abstractions;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Text;
 using System.Text.Json;
 
 namespace Application;
@@ -15,11 +16,8 @@ public class EventService
 {
     private readonly IRepository<Event> _eventRepository;
     private readonly DbSet<Event> _events;
-
     private readonly IMapper _mapper;
-
     private readonly RabbitMqService _rabbitMqService;
-
     private readonly ILogger<EventService> _logger;
     private readonly MinioService _minioService;
     public EventService(IRepository<Event> eventRepository, DataContext dbContext, IMapper mapper, RabbitMqService rabbitMqService, ILogger<EventService> logger, MinioService minioService)
@@ -38,6 +36,9 @@ public class EventService
         {
             // note: check an OrganizerId to exist in the DB
 
+            // upload an event image
+            var etag = await _minioService.UploadFileAsync(eventDto.EventAvatar.Name, eventDto.EventAvatar.OpenReadStream());
+
             //var dto = _mapper.Map<Event>(eventDto);
             var newEvent = new Event()
             {
@@ -51,15 +52,22 @@ public class EventService
                 EventStatus = Constants.EventStatus.Announced,
                 MaxParticipants = eventDto.MaxParticipants,
                 MinParticipants = eventDto.MinParticipants,
+                EventAvatarName = eventDto.EventAvatar.Name,
+                EventAvatarEtag = etag
             };
+
             var res = await _eventRepository.AddAsync(newEvent);
             return res is not null ? res.Id : null;
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Db exception");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error has occured while saving a new event");
-            throw;
         }
+        return null;
     }
 
     public async Task<GetEventDto?> GetEvent(int eventId, int? userId)
@@ -72,6 +80,18 @@ public class EventService
         {
             res.IsParticipant = @event.Participants.Any(p => p.UserId == userId);
             res.IsOrganizer = @event.OrganizerId == userId;
+        }
+        if (!string.IsNullOrWhiteSpace(@event.EventAvatarName))
+        {
+            res.EventAvatarUrl = await _minioService.IssuePresignedUrlForDownload(@event.EventAvatarName);
+            var file = await _minioService.DownloadFileAsync(@event.EventAvatarName);
+            if (file != null)
+            {
+                res.EventAvatarFile = new() {
+                    ContentType = "image/jpeg",
+                    Content = Convert.ToBase64String(file.ToArray())
+                };
+            }
         }
         //if (@event.ThemeId != null)
         //{
@@ -161,7 +181,16 @@ public class EventService
                 .OrderBy(x => x.EventDate)
                 .ToListAsync();
 
-            return _mapper.Map<List<GetShortEventDto>>(events);
+            var dtoList = _mapper.Map<List<GetShortEventDto>>(events);
+
+            // TODO: add await using processing
+            foreach (var item in events)
+            {
+                if (string.IsNullOrWhiteSpace(item.EventAvatarName)) continue;
+                dtoList.First(e => e.Id == item.Id).PresignedImageUrl = await _minioService.IssuePresignedUrlForDownload(item.EventAvatarName);
+            }
+
+            return dtoList;
         }
         catch (Exception ex)
         {

@@ -80,10 +80,6 @@ const useEventProcessing = () => {
   const fetchEvent = async (
     eventId: number
   ): Promise<OccuringEvent | undefined> => {
-    // test logic -> event should be fetched from the server
-    // const _event = events.find((e) => e.id === eventId);
-    //
-
     try {
       console.log("Trying to fetch an event data...");
 
@@ -105,6 +101,9 @@ const useEventProcessing = () => {
           participants: responseBody.participants,
           eventCategory: responseBody.eventCategory,
           eventAvatarUrl: responseBody.eventAvatarUrl,
+          eventAvatarFile:
+            responseBody.eventAvatarFile &&
+            `data:${responseBody.eventAvatarFile.contentType};base64,${responseBody.eventAvatarFile.content}`,
           eventDate: dayjs(responseBody.eventDate),
           stateDetails: EventStateDetails[responseBody.eventStatus],
           isParticipant: responseBody.isParticipant,

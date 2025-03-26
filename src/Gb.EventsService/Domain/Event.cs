@@ -21,6 +21,8 @@ namespace Domain
         public int MinParticipants { get; set; }
         public virtual IList<EventAction> EventActions { get; set; } = [];
         public virtual IList<Participant> Participants { get; set; } = [];
+        public string? EventAvatarName { get; set; }
+        public string? EventAvatarEtag { get; set; }
 
         //public int? ThemeId { get; set; }
         //public string? ThemeExtension { get; set; }

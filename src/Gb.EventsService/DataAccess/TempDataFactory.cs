@@ -22,7 +22,6 @@ public class TempDataFactory : IDbInitializer
         IEnumerable<Event> events = [
             new()
             {
-                Id = 1,
                 CreationDate = DateTime.Now.ToUniversalTime(),
                 EventCategory = Common.EventCategory.Poker,
                 EventDate = DateTime.Now.AddDays(2).ToUniversalTime(),
@@ -58,7 +57,6 @@ public class TempDataFactory : IDbInitializer
             },
             new()
             {
-                Id = 2,
                 CreationDate = DateTime.Now.ToUniversalTime(),
                 EventCategory = Common.EventCategory.Mafia,
                 EventDate = DateTime.Now.AddDays(1).ToUniversalTime(),

@@ -6,6 +6,7 @@ using DataAccess;
 using DataAccess.Abstractions;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
@@ -35,10 +36,8 @@ public class EventService
         try
         {
             // note: check an OrganizerId to exist in the DB
-
-            // upload an event image
-            var etag = await _minioService.UploadFileAsync(eventDto.EventAvatar.Name, eventDto.EventAvatar.OpenReadStream());
-
+            string fileName = eventDto.EventAvatar.Name + "-" + Guid.NewGuid();
+            
             //var dto = _mapper.Map<Event>(eventDto);
             var newEvent = new Event()
             {
@@ -52,11 +51,16 @@ public class EventService
                 EventStatus = Constants.EventStatus.Announced,
                 MaxParticipants = eventDto.MaxParticipants,
                 MinParticipants = eventDto.MinParticipants,
-                EventAvatarName = eventDto.EventAvatar.Name,
-                EventAvatarEtag = etag
+                EventAvatarName = fileName
             };
 
             var res = await _eventRepository.AddAsync(newEvent);
+
+            // upload an event image
+            var etag = await AddEventAvatarAsync(res!.Id, eventDto.EventAvatar.FileName, eventDto.EventAvatar.ContentType, eventDto.EventAvatar.OpenReadStream());
+            res.EventAvatarEtag = etag;
+            await _eventRepository.UpdateAsync(res);
+
             return res is not null ? res.Id : null;
         }
         catch (DbUpdateException ex)
@@ -83,7 +87,7 @@ public class EventService
         }
         if (!string.IsNullOrWhiteSpace(@event.EventAvatarName))
         {
-            res.EventAvatarUrl = await _minioService.IssuePresignedUrlForDownload(@event.EventAvatarName);
+            res.EventAvatarUrl = await _minioService.IssuePresignedUrlForDownload(eventId, @event.EventAvatarName);
             var file = await _minioService.DownloadFileAsync(@event.EventAvatarName);
             if (file != null)
             {
@@ -106,6 +110,15 @@ public class EventService
         //}
 
         return res;
+    }
+
+    public async Task<string?> AddEventAvatarAsync(int eventId, string fileName, string contentType, Stream fileStream)
+    {
+        return await _minioService.UploadFileAsync(eventId, fileName, contentType, fileStream);
+    }
+    public async Task<string?> GetPresignedUrlAsync(int eventId, string fileName)
+    {
+        return await _minioService.IssuePresignedUrlForDownload(eventId, fileName);
     }
 
     //public async Task<bool> AddThemeToEventAsync(int EventId, IFormFile file)
@@ -187,7 +200,7 @@ public class EventService
             foreach (var item in events)
             {
                 if (string.IsNullOrWhiteSpace(item.EventAvatarName)) continue;
-                dtoList.First(e => e.Id == item.Id).PresignedImageUrl = await _minioService.IssuePresignedUrlForDownload(item.EventAvatarName);
+                dtoList.First(e => e.Id == item.Id).PresignedImageUrl = await _minioService.IssuePresignedUrlForDownload(item.Id, item.EventAvatarName);
             }
 
             return dtoList;

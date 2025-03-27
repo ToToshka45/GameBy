@@ -61,7 +61,12 @@ const SignInFormPage = () => {
         if (err.response?.status === 401) {
           setError("root", {
             type: "manual",
-            message: "Username or password is incorrect. Pleast try again.",
+            message: "Username or password is incorrect. Please try again.",
+          });
+        } else {
+          setError("root", {
+            type: "manual",
+            message: "Server error. Pleast try again.",
           });
         }
       }

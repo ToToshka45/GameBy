@@ -51,12 +51,10 @@ const SignUpFormPage = () => {
       if (userAuth !== null) navigate(from, { replace: true });
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        if (err.response?.status === 401) {
-          setError("root", {
-            type: "manual",
-            message: "Username or password is incorrect. Pleast try again.",
-          });
-        }
+        setError("root", {
+          type: "manual",
+          message: err.response?.statusText,
+        });
       }
     }
   };

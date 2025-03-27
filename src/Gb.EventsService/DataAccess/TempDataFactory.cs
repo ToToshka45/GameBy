@@ -14,7 +14,7 @@ public class TempDataFactory : IDbInitializer
 
     public void InitializeDb()
     {
-        _dataContext.Database.EnsureDeleted();
+        //_dataContext.Database.EnsureDeleted();
         _dataContext.Database.EnsureCreated();
 
         if (_dataContext.Events.Any()) return;

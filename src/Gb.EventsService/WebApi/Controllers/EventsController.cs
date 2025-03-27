@@ -158,17 +158,31 @@ namespace WebApi.Controllers
         //    return true;
         //}
 
-        /*
-        [HttpGet("{eventId:int}/test-image")]
-        public async Task<ActionResult> GetImageEventAsync(int eventId)
+        [HttpPost("{eventId:int}/image")]
+        public async Task<ActionResult> AddEventAvatar(int eventId, [FromForm] IFormFile image)
         {
-            var fileStream = await _eventService.GetMediaTest(eventId);
-        
-            if (fileStream is null)
+            var etag = await _eventService.AddEventAvatarAsync(eventId, image.FileName, image.ContentType, image.OpenReadStream());
+
+            if (etag is null)
                 return BadRequest();
 
-            return File(fileStream, "application/octet-stream", "test."+);
-        }*/
+            return Ok("etag="+etag);
+            //return File(fileStream, "application/octet-stream", "test.");
+        }
+
+        [HttpGet("{eventId:int}/image/presigned-url")]
+        public async Task<ActionResult> GetEventAvatarByPresignedUrl(int eventId, [FromQuery] string fileName)
+        {
+            // NOTE: we should get a filename from an event
+            var url = await _eventService.GetPresignedUrlAsync(eventId, fileName);
+
+            if (url is null)
+                return BadRequest();
+
+            return Ok("url=" + url);
+            //return File(fileStream, "application/octet-stream", "test.");
+        }
+
 
         /// <summary>
         /// Изменить мероприятие
@@ -201,7 +215,7 @@ namespace WebApi.Controllers
             var res = await _eventService.GetEvent(eventId, parameters.UserId);
 
             if (res is null)
-                return BadRequest();
+                return BadRequest("Event is not found");
             var response = _mapper.Map<GetShortEventResponse>(res);
 
             return Ok(response);
@@ -222,7 +236,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Все мероприятия + фильтры
+        /// Мероприятия Пользователя.
         /// </summary>
         /// <returns>
         /// Events if success or BadRequest 

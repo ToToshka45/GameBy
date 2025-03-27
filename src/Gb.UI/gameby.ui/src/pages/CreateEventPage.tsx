@@ -14,7 +14,7 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { FileWithPath, useDropzone } from "react-dropzone";
+import Dropzone, { FileWithPath, useDropzone } from "react-dropzone";
 import { useCallback, useState } from "react";
 import { green, orange, pink } from "@mui/material/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,7 +58,6 @@ export default function CreateEventPage() {
       console.log("No image received.");
       return;
     }
-
     setImage(imageUploaded);
     console.log(URL.createObjectURL(imageUploaded));
     setImgPreview(URL.createObjectURL(imageUploaded));
@@ -286,7 +285,7 @@ export default function CreateEventPage() {
             <div {...getRootProps()}>
               <input
                 {...getInputProps({
-                  accept: "image/*",
+                  accept: "image/jpg, image/png",
                   type: "file",
                   name: "image",
                 })}

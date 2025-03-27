@@ -45,7 +45,7 @@ public class MinioService
         _s3Client = new AmazonS3Client(accessKey, secretKey, s3Config);*/
     }
 
-    public async Task<string?> UploadFileAsync(string objectName, Stream fileStream)
+    public async Task<string?> UploadFileAsync(int eventId, string objectName, string contentType, Stream fileStream)
     {
         try
         {
@@ -62,7 +62,9 @@ public class MinioService
                     .WithObject(objectName)
                     .WithStreamData(fileStream)
                     .WithObjectSize(fileStream.Length)
-                    .WithContentType("application/octet-stream") // Set the content type
+                    .WithHeaders(new Dictionary<string, string>() { { "event-id", eventId.ToString() } })
+                    //.WithContentType("application/octet-stream") // Set the content type
+                    .WithContentType(contentType) // Set the content type
             );
 
             if (response.ResponseStatusCode == HttpStatusCode.BadRequest)
@@ -101,7 +103,7 @@ public class MinioService
         }
     }
 
-    public async Task<string?> IssuePresignedUrlForDownload(string objectName)
+    public async Task<string?> IssuePresignedUrlForDownload(int eventId, string objectName)
     {
         try
         {
@@ -112,6 +114,7 @@ public class MinioService
                     .WithBucket(_bucketName)
                     .WithObject(objectName)
                     .WithExpiry(60 * 60) // an hour
+                    .WithHeaders(new Dictionary<string, string>() { { "event-id", eventId.ToString() } })
             );
 
             _logger.LogInformation("Received a presigned url: " + presignedUrl);
@@ -163,6 +166,7 @@ public class MinioService
     {
         var url = await _minioClient.PresignedGetObjectAsync(args);
     }
+
     private async Task EnsureBucketCreatedAsync()
     {
         try

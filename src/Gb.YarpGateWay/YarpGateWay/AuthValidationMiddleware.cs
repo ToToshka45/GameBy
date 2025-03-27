@@ -37,22 +37,28 @@ namespace YarpGateWay
             }
 
 
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token)||token.Length<20)
                 isTokenExist = false;
 
 
             var fullRoute = $"{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
 
-            if(!isTokenExist&&NoAuthRoutes.Routes.Any(x=>fullRoute.Contains(x)))
+            if (context.Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+            {
+
+            }
+
+            if (!isTokenExist&&NoAuthRoutes.Routes.Any(x=>fullRoute.Contains(x)))
             {
                 await _next(context);
             }
             else
             {
-                
-                var authServiceUrl = "https://localhost:51735/validate-token";
 
-                var authRequest = new HttpRequestMessage(HttpMethod.Post, authServiceUrl);
+                //var authServiceUrl = "http://localhost:7070/api/auth/validate-token";
+                var authServiceUrl = AuthServiceConstants.AuthHostPath+AuthServiceConstants.ValidateLoginPath;
+
+                var authRequest = new HttpRequestMessage(HttpMethod.Get, authServiceUrl);
 
                 foreach (var header in context.Request.Headers)
                 {

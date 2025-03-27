@@ -4,9 +4,9 @@
     {
         public static List<string> Routes = new List<string>()
         {
-            "api/Events/Events",
-            "api/Auth",
-            "api/Register"
+            "api/events",
+            "api/auth",
+            "api/register"
         };
     }
 }

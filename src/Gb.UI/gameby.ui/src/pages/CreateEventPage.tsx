@@ -14,7 +14,7 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import Dropzone, { FileWithPath, useDropzone } from "react-dropzone";
+import { FileWithPath, useDropzone } from "react-dropzone";
 import { useCallback, useState } from "react";
 import { green, orange, pink } from "@mui/material/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ import CreateEventData, {
   eventCreationSchema,
 } from "../schemas/EventCreationForm";
 import useCreateEvent from "../hooks/useCreateEvent";
-import { replace, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { EventCategory } from "../common/enums/EventEnums";
 
 const categories = Object.entries(EventCategory)

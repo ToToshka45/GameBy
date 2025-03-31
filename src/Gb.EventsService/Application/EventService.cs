@@ -8,6 +8,7 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 
@@ -58,6 +59,7 @@ public class EventService
 
             // upload an event image
             var etag = await AddEventAvatarAsync(res!.Id, eventDto.EventAvatar.FileName, eventDto.EventAvatar.ContentType, eventDto.EventAvatar.OpenReadStream());
+            res.EventAvatarName = eventDto.EventAvatar.FileName;
             res.EventAvatarEtag = etag;
             await _eventRepository.UpdateAsync(res);
 
@@ -88,12 +90,12 @@ public class EventService
         if (!string.IsNullOrWhiteSpace(@event.EventAvatarName))
         {
             res.EventAvatarUrl = await _minioService.IssuePresignedUrlForDownload(eventId, @event.EventAvatarName);
-            var file = await _minioService.DownloadFileAsync(@event.EventAvatarName);
-            if (file != null)
+            var data = await _minioService.DownloadFileAsync(@event.Id, @event.EventAvatarName);
+            if (data.fileStream != null)
             {
                 res.EventAvatarFile = new() {
                     ContentType = "image/jpeg",
-                    Content = Convert.ToBase64String(file.ToArray())
+                    Content = GetBase64File(data.fileStream)
                 };
             }
         }
@@ -116,8 +118,16 @@ public class EventService
     {
         return await _minioService.UploadFileAsync(eventId, fileName, contentType, fileStream);
     }
-    public async Task<string?> GetPresignedUrlAsync(int eventId, string fileName)
+
+    public async Task<(MemoryStream? fileStream, string? contentType)> GetEventAvatarAsync(int eventId)
     {
+        var fileName = await _events.Where(e => e.Id == eventId).Select(e => e.EventAvatarName).FirstOrDefaultAsync();
+        return await _minioService.DownloadFileAsync(eventId, fileName);
+    }
+
+    public async Task<string?> GetPresignedUrlAsync(int eventId)
+    {
+        var fileName = await _events.Where(e => e.Id == eventId).Select(e => e.EventAvatarName).FirstOrDefaultAsync();
         return await _minioService.IssuePresignedUrlForDownload(eventId, fileName);
     }
 
@@ -200,7 +210,9 @@ public class EventService
             foreach (var item in events)
             {
                 if (string.IsNullOrWhiteSpace(item.EventAvatarName)) continue;
-                dtoList.First(e => e.Id == item.Id).PresignedImageUrl = await _minioService.IssuePresignedUrlForDownload(item.Id, item.EventAvatarName);
+                //dtoList.First(e => e.Id == item.Id).PresignedImageUrl = await _minioService.IssuePresignedUrlForDownload(item.Id, item.EventAvatarName);
+                var data = await _minioService.DownloadFileAsync(item.Id, item.EventAvatarName);
+                dtoList.First(e => e.Id == item.Id).EventAvatarFile = GetBase64File(data.fileStream);
             }
 
             return dtoList;
@@ -442,5 +454,10 @@ public class EventService
             participant.AcceptedDate = acceptedDate.Value;
 
         await _eventRepository.UpdateAsync(@event);
+    }
+
+    private string? GetBase64File(MemoryStream? fileStream)
+    {
+        return fileStream is not null ? Convert.ToBase64String(fileStream.ToArray()) : null;
     }
 }

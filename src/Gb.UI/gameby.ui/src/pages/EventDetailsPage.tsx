@@ -208,8 +208,8 @@ export default function EventDetailsPage() {
           <Grid item xs={6}>
             <CardMedia
               component="img"
-              image={"../" + occuringEvent?.eventAvatarUrl}
-              // src={"src/assets/event-pics/event_default.jpg"}
+              image={occuringEvent?.eventAvatarUrl}
+              src={"src/assets/event-pics/event_default.jpg"}
               height="100%"
             />
           </Grid>

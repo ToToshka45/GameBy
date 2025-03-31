@@ -46,12 +46,12 @@ export const eventCreationSchema = z
 
   export function createDefaultEvent() : CreateEventData {
     return {
-      title: "",
-      description: "",
+      title: "Modern Mafia",
+      description: "Default event description.",
       startDate: dayjs().add(1, "day").toDate(),
       endDate: dayjs().add(1, "day").toDate(),
-      eventCategory: EventCategory.Undefined.toString(),
-      location: "",
+      eventCategory: EventCategory.Mafia.toString(),
+      location: "Chicago",
       minParticipants: 1,
       maxParticipants: 1
     }

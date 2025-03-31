@@ -59,12 +59,12 @@ public class MinioService
             var response = await _minioClient.PutObjectAsync(
                 new PutObjectArgs()
                     .WithBucket(_bucketName)
+                    .WithContentType(contentType) // Set the content type
                     .WithObject(objectName)
                     .WithStreamData(fileStream)
                     .WithObjectSize(fileStream.Length)
                     .WithHeaders(new Dictionary<string, string>() { { "event-id", eventId.ToString() } })
                     //.WithContentType("application/octet-stream") // Set the content type
-                    .WithContentType(contentType) // Set the content type
             );
 
             if (response.ResponseStatusCode == HttpStatusCode.BadRequest)
@@ -109,8 +109,8 @@ public class MinioService
         {
             _logger.LogInformation($"Trying to receive a presigned URL for the file '{objectName}'");
 
-            var presignedUrl = await _minioClient.PresignedPutObjectAsync(
-                new PresignedPutObjectArgs()
+            var presignedUrl = await _minioClient.PresignedGetObjectAsync(
+                new PresignedGetObjectArgs()
                     .WithBucket(_bucketName)
                     .WithObject(objectName)
                     .WithExpiry(60 * 60) // an hour
@@ -128,7 +128,7 @@ public class MinioService
         }
     }
 
-    public async Task<MemoryStream?> DownloadFileAsync(string objectName)
+    public async Task<(MemoryStream? fileStream, string? contentType)> DownloadFileAsync(int eventId, string? objectName)
     {
         try
         {
@@ -141,9 +141,10 @@ public class MinioService
 
             // Download the file from the bucket
             var memoryStream = new MemoryStream();
-            await _minioClient.GetObjectAsync(
+            var objectStat = await _minioClient.GetObjectAsync(
                 new GetObjectArgs()
                     .WithBucket(_bucketName)
+                    .WithHeaders(new Dictionary<string, string> { { "event-id", eventId.ToString() } })
                     .WithObject(objectName)
                     .WithCallbackStream(stream =>
                     {
@@ -153,13 +154,13 @@ public class MinioService
             );
 
             Console.WriteLine($"File '{objectName}' downloaded successfully from bucket '{_bucketName}'.");
-            return memoryStream;
+            return (memoryStream, objectStat.ContentType);
         }
         catch (MinioException ex)
         {
             Console.WriteLine($"Error downloading file: {ex.Message}");
         }
-        return null;
+        return (null, null);
     }
 
     public async Task GetPresignUrlAsync(PresignedGetObjectArgs args)

@@ -6,6 +6,6 @@
         public Common.EventCategory[] EventCategories { get; set; } = [];
         public DateTime AfterDate { get; set; }
         public DateTime BeforeDate { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
     }
 }

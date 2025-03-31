@@ -170,11 +170,23 @@ namespace WebApi.Controllers
             //return File(fileStream, "application/octet-stream", "test.");
         }
 
+        [HttpGet("{eventId:int}/image")]
+        public async Task<ActionResult> GetEventAvatar(int eventId)
+        {
+            var (fileStream, contentType) = await _eventService.GetEventAvatarAsync(eventId);
+
+            if (fileStream is null)
+                return BadRequest("No image is found");
+
+            return File(fileStream, "image/jpeg");
+            //return File(fileStream, "application/octet-stream", "test.");
+        }
+
         [HttpGet("{eventId:int}/image/presigned-url")]
-        public async Task<ActionResult> GetEventAvatarByPresignedUrl(int eventId, [FromQuery] string fileName)
+        public async Task<ActionResult> GetEventAvatarByPresignedUrl(int eventId)
         {
             // NOTE: we should get a filename from an event
-            var url = await _eventService.GetPresignedUrlAsync(eventId, fileName);
+            var url = await _eventService.GetPresignedUrlAsync(eventId);
 
             if (url is null)
                 return BadRequest();
@@ -241,7 +253,7 @@ namespace WebApi.Controllers
         /// <returns>
         /// Events if success or BadRequest 
         /// </returns>
-        [HttpGet]
+        [HttpGet("my-events")]
         public async Task<ActionResult<GetUserEventsResponse>> GetUserEvents([FromQuery] int userId, [FromQuery] DateTime currentTime)
         {
             var result = await _eventService.GetUserEvents(userId, currentTime);

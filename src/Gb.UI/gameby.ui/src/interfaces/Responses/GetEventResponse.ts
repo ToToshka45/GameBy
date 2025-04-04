@@ -1,4 +1,3 @@
-import { FileWithPath } from "react-dropzone";
 import { EventCategory, EventStatus } from "../../common/enums/EventEnums";
 import Participant from "../EventParticipant";
 

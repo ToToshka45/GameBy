@@ -2,7 +2,7 @@ import { Box, Container, Typography } from "@mui/material";
 import DisplayEventsGrid from "../components/Events/OccuringEventsGrid";
 import { DisplayEvent } from "../interfaces/EventEntities";
 import { EventCategory } from "../common/enums/EventEnums";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import FiltersPropsContext from "../contexts/FiltersPropsContext";
 import FiltersProps from "../interfaces/FiltersProps";
 // import { DATE_FORMAT } from "../common/consts/fakeData/testOccuringEvents";

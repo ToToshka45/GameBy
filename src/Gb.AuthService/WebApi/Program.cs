@@ -3,11 +3,12 @@ using Application.EventHandlers;
 using DataAccess;
 using DataAccess.Abstractions;
 using DataAccess.Repositories;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using WebApi.MapperProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,37 +20,62 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
+
 //amqps://
-var PgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
-var RedisConnect= Environment.GetEnvironmentVariable("REDIS_CONNECT");
+var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+var redisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
 //var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
 
 //var PgConnect = "Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=123w";
 //var RedisConnect= "localhost:1920";
 
-
 builder.Services.AddDbContext<DataContext>(x =>
 {
     //x.UseNpgsql("Host=localhost;Port=5432;Database=usersdb;Username=postgres;Password=123w");
-    x.UseNpgsql(PgConnect);
+    x.UseNpgsql(pgConnect);
     x.UseLazyLoadingProxies();
     x.LogTo(Console.WriteLine, LogLevel.Information);
 });
-
 
 builder.Services.AddSingleton<RabbitService>();
 builder.Services.AddScoped<RegisterService>();
 builder.Services.AddScoped<AuthenticantionService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
-
-
 builder.Services.AddAutoMapper(typeof(AppMappingProfiles));
 
 builder.Services.AddScoped<IDbInitializer, TempDataFactory>();
 
-//"localhost:1919"
-builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(RedisConnect));
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnect!));
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy
+            .WithOrigins(builder.Configuration["CORS:Origins"] ?? "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            ;
+    });
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(config =>
+{
+    config.TokenValidationParameters = new()
+    {
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 builder.Services.AddScoped<UserTokenService>();
 
@@ -70,13 +96,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-
-
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseRouting();
+
+app.UseCors();
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 /* for Cookie variant
@@ -86,11 +113,6 @@ app.UseCors(builder => builder
     .AllowAnyMethod()
     .AllowAnyHeader());*/
 
-app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
-
 // Initialize the database (if needed)
 using (var scope = app.Services.CreateScope())
 {
@@ -98,10 +120,7 @@ using (var scope = app.Services.CreateScope())
     dbInitializer.InitializeDb();
 
     RabbitService rabbitService = scope.ServiceProvider.GetRequiredService<RabbitService>();
-    await rabbitService.Init(""); 
+    await rabbitService.Init("");
 }
 
 app.Run();
-
-
-

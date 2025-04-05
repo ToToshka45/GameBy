@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.ValueObjects
+﻿namespace Domain.ValueObjects
 {
     public class UserPassword
     {
-        public string Password { get; set; }
+        public string Value { get; private set; }
 
-        public UserPassword(string password)
+        public UserPassword(string value)
         {
-            Password = password;
+            Value = value;
         }
     }
 }

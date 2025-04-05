@@ -26,10 +26,9 @@ namespace Application
 
         public async Task<bool> CheckLoginExists(string login)
         {
-            var ExistingUser =await _userRepository.Search(x => x.Login.Name == login);
+            var ExistingUser = await _userRepository.Search(x => x.Login.Name == login);
 
-
-            if (ExistingUser.Count()==0)
+            if (ExistingUser.Count() == 0)
                 return true;
 
             return false;
@@ -37,7 +36,7 @@ namespace Application
 
         public async Task<bool> CheckEmailExists(string email)
         {
-            var ExistingUser =await _userRepository.Search(x => x.Email.Email == email);
+            var ExistingUser = await _userRepository.Search(x => x.Email.Value == email);
 
 
             if (ExistingUser.Count() == 0)
@@ -50,46 +49,53 @@ namespace Application
         {
             //ToDo Send RabbitMq message
 
-            if (!await CheckLoginExists(newUserDto.UserName))
+            if (!await CheckLoginExists(newUserDto.Username))
             {
                 return new NewUserResultDto() { IsSuccess = false, ErrorMessage = "Логин занят" };
             }
 
-            if (!await CheckEmailExists(newUserDto.UserEmail))
+            if (!await CheckEmailExists(newUserDto.Email))
             {
                 return new NewUserResultDto() { IsSuccess = false, ErrorMessage = "Такой email уже есть" };
             }
 
             var user = new User();
 
-            user.Email = new UserEmail(newUserDto.UserEmail);
-            user.Login = new UserName(newUserDto.UserName);
-            user.Password = new UserPassword(newUserDto.UserPassword);
+            user.Email = new UserEmail(newUserDto.Email);
+            user.Login = new UserName(newUserDto.Username);
+            user.Password = new UserPassword(newUserDto.Password);
 
             //ToDo AddRole
             var playerRole = await _roleRepository.GetByIdAsync(1);
             var orgRole = await _roleRepository.GetByIdAsync(2);
 
-            user.Roles = new List<UserRole>() { new UserRole() {
-                Role = playerRole,
-                User=user
-            }, new UserRole() {Role=orgRole,User=user } };
+            user.Roles = [
+                new UserRole() 
+                {
+                    Role = playerRole,
+                    User=user
+                },
+                new UserRole()
+                {
+                    Role=orgRole,
+                    User=user
+                }
+            ];
 
             var newUser = await _userRepository.AddAsync(user);
             if (newUser != null)
             {
-
-                var userAddedEvent = new UserAddedEvent(newUser.Id,newUser.Login.Name);
+                var userAddedEvent = new UserAddedEvent(newUser.Id, newUser.Login.Name);
                 await _mediator.Publish(userAddedEvent);
                 return new NewUserResultDto()
                 {
-                    UserName = newUser.Login.Name,
+                    Username = newUser.Login.Name,
                     Id = newUser.Id,
                     IsSuccess = true
                 };
             }
 
-            return new NewUserResultDto() { IsSuccess = false,ErrorMessage="Unknown" };
+            return new NewUserResultDto() { IsSuccess = false, ErrorMessage = "Unknown" };
         }
 
         //ToDoUpdateRoleMethod

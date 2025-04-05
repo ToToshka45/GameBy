@@ -1,0 +1,202 @@
+{
+  "hash": "303e25c3",
+  "configHash": "815ccf81",
+  "lockfileHash": "a52c3e21",
+  "browserHash": "e1b0ea6f",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "0db3d827",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "6ce474e7",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "85177d86",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "555b1c50",
+      "needsInterop": false
+    },
+    "@mui/material": {
+      "src": "../../node_modules/@mui/material/index.js",
+      "file": "@mui_material.js",
+      "fileHash": "45e01b0f",
+      "needsInterop": false
+    },
+    "@mui/material/colors": {
+      "src": "../../node_modules/@mui/material/colors/index.js",
+      "file": "@mui_material_colors.js",
+      "fileHash": "340a8f01",
+      "needsInterop": false
+    },
+    "@toolpad/core/AppProvider": {
+      "src": "../../node_modules/@toolpad/core/AppProvider/index.js",
+      "file": "@toolpad_core_AppProvider.js",
+      "fileHash": "2dd48a23",
+      "needsInterop": false
+    },
+    "@mui/material/styles": {
+      "src": "../../node_modules/@mui/material/styles/index.js",
+      "file": "@mui_material_styles.js",
+      "fileHash": "8179ce25",
+      "needsInterop": false
+    },
+    "dayjs": {
+      "src": "../../node_modules/dayjs/dayjs.min.js",
+      "file": "dayjs.js",
+      "fileHash": "2b348a4c",
+      "needsInterop": true
+    },
+    "react-router": {
+      "src": "../../node_modules/react-router/dist/development/index.mjs",
+      "file": "react-router.js",
+      "fileHash": "dfee575d",
+      "needsInterop": false
+    },
+    "@mui/x-date-pickers": {
+      "src": "../../node_modules/@mui/x-date-pickers/index.js",
+      "file": "@mui_x-date-pickers.js",
+      "fileHash": "9af40b63",
+      "needsInterop": false
+    },
+    "react-hook-form": {
+      "src": "../../node_modules/react-hook-form/dist/index.esm.mjs",
+      "file": "react-hook-form.js",
+      "fileHash": "02f394e9",
+      "needsInterop": false
+    },
+    "@mui/x-date-pickers/AdapterDayjs": {
+      "src": "../../node_modules/@mui/x-date-pickers/AdapterDayjs/index.js",
+      "file": "@mui_x-date-pickers_AdapterDayjs.js",
+      "fileHash": "f88fa0a0",
+      "needsInterop": false
+    },
+    "react-dropzone": {
+      "src": "../../node_modules/react-dropzone/dist/es/index.js",
+      "file": "react-dropzone.js",
+      "fileHash": "aa030ebc",
+      "needsInterop": false
+    },
+    "@hookform/resolvers/zod": {
+      "src": "../../node_modules/@hookform/resolvers/zod/dist/zod.mjs",
+      "file": "@hookform_resolvers_zod.js",
+      "fileHash": "4b346360",
+      "needsInterop": false
+    },
+    "@mui/icons-material/Menu": {
+      "src": "../../node_modules/@mui/icons-material/esm/Menu.js",
+      "file": "@mui_icons-material_Menu.js",
+      "fileHash": "eff53530",
+      "needsInterop": false
+    },
+    "@mui/icons-material/AccountCircle": {
+      "src": "../../node_modules/@mui/icons-material/esm/AccountCircle.js",
+      "file": "@mui_icons-material_AccountCircle.js",
+      "fileHash": "e94d5604",
+      "needsInterop": false
+    },
+    "zod": {
+      "src": "../../node_modules/zod/lib/index.mjs",
+      "file": "zod.js",
+      "fileHash": "abc8ac1e",
+      "needsInterop": false
+    },
+    "@mui/x-date-pickers-pro/DateRangePicker": {
+      "src": "../../node_modules/@mui/x-date-pickers-pro/DateRangePicker/index.js",
+      "file": "@mui_x-date-pickers-pro_DateRangePicker.js",
+      "fileHash": "41d2276a",
+      "needsInterop": false
+    },
+    "@toolpad/core/SignInPage": {
+      "src": "../../node_modules/@toolpad/core/SignInPage/index.js",
+      "file": "@toolpad_core_SignInPage.js",
+      "fileHash": "4e78f0ca",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-CAH6P3TN": {
+      "file": "chunk-CAH6P3TN.js"
+    },
+    "chunk-WHC732NP": {
+      "file": "chunk-WHC732NP.js"
+    },
+    "chunk-Q2BLGLKS": {
+      "file": "chunk-Q2BLGLKS.js"
+    },
+    "chunk-AFIQYO7F": {
+      "file": "chunk-AFIQYO7F.js"
+    },
+    "chunk-YTTAHBDQ": {
+      "file": "chunk-YTTAHBDQ.js"
+    },
+    "chunk-C6WWHQR7": {
+      "file": "chunk-C6WWHQR7.js"
+    },
+    "chunk-4I7C2EBU": {
+      "file": "chunk-4I7C2EBU.js"
+    },
+    "chunk-MH325SYJ": {
+      "file": "chunk-MH325SYJ.js"
+    },
+    "chunk-SFSXBOQ7": {
+      "file": "chunk-SFSXBOQ7.js"
+    },
+    "chunk-F6CH56XX": {
+      "file": "chunk-F6CH56XX.js"
+    },
+    "chunk-YJEEJQO7": {
+      "file": "chunk-YJEEJQO7.js"
+    },
+    "chunk-NP2WBMXJ": {
+      "file": "chunk-NP2WBMXJ.js"
+    },
+    "chunk-HLL7H7BY": {
+      "file": "chunk-HLL7H7BY.js"
+    },
+    "chunk-EAS2PSTI": {
+      "file": "chunk-EAS2PSTI.js"
+    },
+    "chunk-MYZQRXX6": {
+      "file": "chunk-MYZQRXX6.js"
+    },
+    "chunk-UP6LQVYV": {
+      "file": "chunk-UP6LQVYV.js"
+    },
+    "chunk-LEJ3OO4T": {
+      "file": "chunk-LEJ3OO4T.js"
+    },
+    "chunk-EL2YVVB3": {
+      "file": "chunk-EL2YVVB3.js"
+    },
+    "chunk-C2G5NUBJ": {
+      "file": "chunk-C2G5NUBJ.js"
+    },
+    "chunk-HQ6ZTAWL": {
+      "file": "chunk-HQ6ZTAWL.js"
+    },
+    "chunk-MCMOV7PY": {
+      "file": "chunk-MCMOV7PY.js"
+    },
+    "chunk-TWJRYSII": {
+      "file": "chunk-TWJRYSII.js"
+    },
+    "chunk-ZSEW566P": {
+      "file": "chunk-ZSEW566P.js"
+    },
+    "chunk-DC5AMYBS": {
+      "file": "chunk-DC5AMYBS.js"
+    }
+  }
+}

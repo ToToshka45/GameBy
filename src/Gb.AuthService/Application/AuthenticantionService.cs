@@ -1,15 +1,14 @@
 ﻿using Application.Dto;
 using DataAccess.Abstractions;
 using Domain;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Application
 {
@@ -17,20 +16,20 @@ namespace Application
     public class AuthenticantionService
     {
         private readonly IRepository<User> _userRepository;
-        private readonly IRepository<Role> _roleRepository;
-
-        private readonly string _issuer = "GamesByAuth"; 
-        private readonly string _audience = "GamesByMictoservices";
-
-
+        //private readonly IRepository<Role> _roleRepository;
         private readonly UserTokenService _userService;
 
-        public AuthenticantionService(IRepository<User> userRepository,IRepository<Role> roleRepository,
-            UserTokenService userService)
+        private readonly JwtSettings _jwtSettings;
+
+        private readonly ILogger<AuthenticantionService> _logger;
+
+        public AuthenticantionService(IRepository<User> userRepository, IRepository<Role> roleRepository,
+            UserTokenService userService, IOptions<JwtSettings> options, ILogger<AuthenticantionService> logger)
         {
             _userRepository = userRepository;
-            
             _userService = userService;
+            _jwtSettings = options.Value;
+            _logger = logger;
         }
 
         /*
@@ -50,171 +49,153 @@ namespace Application
             return res;
         }*/
 
-        public async Task<AuthResultDto> AuthUserById(int UserId
-             )
+        public async Task<AuthResultDto> AuthUserById(int userId)
         {
-            AuthResultDto result = new AuthResultDto();
+            AuthResultDto result = new();
+            User? user = null;
 
-            User user = null;
+            user = await _userRepository.GetByIdAsync(userId);
 
-            user=await _userRepository.GetByIdAsync( UserId );
+            result.AccessToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
+            result.RefreshToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
 
+            SetCachedRefreshToken(result.RefreshToken, user.Id, user.Roles);
 
-            result.AccessToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
-            result.RefreshToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
-            result.IsSuccess = true;
-
-            _userService.AddUserToken(new UserToken()
-            {
-                RefreshToken = result.RefreshToken,
-                ExpirationDate = DateTime.Now.AddDays(7),
-                UserId = user.Id,
-                UserRoles = user.Roles.
-            Select(x => x.Role.RoleName).ToList()
-            });
             return result;
         }
 
-        public async Task<AuthResultDto> AuthUser(string userPassword, string userLogin,string userEmail
-             )
-         {
-            AuthResultDto result = new AuthResultDto();
-
-            User user=null;
-
-            if (!string.IsNullOrEmpty(userLogin)) {
-                user= (await _userRepository.Search(x => x.Login.Name==userLogin)).FirstOrDefault();
-            }
-            else if(!string.IsNullOrEmpty(userEmail)) 
-            {
-                user = (await _userRepository.Search(x => x.Email.Email == userEmail)).FirstOrDefault();
-            }
-
-            if (user == null) { 
-                result.IsSuccess = false;
-                result.ErrorMessage = "Пользователь не найден";
-                return result;
-            }
-
-            if(user.Password.Password!=userPassword)
-            {
-                result.IsSuccess = false;
-                result.ErrorMessage = "Неверный логин или пароль";
-                return result;
-            }
-
-            
-            result.AccessToken = GenerateTokens(user.Id,user.Roles.Select(x=>x.Role.RoleName).ToList());
-            result.RefreshToken = GenerateTokens(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
-            result.IsSuccess=true;
-
-            _userService.AddUserToken(new UserToken() { RefreshToken=result.RefreshToken,
-            ExpirationDate=DateTime.Now.AddDays(7),UserId=user.Id,UserRoles= user.Roles.
-            Select(x => x.Role.RoleName).ToList()
-            });
-            return result;
-        }
-
-
-        public async Task<RefreshAccessTokenDto> RefreshToken(string refreshToken)
+        public async Task<AuthResultDto?> AuthUser(string userPassword, string userLogin, string userEmail)
         {
-            RefreshAccessTokenDto res=new RefreshAccessTokenDto();
+            AuthResultDto? result = new();
+            User? user = null;
 
-            UserToken userToken = _userService.FindUserByRefreshToken(refreshToken);
-            if (userToken == null)
+            if (!string.IsNullOrEmpty(userLogin))
             {
-                res.ErrorMessage = "Invalid Token";
-                res.IsSuccess = false;
-                return res;
+                user = (await _userRepository.Search(x => x.Login.Name == userLogin)).FirstOrDefault();
             }
-
-            string PreviousToken = userToken.RefreshToken;
-            /*
-            ClaimsPrincipal principal = null;
-            try {
-               principal= GetPrincipalFromTokens(refreshToken); 
+            else if (!string.IsNullOrEmpty(userEmail))
+            {
+                user = (await _userRepository.Search(x => x.Email.Value == userEmail)).FirstOrDefault();
             }
-            catch(SecurityTokenException e) {
-                res.ErrorMessage = "Invalid Token";
-                res.IsSuccess = false;
-                return res;
-            }
-            string useridStr = principal.Identity.Name;
-
-            var test=await _userRepository.GetAllAsync();
-
-            var user=await _userRepository.GetByIdAsync(Guid.Parse(useridStr));
 
             if (user == null)
             {
-                res.ErrorMessage = "Invalid Token";
-                res.IsSuccess = false;
-                return res;
+                return null;
             }
 
-            res.AccessToken = GenerateTokens(Guid.Parse(useridStr), user.Roles.Select(x=>x.Role.RoleName).ToList()
-                );
-            res.RefreshToken = GenerateTokens(Guid.Parse(useridStr), user.Roles.Select(x => x.Role.RoleName).ToList(),
-                true);
-            */
-            res.AccessToken = GenerateTokens(userToken.UserId, userToken.UserRoles
-                );
-            res.RefreshToken = GenerateTokens(userToken.UserId, userToken.UserRoles,
-                true);
-            res.IsSuccess=true;
+            if (user.Password.Value != userPassword)
+            {
+                return null;
+            }
+
+            result.Id = user.Id;
+            result.Username = user.Login.Name;
+            result.Email = user.Email.Value;
+            result.AccessToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList());
+            result.RefreshToken = GenerateToken(user.Id, user.Roles.Select(x => x.Role.RoleName).ToList(), true);
+
+            SetCachedRefreshToken(result.RefreshToken, user.Id, user.Roles);
+
+            return result;
+        }
+
+        public async Task<RefreshAccessTokenDto?> RefreshToken(string refreshToken)
+        {
+            UserToken? userToken = _userService.FindUserByRefreshToken(refreshToken);
+            if (userToken == null)
+            {
+                return null;
+            }
+
+            RefreshAccessTokenDto res = new();
+            var userData = await _userRepository.GetByIdAsync(userToken.UserId);
+            string previousToken = userToken.RefreshToken;
+            res.Id = userToken.UserId;
+            res.Username = userData.Login.Name;
+            res.Email = userData.Email.Value;
+            res.AccessToken = GenerateToken(userToken.UserId, userToken.UserRoles);
+            res.RefreshToken = GenerateToken(userToken.UserId, userToken.UserRoles, true);
 
             userToken.RefreshToken = res.RefreshToken;
-            _userService.UpdateUserToken(userToken, PreviousToken);
-            
+            await _userService.UpdateUserToken(userToken, previousToken);
 
             return res;
         }
 
-        private string GenerateTokens(int userId,List<string> userRoleNames,
-            bool IsRefresh=false)
+        private string GenerateToken(int userId, List<string> userRoleNames, bool isRefresh = false)
         {
             string res = string.Empty;
 
+            List<Claim> claims =
+                [
+                   new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                   new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
+                ];
 
-            List<Claim> claims = new List<Claim>();
-            foreach (string RoleName in userRoleNames) {
-                claims.Add(new Claim(ClaimTypes.Role, RoleName));
+            foreach (string roleName in userRoleNames)
+            {
+                claims.Add(new Claim("roles", roleName));
             }
-            claims.Add(new Claim(ClaimTypes.Name, userId.ToString()));
-            
+            //claims.Add(new Claim(ClaimTypes.Name, userId.ToString()));
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("mysupersecret_secretsecretsecretkey!123"));
+            var key = new SymmetricSecurityKey(GetSecretKey());
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            DateTime expiresAt= DateTime.UtcNow;
-            if (IsRefresh)
-            {
-                expiresAt = expiresAt.AddDays(7);
-            }
-            else expiresAt = expiresAt.AddMinutes(30);
+            var token = new JwtSecurityToken(issuer: _jwtSettings.Issuer,
+                                             audience: _jwtSettings.Audience,
+                                             claims,
+                                             expires: DateTime.Now.AddMinutes(isRefresh ? JwtSettings.RefreshTokenExpiresInMinutes : JwtSettings.AccessTokenExpiresInMinutes),
+                                             signingCredentials: creds);
 
-            var token = new JwtSecurityToken(issuer:_issuer,
-                audience:_audience,
-                claims,
-                expires: expiresAt,
-                signingCredentials: creds);
-             
             res = new JwtSecurityTokenHandler().WriteToken(token);
             return res;
         }
 
-        public int? GetTokenInfo(string accessToken)
+        public async Task<ValidateTokenDto?> RestoreUserInfo(string accessToken)
         {
-            ClaimsPrincipal principal = null;
             try
             {
-                principal = GetPrincipalFromTokens(accessToken);
+                ClaimsPrincipal? principal = GetPrincipalFromTokens(accessToken);
+                if (principal is null) return null;
+
+                var sub = principal.FindFirst(JwtRegisteredClaimNames.Sub);
+                User? user = null;
+                if (sub is not null)
+                {
+                    user = await _userRepository.GetByIdAsync(int.Parse(sub.Value));
+                }
+
+                if (user is null) return null;
+
+                return new() { Id = user.Id, Email = user.Email.Value, Username = user.Login.Name, AccessToken = accessToken };
             }
             catch (SecurityTokenException e)
             {
-                return null;
+                _logger.LogError(e, "Security token validation failed for access token: {AccessToken}", accessToken);
             }
-            return Convert.ToInt32(principal.Identity.Name);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while validating the access token: {AccessToken}", accessToken);
+            }
+            return null;
+        }
+        public int? GetTokenInfo(string accessToken)
+        {
+            ClaimsPrincipal? principal = null;
+            try
+            {
+                principal = GetPrincipalFromTokens(accessToken);
+                return Convert.ToInt32(principal.Identity.Name);
+            }
+            catch (SecurityTokenException e)
+            {
+                _logger.LogError(e, "Security token validation failed for access token: {AccessToken}", accessToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while validating the access token: {AccessToken}", accessToken);
+            }
+            return null;
         }
 
         private ClaimsPrincipal GetPrincipalFromTokens(string tokenStr)
@@ -224,7 +205,7 @@ namespace Application
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("mysupersecret_secretsecretsecretkey!123")),
+                IssuerSigningKey = new SymmetricSecurityKey(GetSecretKey()),
                 ValidateLifetime = true
             };
 
@@ -232,10 +213,27 @@ namespace Application
             var principal = tokenHandler.ValidateToken(tokenStr, tokenValidationParameters, out SecurityToken securityToken);
             if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
-             
+
             return principal;
         }
 
+        private void SetCachedRefreshToken(string refreshToken, int userId, IEnumerable<UserRole> roles)
+        {
+            _userService.AddUserToken(new UserToken()
+            {
+                RefreshToken = refreshToken,
+                ExpirationDate = DateTime.Now.AddMinutes(10),
+                UserId = userId,
+                UserRoles = roles.Select(x => x.Role.RoleName).ToList()
+            });
+        }
 
+        private byte[] GetSecretKey()
+        {
+            if (_jwtSettings.SecretKey is not null)
+                return Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+            else
+                return RandomNumberGenerator.GetBytes(32);
+        }
     }
 }

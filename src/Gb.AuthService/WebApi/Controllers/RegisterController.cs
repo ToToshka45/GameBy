@@ -1,7 +1,6 @@
 ﻿using Application;
 using Application.Dto;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Dto;
 
@@ -34,20 +33,23 @@ namespace WebApi.Controllers
         /// Customer if success or BadRequest 
         /// InternalError Если не удалось добавить пользователя но запрос валидацию прошёл
         /// </returns>
-        [HttpPost("RegisterNew")]
-        public async Task<ActionResult<NewUserResponse>> CreateCustomerAsync(RegiserUserRequest request)
+        [HttpPost]
+        public async Task<ActionResult<RegisterUserResponse>> RegisterAsync(RegiserUserRequest request)
         {
-            NewUserResultDto res = await _registerService.
-                AddNewUser(_mapper.Map<NewUserDto>(request));
-
+            var res = await _registerService.AddNewUser(_mapper.Map<NewUserDto>(request));
 
             if (!res.IsSuccess)
                 return BadRequest(res.ErrorMessage);
 
             var authres = await _authenticatorService.AuthUserById(res.Id);
 
-            return new NewUserResponse() { UserName = res.UserName, Id = res.Id,AccessToken=authres.AccessToken,RefreshToken=authres.RefreshToken };
-
+            return new RegisterUserResponse()
+            {
+                Id = res.Id,
+                Username = res.Username,
+                AccessToken = authres.AccessToken,
+                RefreshToken = authres.RefreshToken
+            };
         }
 
         /// <summary>
@@ -59,7 +61,6 @@ namespace WebApi.Controllers
         [HttpGet("CheckLoginExists")]
         public async Task<ActionResult<bool>> CheckLoginExists(string login)
         {
-
             return await _registerService.CheckLoginExists(login);
         }
 
@@ -72,7 +73,6 @@ namespace WebApi.Controllers
         [HttpGet("CheckEmailExists")]
         public async Task<ActionResult<bool>> CheckEmailExists(string login)
         {
-
             return await _registerService.CheckEmailExists(login);
         }
 

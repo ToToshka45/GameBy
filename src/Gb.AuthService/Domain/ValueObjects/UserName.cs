@@ -11,21 +11,12 @@ namespace Domain.ValueObjects
 {
     public class UserName
     {
-        
-        private string _name;
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                //NameValidation(value);
-                _name = value;
-            }
-        }
+        public string Name { get; private set; }
 
         public UserName(string name)
         {
             NameValidation(name);
+            Name = name;
         }
 
         public void NameValidation(string newValue)
@@ -34,8 +25,6 @@ namespace Domain.ValueObjects
                 throw new ValidationException("Length of Name too short or long");
             if (!Regex.IsMatch(newValue,RegexPatterns.UserLogin))
                 throw new ValidationException("Use only English alphabet and numbers or _");
-
-            Name = newValue;
         }
     }
 }

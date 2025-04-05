@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
 
 //amqps://
-var pgConnect = Environment.GetEnvironmentVariable("PG_CONNECT");
+var pgConnect = builder.Configuration.GetValue<string>("PG_CONNECT");
 var redisConnect = builder.Configuration.GetValue<string>("REDIS_CONNECT");
 //var RabbitConnect= Environment.GetEnvironmentVariable("RABBIT_CONNECT");
 

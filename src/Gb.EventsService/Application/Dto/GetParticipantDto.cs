@@ -1,9 +1,8 @@
-﻿using Common;
-
-namespace Application.Dto;
+﻿namespace Application.Dto;
 
 public class GetParticipantDto
 {
+    public int Id { get; set; }
     public int EventId { get; set; }
     public int UserId { get; set; }
     public string Username { get; set; }

@@ -38,7 +38,7 @@ const useEventProcessing = () => {
   };
 
   const fetchUserEvents = async () => {
-    const res = await eventsAxios.get("events", {
+    const res = await eventsAxios.get("events/my-events", {
       params: { userId: userAuth?.id, currentTime: new Date() },
       withCredentials: true,
     });
@@ -125,10 +125,9 @@ const useEventProcessing = () => {
     acceptedDate?: Date
   ) => {
     try {
-      await eventsAxios.post(
-        `events/${eventId}/participants/${participantId}?state=${newState}`,
-        { acceptedDate }
-      );
+      await eventsAxios.get(`events/${eventId}/participants/${participantId}`, {
+        params: { state: newState, acceptedDate },
+      });
     } catch (err) {
       console.error(err);
     }

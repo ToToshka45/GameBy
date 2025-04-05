@@ -93,10 +93,10 @@ public class EventService
             var data = await _minioService.DownloadFileAsync(@event.Id, @event.EventAvatarName);
             if (data.fileStream != null)
             {
-                res.EventAvatarFile = new() {
-                    ContentType = "image/jpeg",
-                    Content = GetBase64File(data.fileStream)
-                };
+                //res.EventAvatarFile = new() {
+                //    ContentType = "image/jpeg",
+                //    Content = GetBase64File(data.fileStream)
+                //};
             }
         }
         //if (@event.ThemeId != null)
@@ -210,9 +210,9 @@ public class EventService
             foreach (var item in events)
             {
                 if (string.IsNullOrWhiteSpace(item.EventAvatarName)) continue;
-                //dtoList.First(e => e.Id == item.Id).PresignedImageUrl = await _minioService.IssuePresignedUrlForDownload(item.Id, item.EventAvatarName);
-                var data = await _minioService.DownloadFileAsync(item.Id, item.EventAvatarName);
-                dtoList.First(e => e.Id == item.Id).EventAvatarFile = GetBase64File(data.fileStream);
+                //var data = await _minioService.DownloadFileAsync(item.Id, item.EventAvatarName);
+                //dtoList.First(e => e.Id == item.Id).EventAvatarFile = GetBase64File(data.fileStream);
+                dtoList.First(e => e.Id == item.Id).EventAvatarUrl = await _minioService.IssuePresignedUrlForDownload(item.Id, item.EventAvatarName); ;
             }
 
             return dtoList;

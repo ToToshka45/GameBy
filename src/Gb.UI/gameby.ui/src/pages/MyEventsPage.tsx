@@ -121,7 +121,6 @@ export default function MyEventsPage() {
                       image={event.eventAvatarUrl}
                       src={"src/assets/event-pics/event_default.jpg"}
                     />
-                    {/* <CardContent></CardContent> */}
                   </Card>
                 </Box>
               </Grid>

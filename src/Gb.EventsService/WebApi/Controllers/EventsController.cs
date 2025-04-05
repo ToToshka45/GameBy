@@ -75,7 +75,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{eventId:int}/participants/{participantId:int}")]
-        public async Task<IActionResult> SetParticipantState(int eventId, int participantId, [FromQuery] Common.ParticipationState state, [FromBody] DateTime? acceptedDate)
+        public async Task<IActionResult> SetParticipantState(int eventId, int participantId, [FromQuery] Common.ParticipationState state, [FromQuery] DateTime? acceptedDate)
         {
             if (eventId == 0 || participantId == 0 || state is Common.ParticipationState.Unclarified) return BadRequest();
             await _eventService.UpdateParticipantState(eventId, participantId, state, acceptedDate);
@@ -230,7 +230,7 @@ namespace WebApi.Controllers
                 return BadRequest("Event is not found");
             var response = _mapper.Map<GetShortEventResponse>(res);
 
-            return Ok(response);
+            return Ok(res);
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace WebApi.Controllers
         {
             var dto = _mapper.Map<EventsFiltersDto>(filters);
             var res = await _eventService.GetEvents(dto);
-            return Ok(res);
+            return Ok(_mapper.Map<List<GetShortEventResponse>>(res));
         }
 
         /// <summary>

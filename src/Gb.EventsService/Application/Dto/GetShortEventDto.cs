@@ -15,5 +15,6 @@ public class GetShortEventDto
     public bool IsUserParticipant {  get; set; }
     public bool IsUserOrganizer { get; set; }
     public string? EventAvatarFile { get; set; }
+    public string? EventAvatarUrl { get; set; }
     public string? PresignedImageUrl { get; set; }
 }

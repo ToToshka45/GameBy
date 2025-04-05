@@ -2,6 +2,7 @@
 
 public class GetParticipantResponse
 {
+    public int Id { get; set; }
     public int EventId { get; set; }
     public int UserId { get; set; }
     public string Username { get; set; }

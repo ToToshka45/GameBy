@@ -151,6 +151,34 @@ namespace Application
             return res;
         }
 
+        public async Task<ValidateTokenDto?> RestoreUserInfo(string accessToken)
+        {
+            try
+            {
+                ClaimsPrincipal? principal = GetPrincipalFromTokens(accessToken);
+                if (principal is null) return null;
+
+                var sub = principal.FindFirst(JwtRegisteredClaimNames.Sub);
+                User? user = null;
+                if (sub is not null)
+                {
+                    user = await _userRepository.GetByIdAsync(int.Parse(sub.Value));
+                }
+
+                if (user is null) return null;
+
+                return new() { Id = user.Id, Email = user.Email.Value, Username = user.Login.Name, AccessToken = accessToken };
+            }
+            catch (SecurityTokenException e)
+            {
+                _logger.LogError(e, "Security token validation failed for access token: {AccessToken}", accessToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while validating the access token: {AccessToken}", accessToken);
+            }
+            return null;
+        }
         public int? GetTokenInfo(string accessToken)
         {
             ClaimsPrincipal? principal = null;

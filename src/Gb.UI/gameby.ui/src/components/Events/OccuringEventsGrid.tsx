@@ -82,10 +82,6 @@ const DisplayEventsGrid = ({ events }: DisplayEventProps) => {
                   image={event.eventAvatarUrl}
                   src={"src/assets/event-pics/event_default.jpg"}
                 />
-                {/* <CardContent sx={{ height: "100%", bgcolor: blue[100] }}>
-                  <Typography variant="caption">{event.description}</Typography>
-                </CardContent> */}
-                {/* <CardActions /> */}
               </Card>
             </Box>
           </Grid>

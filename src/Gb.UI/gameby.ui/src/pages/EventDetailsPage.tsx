@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   CardMedia,
   Chip,
   Dialog,
@@ -27,6 +28,7 @@ import { ThumbUp, ThumbDown, Person, ArrowLeft } from "@mui/icons-material";
 import { blue, green, red } from "@mui/material/colors";
 import useAuth from "../hooks/useAuth";
 import useEventProcessing from "../hooks/useEventProcessing";
+import eventDefaultImage from "../../src/assets/event-pics/event_default.jpg";
 
 export default function EventDetailsPage() {
   // this allows us to get a payload, sent alongside when we were redirected to the EventPage
@@ -76,14 +78,14 @@ export default function EventDetailsPage() {
   useEffect(() => {
     console.log("Participants acquired: ", occuringEvent?.participants);
     const acceptedParticipants =
-      occuringEvent?.participants.filter(
+      occuringEvent?.participants?.filter(
         (p: Participant) =>
           p.state.toString() === ParticipationState.Accepted.toString()
       ) || [];
     setAcceptedParticipants(acceptedParticipants);
 
     const pending =
-      occuringEvent?.participants.filter(
+      occuringEvent?.participants?.filter(
         (p: Participant) => p.state === "PendingAcceptance"
       ) || [];
     setPendingParticipants(pending);
@@ -145,7 +147,7 @@ export default function EventDetailsPage() {
   };
 
   const renderState = () => {
-    const state = occuringEvent?.participants.find(
+    const state = occuringEvent?.participants?.find(
       (p) => p.userId === userAuth?.id
     )?.state;
     return ParticipationState[state as keyof typeof ParticipationState];
@@ -170,7 +172,6 @@ export default function EventDetailsPage() {
                 flexDirection="column"
                 justifyItems="center"
                 alignItems="center"
-                // bgcolor={occuringEvent?.stateDetails.color}
               >
                 <Typography variant="h6" px={5}>
                   {occuringEvent?.title}
@@ -209,7 +210,7 @@ export default function EventDetailsPage() {
             <CardMedia
               component="img"
               image={occuringEvent?.eventAvatarUrl}
-              src={"src/assets/event-pics/event_default.jpg"}
+              src={eventDefaultImage}
               height="100%"
             />
           </Grid>

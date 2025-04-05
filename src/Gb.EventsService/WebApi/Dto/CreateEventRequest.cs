@@ -12,10 +12,8 @@ public class CreateEventRequest
     public DateTime CreationDate { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EventDate { get; set; }
-    //public short EventDurationInHours { get; set; }
     public string Location { get; set; } = string.Empty;
-    //public bool IsClosedParticipation { get; set; }
-    //public EventStatus EventStatus { get; set; }
+
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public EventCategory EventCategory { get; set; }
     public int MaxParticipants { get; set; }

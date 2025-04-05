@@ -34,7 +34,7 @@ namespace WebApi.Controllers
         /// Unauthorized or LoginResultResponse
         /// </returns>
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResponse>> Login(SimpleLoginDto request)
+        public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
         {
             var res = await _authService.AuthUser(request.Password, request.Username, request.Email);
 
@@ -88,7 +88,7 @@ namespace WebApi.Controllers
         /// </returns>
         [HttpGet("validate-token")]
         //[Authorize]
-        public IActionResult ValidateToken()
+        public async Task<ActionResult<ValidateTokenResponse>> ValidateToken()
         {
             Request.Headers.TryGetValue("Authorization", out var value);
             var bearerToken = value.ToString();
@@ -96,14 +96,19 @@ namespace WebApi.Controllers
 
             var token = bearerToken.Substring("Bearer ".Length).Trim();
 
-            var res = _authService.GetTokenInfo(token);
+            var res = await _authService.RestoreUserInfo(token);
             if (res is null)
             {
                 return Unauthorized();
             }
 
-            //return res is null ? Unauthorized() :
-            return Ok("Correct access token has been received");
+            return Ok(new ValidateTokenResponse()
+            {
+                Id = res.Id,
+                Username = res.Username,
+                Email = res.Email,
+                AccessToken = res.AccessToken
+            });
         }
 
         [HttpGet("About")]

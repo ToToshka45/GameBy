@@ -325,7 +325,11 @@ export default function CreateEventPage() {
             </Button>
           </Box>
         </form>
-        {image !== null && <img src={imgPreview as string} />}
+        <Box mt={4} display="flex" justifyContent="center">
+          {image !== null && (
+            <img height="400" width="600" src={imgPreview as string} />
+          )}
+        </Box>
       </Paper>
     </Box>
   );

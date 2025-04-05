@@ -2,7 +2,7 @@
 
 namespace WebApi.Dto
 {
-    public class SimpleLoginDto
+    public class LoginRequest
     {
         [JsonProperty("email")]
         public string Email { get; set; }
